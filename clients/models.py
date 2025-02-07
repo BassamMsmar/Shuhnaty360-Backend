@@ -1,13 +1,16 @@
 from django.db import models
 
-# Create your models here.
-from django.db import models
+from cities.models import City
+
 
 class Client(models.Model):
     name = models.CharField(max_length=255, verbose_name="اسم العميل")
-    phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف")
-    email = models.EmailField(unique=True, verbose_name="البريد الإلكتروني")
-    address = models.TextField(verbose_name="العنوان", blank=True, null=True)
+    address = models.CharField(
+        verbose_name="العنوان", max_length=255, blank=True, null=True)
+    phone_number = models.CharField(
+        max_length=20, verbose_name="رقم الهاتف", null=True, blank=True)
+    email = models.EmailField(
+        unique=True, verbose_name="البريد الإلكتروني", null=True, blank=True)
 
     class Meta:
         verbose_name = "عميل"
@@ -18,11 +21,14 @@ class Client(models.Model):
 
 
 class Branch(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="branches", verbose_name="العميل")
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name="branches", verbose_name="العميل")
     name = models.CharField(max_length=255, verbose_name="اسم الفرع")
-    phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف")
-    address = models.TextField(verbose_name="العنوان")
-    city = models.CharField(max_length=100, verbose_name="المدينة")
+    city = models.ForeignKey(
+        City, on_delete=models.CASCADE, related_name="clients", verbose_name="المدينة")
+    address = models.CharField(verbose_name="العنوان", max_length=255)
+    phone_number = models.CharField(
+        max_length=20, verbose_name="رقم الهاتف",  null=True, blank=True)
 
     class Meta:
         verbose_name = "فرع"
