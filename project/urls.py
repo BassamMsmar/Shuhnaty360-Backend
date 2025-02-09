@@ -21,6 +21,14 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    path('api/', include('cities.urls')),
+    path('api/', include('drivers.urls')),
+    path('api/', include('clients.urls')),
+    path('api/', include('shipments.urls')),
+    path('api/', include('recipient.urls')),
+
+    path('api-auth/', include('rest_framework.urls'))
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
