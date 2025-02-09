@@ -10,3 +10,9 @@ class City(models.Model):
 
     def __str__(self):
         return self.ar_city
+    
+    class Meta:
+        verbose_name = "المدن"
+        verbose_name_plural = "المدن"
+    
+
