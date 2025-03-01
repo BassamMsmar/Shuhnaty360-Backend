@@ -72,4 +72,13 @@ def create_recipient():
             address=Faker().address(),
             city=random.choice(cities))
         print(f'Recipient {i} created')
-create_recipient()
+
+
+
+# create_superuser()
+# create_user()
+# create_city()
+# create_client()
+# create_branch()
+# create_driver()
+# create_recipient()
