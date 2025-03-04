@@ -22,11 +22,11 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    path('api/', include('cities.urls')),
-    path('api/', include('drivers.urls')),
-    path('api/', include('clients.urls')),
-    path('api/', include('shipments.urls')),
-    path('api/', include('recipient.urls')),
+    path('cities/', include('cities.urls')),
+    path('drivers/', include('drivers.urls')),
+    path('clients/', include('clients.urls')),
+    path('shipments/', include('shipments.urls')),
+    path('recipient/', include('recipient.urls')),
 
     path('api-auth/', include('rest_framework.urls'))
 ]
