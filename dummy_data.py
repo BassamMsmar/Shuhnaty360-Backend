@@ -75,10 +75,10 @@ def create_recipient():
 
 
 
-# create_superuser()
-# create_user()
-# create_city()
-# create_client()
-# create_branch()
-# create_driver()
-# create_recipient()
+create_superuser()
+create_user()
+create_city()
+create_client()
+create_branch()
+create_driver()
+create_recipient()
