@@ -12,3 +12,8 @@ class ShipmentViewSet(generics.ListCreateAPIView):
     queryset = Shipment.objects.all()
     serializer_class = ShipmentSerializer
     permission_classes = [IsAdminUser]
+
+class ShipmentDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Shipment.objects.all()
+    serializer_class = ShipmentSerializer
+    permission_classes = [IsAdminUser]
