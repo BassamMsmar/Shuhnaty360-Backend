@@ -12,3 +12,8 @@ class CityViewSet(generics.ListCreateAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     permission_classes = [IsAdminUser]
+
+class CityDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = City.objects.all()
+    serializer_class = CitySerializer
+    permission_classes = [IsAdminUser]
