@@ -12,3 +12,8 @@ class RecipientViewSet(generics.ListCreateAPIView):
     queryset = Recipient.objects.all()
     serializer_class = RecipientSerializer
     permission_classes = [IsAdminUser]
+
+class RecipientDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Recipient.objects.all()
+    serializer_class = RecipientSerializer
+    permission_classes = [IsAdminUser]
