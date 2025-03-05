@@ -10,7 +10,7 @@ import uuid
 import qrcode
 from io import BytesIO
 from django.core.files import File
-from PIL import Image, ImageDraw
+from PIL import Image
 
 # Assuming the following models exist in your project:
 # User, Driver, Branch, ShipmentStatus, City

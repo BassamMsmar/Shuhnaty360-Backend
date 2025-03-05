@@ -13,6 +13,7 @@ from cities.models import City
 from clients.models import Client, Branch
 from drivers.models import Driver
 from recipient.models import Recipient
+from shipments.models import Shipment, ShipmentStatus
 import faker
 
 CITIES = [('Jeddah', 'جدة'), ('Riyadh', 'الرياض'), ('Dammam', 'الدمام'), ('Makkah', 'مكة'), ('Madinah', 'المدينة')]
@@ -73,12 +74,39 @@ def create_recipient():
             city=random.choice(cities))
         print(f'Recipient {i} created')
 
+def create_shipment():
+    user = User.objects.all()
+    driver = Driver.objects.all()
+    customer_branch = Branch.objects.all()
+    recipient = Recipient.objects.all()
+    status = ShipmentStatus.objects.all()
+    for i in range(1, 100):
+        Shipment.objects.create(
+            user=random.choice(user),
+            driver=random.choice(driver),
+            customer_branch=random.choice(customer_branch),
+            customer_invoice_number=Faker().numerify(text='##########'),
+            recipient = random.choice(recipient),
+            fare=Faker().numerify(text='###'),
+            premium=Faker().numerify(text='###'),
+            fare_return=Faker().numerify(text='###'),
+            days_stayed=Faker().numerify(text='#'),
+            stay_cost=Faker().numerify(text='###'),
+            deducted=Faker().numerify(text='###'),
+            status=random.choice(status),
+            days_to_arrive=random.choice([1, 2, 3, 4, 5]),
+            notes=Faker().sentence(),
+        )
+            
+        print(f'shipment {i} created')
 
 
-create_superuser()
-create_user()
-create_city()
-create_client()
-create_branch()
-create_driver()
-create_recipient()
+
+# create_superuser()
+# create_user()
+# create_city()
+# create_client()
+# create_branch()
+# create_driver()
+# create_recipient()
+create_shipment()
