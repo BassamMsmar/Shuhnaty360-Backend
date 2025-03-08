@@ -115,23 +115,23 @@ class Shipment(models.Model):
         if not self.tracking_number:
             self.tracking_number = str(uuid.uuid4().int)[:10]  # رقم عشوائي مكون من 10 أرقام
 
-        if not self.code:
-        # Generate QR code
-            qr = qrcode.QRCode(
-                version=1,
-                error_correction=qrcode.constants.ERROR_CORRECT_L,
-                box_size=4,
-                border=4,
-            )
-            qr.add_data(f'http://127.0.0.1:8000/shipment/{self.id}/')
-            qr.make(fit=True)
+        # if not self.code:
+        # # Generate QR code
+        #     qr = qrcode.QRCode(
+        #         version=1,
+        #         error_correction=qrcode.constants.ERROR_CORRECT_L,
+        #         box_size=4,
+        #         border=4,
+        #     )
+        #     qr.add_data(f'http://127.0.0.1:8000/shipment/{self.id}/')
+        #     qr.make(fit=True)
 
-            img = qr.make_image(fill_color="black", back_color="white")
+        #     img = qr.make_image(fill_color="black", back_color="white")
 
-            # Save QR code to image field
-            buffer = BytesIO()
-            img.save(buffer, format='PNG')
-            self.code.save(f'{self.id}_qrcode.png', File(buffer), save=False)
+        #     # Save QR code to image field
+        #     buffer = BytesIO()
+        #     img.save(buffer, format='PNG')
+        #     self.code.save(f'{self.id}_qrcode.png', File(buffer), save=False)
 
         super().save(*args, **kwargs)
         
