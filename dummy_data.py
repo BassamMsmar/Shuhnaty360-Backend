@@ -49,6 +49,15 @@ def create_branch():
         Branch.objects.create(client=random.choice(clients), name=Faker().company(), city=random.choice(cities), address=Faker().address(), phone_number=Faker().phone_number())
         print(f'Branch {i} created')
 
+def create_shipment_status():
+    ShipmentStatus.objects.create(name_en='In Shipping', name_ar='قيد الشحن')
+    ShipmentStatus.objects.create(name_en='In Transit', name_ar='في الطريق')
+    ShipmentStatus.objects.create(name_en='Delivered', name_ar='تم التوصيل')
+    ShipmentStatus.objects.create(name_en='Returned', name_ar='تم الإرجاع')
+    ShipmentStatus.objects.create(name_en='Under Review', name_ar='قيد المراجعة')  
+    ShipmentStatus.objects.create(name_en='Cancelled', name_ar='تم الإلغاء')
+    print('Shipment statuses created')
+
 
 # Create 10 Drivers
 def create_driver():
@@ -102,11 +111,12 @@ def create_shipment():
 
 
 
-# create_superuser()
+#create_superuser()
 # create_user()
 # create_city()
 # create_client()
 # create_branch()
 # create_driver()
 # create_recipient()
-create_shipment()
+#create_shipment_status()
+#create_shipment()
