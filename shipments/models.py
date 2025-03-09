@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from drivers.models import Driver
 from clients.models import Branch
 from recipient.models import Recipient
+from cities.models import City
 import uuid
 
 import qrcode
@@ -77,6 +78,13 @@ class Shipment(models.Model):
     fare = models.IntegerField("Fare")
     premium = models.IntegerField("Premium", null=True, blank=True)
     fare_return = models.IntegerField("Return", null=True, blank=True)
+
+    origin_city = models.ForeignKey(
+        City, on_delete=models.SET_NULL, related_name="origin_shipments", verbose_name="مدينة التحميل", null=True, blank=True
+    )
+    destination_city = models.ForeignKey(
+        City, on_delete=models.SET_NULL, related_name="destination_shipments", verbose_name="مدينة الوجهة", null=True, blank=True
+    )
 
     # QR Code image for tracking
     code = models.ImageField(blank=True, null=True, upload_to='code')
