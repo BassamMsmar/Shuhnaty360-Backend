@@ -89,6 +89,7 @@ def create_shipment():
     customer_branch = Branch.objects.all()
     recipient = Recipient.objects.all()
     status = ShipmentStatus.objects.all()
+    cities = City.objects.all()
     for i in range(1, 100):
         Shipment.objects.create(
             user=random.choice(user),
@@ -96,6 +97,8 @@ def create_shipment():
             customer_branch=random.choice(customer_branch),
             customer_invoice_number=Faker().numerify(text='##########'),
             recipient = random.choice(recipient),
+            origin_city = random.choice(cities),
+            destination_city = random.choice(cities),
             fare=Faker().numerify(text='###'),
             premium=Faker().numerify(text='###'),
             fare_return=Faker().numerify(text='###'),
@@ -119,4 +122,4 @@ def create_shipment():
 # create_driver()
 # create_recipient()
 #create_shipment_status()
-#create_shipment()
+create_shipment()
