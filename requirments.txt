@@ -1,17 +1,25 @@
+altgraph @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/altgraph-0.17.2-py2.py3-none-any.whl
 asgiref==3.8.1
 colorama==0.4.6
-Django==5.1.6
+Django==4.2
 django-filter==25.1
 djangorestframework==3.15.2
 drf-yasg==1.21.9
 Faker==36.1.1
+future @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/future-0.18.2-py3-none-any.whl
+importlib_metadata==8.6.1
 inflection==0.5.1
+macholib @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/macholib-1.15.2-py2.py3-none-any.whl
 Markdown==3.7
 packaging==24.2
 pillow==11.1.0
+python-decouple==3.8
 pytz==2025.1
 PyYAML==6.0.2
 qrcode==8.0
+six @ file:///AppleInternal/Library/BuildRoots/2c89a47b-9dd5-11ef-938f-6e654a286000/Library/Caches/com.apple.xbs/Sources/python3/six-1.15.0-py2.py3-none-any.whl
 sqlparse==0.5.3
+typing_extensions==4.12.2
 tzdata==2025.1
 uritemplate==4.1.1
+zipp==3.21.0
