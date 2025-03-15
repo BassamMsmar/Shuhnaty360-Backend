@@ -14,9 +14,13 @@ from clients.models import Client, Branch
 from drivers.models import Driver
 from recipient.models import Recipient
 from shipments.models import Shipment, ShipmentStatus
-import faker
+from faker import Faker
+fake = Faker('ar_SA')
 
-CITIES = [('Jeddah', 'جدة'), ('Riyadh', 'الرياض'), ('Dammam', 'الدمام'), ('Makkah', 'مكة'), ('Madinah', 'المدينة')]
+
+CITIES = [('Jeddah', 'جدة'), ('Riyadh', 'الرياض'), ('Dammam', 'الدمام'), ('Makkah', 'مكة'), ('Madinah', 'المدينة'), ('Abha', 'أبها'), ('Jizan', 'جيزان'), ('Tabuk', 'تبوك'), ('Hail', 'حائل'), ('Qassim', 'القصيم')]
+users = ['صالح حسين', 'حسين اليافعي', 'بندر الهمداني ', 'نشوان طفيان', 'خالد عثمان', 'احمد سالم']
+clints = ['ارنون', 'ابوداوود ',' المعتمدون', 'المنتجات الحديثة','العثيم'  ]
 
 # Create a superuser
 def create_superuser():
@@ -24,9 +28,10 @@ def create_superuser():
 
 # Create 5 Users
 def create_user():
-    for i in range(1, 6):
-        User.objects.create_user(Faker().user_name(), Faker().email(), 'password', first_name=Faker().first_name(),last_name=Faker().last_name())
+    for i, user in enumerate(users, start=1):
+        User.objects.create_user(Faker().user_name(), Faker().email(), 'password', first_name=user)
         print(f'User {i} created')
+
 
 # Create 5 Cities
 def create_city():
@@ -37,8 +42,9 @@ def create_city():
 
 # Create 5 Clients
 def create_client():
-    for i in range(1, 6):
-        Client.objects.create(name=Faker().company(), address=Faker().address(), phone_number=Faker().phone_number(), email=Faker().email())
+
+    for i, clint in enumerate(clints, start=1):
+        Client.objects.create(name=clint, address=Faker().address(), phone_number=Faker().phone_number(), email=Faker().email())
         print(f'Client {i} created')
 
 # Create 10 Branches
@@ -48,6 +54,7 @@ def create_branch():
     for i in range(1, 11):
         Branch.objects.create(client=random.choice(clients), name=Faker().company(), city=random.choice(cities), address=Faker().address(), phone_number=Faker().phone_number())
         print(f'Branch {i} created')
+
 
 def create_shipment_status():
     ShipmentStatus.objects.create(name_en='In Shipping', name_ar='قيد الشحن')
@@ -63,14 +70,16 @@ def create_shipment_status():
 def create_driver():
     for i in range(1, 11):
         Driver.objects.create(
-            name=Faker().name(),
-            phone_number=Faker().phone_number(),
-            nationality=Faker().country(),
-            language = random.choice(['en', 'ar', 'ur']),
-            identity_number=Faker().numerify(text='############'),
-            vehicle_number=Faker().numerify(text='########'),
-            status=random.choice(['available', 'busy', 'offline']))
+            name=fake.first_name_male(),
+            phone_number=fake.phone_number(),
+            nationality=fake.country(),
+            language=random.choice(['en', 'ar', 'ur']),
+            identity_number=fake.numerify(text='############'),
+            vehicle_number=fake.numerify(text='########'),
+            status=random.choice(['available', 'busy', 'offline'])
+        )
         print(f'Driver {i} created')
+
 
 # Create 10 Recipients
 def create_recipient():
