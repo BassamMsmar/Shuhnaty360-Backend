@@ -1,20 +1,20 @@
-from shipments.models import Shipment, ShipmentStatus
-from recipient.models import Recipient
-from drivers.models import Driver
-from clients.models import Client, Branch
-from cities.models import City
-from django.contrib.auth.models import User
-import random
-from faker import Faker
 import os
 import django
 
 # إعداد متغير البيئة لمشروع Django الخاص بك
-# استبدل 'project' باسم مشروعك الفعلي
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')  # استبدل 'project' باسم مشروعك الفعلي
 django.setup()
 
+from faker import Faker
+import random
 
+from django.contrib.auth.models import User
+from cities.models import City
+from clients.models import Client, Branch
+from drivers.models import Driver
+from recipient.models import Recipient
+from shipments.models import Shipment, ShipmentStatus
+from faker import Faker
 fake = Faker('ar_SA')
 
 
