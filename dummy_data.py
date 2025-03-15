@@ -1,20 +1,22 @@
 import os
 import django
 
-# إعداد متغير البيئة لمشروع Django الخاص بك
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')  # استبدل 'project' باسم مشروعك الفعلي
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 django.setup()
 
-from faker import Faker
-import random
-
-from django.contrib.auth.models import User
-from cities.models import City
-from clients.models import Client, Branch
-from drivers.models import Driver
-from recipient.models import Recipient
 from shipments.models import Shipment, ShipmentStatus
+from recipient.models import Recipient
+from drivers.models import Driver
+from clients.models import Client, Branch
+from cities.models import City
+from django.contrib.auth.models import User
+import random
 from faker import Faker
+
+# إعداد متغير البيئة لمشروع Django الخاص بك
+# استبدل 'project' باسم مشروعك الفعلي
+
+
 fake = Faker('ar_SA')
 
 
@@ -22,6 +24,7 @@ CITIES = [('Jeddah', 'جدة'), ('Riyadh', 'الرياض'), ('Dammam', 'الدم
                                                                                              'المدينة'), ('Abha', 'أبها'), ('Jizan', 'جيزان'), ('Tabuk', 'تبوك'), ('Hail', 'حائل'), ('Qassim', 'القصيم')]
 users = ['صالح حسين', 'حسين اليافعي', 'بندر الهمداني ',
          'نشوان طفيان', 'خالد عثمان', 'احمد سالم']
+
 clints = ['ارنون', 'ابوداوود ', ' المعتمدون', 'المنتجات الحديثة', 'العثيم']
 
 # Create a superuser
@@ -52,8 +55,8 @@ def create_city():
 def create_client():
 
     for i, clint in enumerate(clints, start=1):
-        Client.objects.create(name=clint, address=Faker().address(), phone_number=Faker(
-        ).phone_number(text='############'), email=Faker().email())
+        Client.objects.create(name=clint, address=Faker().address(
+        ), phone_number=fake.numerify(text='############'), email=Faker().email())
         print(f'Client {i} created')
 
 # Create 10 Branches
@@ -64,7 +67,7 @@ def create_branch():
     cities = City.objects.all()
     for i in range(1, 11):
         Branch.objects.create(client=random.choice(clients), name=Faker().company(), city=random.choice(
-            cities), address=Faker().address(), phone_number=Faker().phone_number(text='############'))
+            cities), address=Faker().address(), phone_number=fake.numerify(text='############'))
         print(f'Branch {i} created')
 
 
@@ -84,7 +87,7 @@ def create_driver():
     for i in range(1, 11):
         Driver.objects.create(
             name=fake.first_name_male(),
-            phone_number=fake.phone_number(text='############'),
+            phone_number=fake.numerify(text='############'),
             nationality=fake.country(),
             language=random.choice(['en', 'ar', 'ur']),
             identity_number=fake.numerify(text='############'),
@@ -100,7 +103,7 @@ def create_recipient():
     for i in range(1, 11):
         Recipient.objects.create(
             name=Faker().name(),
-            phone_number=Faker().phone_number(text='############'),
+            phone_number=fake.numerify(text='############'),
             address=Faker().address(),
             city=random.choice(cities))
         print(f'Recipient {i} created')
@@ -136,9 +139,9 @@ def create_shipment():
         print(f'shipment {i} created')
 
 
-create_superuser()
-create_user()
-create_city()
+#create_superuser()
+#create_user()
+#create_city()
 create_client()
 create_branch()
 create_driver()
