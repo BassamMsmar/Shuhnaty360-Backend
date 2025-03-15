@@ -1,35 +1,43 @@
+from shipments.models import Shipment, ShipmentStatus
+from recipient.models import Recipient
+from drivers.models import Driver
+from clients.models import Client, Branch
+from cities.models import City
+from django.contrib.auth.models import User
+import random
+from faker import Faker
 import os
 import django
 
 # إعداد متغير البيئة لمشروع Django الخاص بك
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')  # استبدل 'project' باسم مشروعك الفعلي
+# استبدل 'project' باسم مشروعك الفعلي
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 django.setup()
 
-from faker import Faker
-import random
 
-from django.contrib.auth.models import User
-from cities.models import City
-from clients.models import Client, Branch
-from drivers.models import Driver
-from recipient.models import Recipient
-from shipments.models import Shipment, ShipmentStatus
-from faker import Faker
 fake = Faker('ar_SA')
 
 
-CITIES = [('Jeddah', 'جدة'), ('Riyadh', 'الرياض'), ('Dammam', 'الدمام'), ('Makkah', 'مكة'), ('Madinah', 'المدينة'), ('Abha', 'أبها'), ('Jizan', 'جيزان'), ('Tabuk', 'تبوك'), ('Hail', 'حائل'), ('Qassim', 'القصيم')]
-users = ['صالح حسين', 'حسين اليافعي', 'بندر الهمداني ', 'نشوان طفيان', 'خالد عثمان', 'احمد سالم']
-clints = ['ارنون', 'ابوداوود ',' المعتمدون', 'المنتجات الحديثة','العثيم'  ]
+CITIES = [('Jeddah', 'جدة'), ('Riyadh', 'الرياض'), ('Dammam', 'الدمام'), ('Makkah', 'مكة'), ('Madinah',
+                                                                                             'المدينة'), ('Abha', 'أبها'), ('Jizan', 'جيزان'), ('Tabuk', 'تبوك'), ('Hail', 'حائل'), ('Qassim', 'القصيم')]
+users = ['صالح حسين', 'حسين اليافعي', 'بندر الهمداني ',
+         'نشوان طفيان', 'خالد عثمان', 'احمد سالم']
+clints = ['ارنون', 'ابوداوود ', ' المعتمدون', 'المنتجات الحديثة', 'العثيم']
 
 # Create a superuser
+
+
 def create_superuser():
-    User.objects.create_superuser('admin', 'admin@admin.com', 'admin', first_name='Admin', last_name='Admin')
+    User.objects.create_superuser(
+        'admin', 'admin@admin.com', 'admin', first_name='Admin', last_name='Admin')
 
 # Create 5 Users
+
+
 def create_user():
     for i, user in enumerate(users, start=1):
-        User.objects.create_user(Faker().user_name(), Faker().email(), 'password', first_name=user)
+        User.objects.create_user(
+            Faker().user_name(), Faker().email(), 'password', first_name=user)
         print(f'User {i} created')
 
 
@@ -44,15 +52,19 @@ def create_city():
 def create_client():
 
     for i, clint in enumerate(clints, start=1):
-        Client.objects.create(name=clint, address=Faker().address(), phone_number=Faker().phone_number(), email=Faker().email())
+        Client.objects.create(name=clint, address=Faker().address(), phone_number=Faker(
+        ).phone_number(text='############'), email=Faker().email())
         print(f'Client {i} created')
 
 # Create 10 Branches
+
+
 def create_branch():
     clients = Client.objects.all()
     cities = City.objects.all()
     for i in range(1, 11):
-        Branch.objects.create(client=random.choice(clients), name=Faker().company(), city=random.choice(cities), address=Faker().address(), phone_number=Faker().phone_number())
+        Branch.objects.create(client=random.choice(clients), name=Faker().company(), city=random.choice(
+            cities), address=Faker().address(), phone_number=Faker().phone_number(text='############'))
         print(f'Branch {i} created')
 
 
@@ -61,7 +73,8 @@ def create_shipment_status():
     ShipmentStatus.objects.create(name_en='In Transit', name_ar='في الطريق')
     ShipmentStatus.objects.create(name_en='Delivered', name_ar='تم التوصيل')
     ShipmentStatus.objects.create(name_en='Returned', name_ar='تم الإرجاع')
-    ShipmentStatus.objects.create(name_en='Under Review', name_ar='قيد المراجعة')  
+    ShipmentStatus.objects.create(
+        name_en='Under Review', name_ar='قيد المراجعة')
     ShipmentStatus.objects.create(name_en='Cancelled', name_ar='تم الإلغاء')
     print('Shipment statuses created')
 
@@ -71,7 +84,7 @@ def create_driver():
     for i in range(1, 11):
         Driver.objects.create(
             name=fake.first_name_male(),
-            phone_number=fake.phone_number(),
+            phone_number=fake.phone_number(text='############'),
             nationality=fake.country(),
             language=random.choice(['en', 'ar', 'ur']),
             identity_number=fake.numerify(text='############'),
@@ -87,10 +100,11 @@ def create_recipient():
     for i in range(1, 11):
         Recipient.objects.create(
             name=Faker().name(),
-            phone_number=Faker().phone_number(),
+            phone_number=Faker().phone_number(text='############'),
             address=Faker().address(),
             city=random.choice(cities))
         print(f'Recipient {i} created')
+
 
 def create_shipment():
     user = User.objects.all()
@@ -105,9 +119,9 @@ def create_shipment():
             driver=random.choice(driver),
             customer_branch=random.choice(customer_branch),
             customer_invoice_number=Faker().numerify(text='##########'),
-            recipient = random.choice(recipient),
-            origin_city = random.choice(cities),
-            destination_city = random.choice(cities),
+            recipient=random.choice(recipient),
+            origin_city=random.choice(cities),
+            destination_city=random.choice(cities),
             fare=Faker().numerify(text='###'),
             premium=Faker().numerify(text='###'),
             fare_return=Faker().numerify(text='###'),
@@ -118,9 +132,8 @@ def create_shipment():
             days_to_arrive=random.choice([1, 2, 3, 4, 5]),
             notes=Faker().sentence(),
         )
-            
-        print(f'shipment {i} created')
 
+        print(f'shipment {i} created')
 
 
 create_superuser()
