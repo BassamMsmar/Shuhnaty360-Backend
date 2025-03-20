@@ -76,9 +76,9 @@ def create_shipment_status():
     ShipmentStatus.objects.create(name_en='In Transit', name_ar='في الطريق')
     ShipmentStatus.objects.create(name_en='Delivered', name_ar='تم التوصيل')
     ShipmentStatus.objects.create(name_en='Returned', name_ar='تم الإرجاع')
-    ShipmentStatus.objects.create(
-        name_en='Under Review', name_ar='قيد المراجعة')
+    ShipmentStatus.objects.create(name_en='Under Review', name_ar='قيد المراجعة')
     ShipmentStatus.objects.create(name_en='Cancelled', name_ar='تم الإلغاء')
+    ShipmentStatus.objects.create(name_en='Completed', name_ar='مكتملة')
     print('Shipment statuses created')
 
 
