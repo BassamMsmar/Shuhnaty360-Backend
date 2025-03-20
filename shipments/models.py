@@ -19,11 +19,11 @@ from PIL import Image
 
 # Create your models here.
 class ShipmentStatus(models.Model):
-    name_ar = models.CharField( max_length=50, verbose_name='الحالة')
-    name_en = models.CharField( max_length=50, verbose_name='Status')
+    name_ar = models.CharField( max_length=50, verbose_name='Status')
+    name_en = models.CharField( max_length=50, verbose_name='الحالة')
 
     def __str__(self):
-        return self.name_ar
+        return self.name_en
     
     class Meta:
         verbose_name = "حالة الشحنة"
