@@ -79,7 +79,9 @@ def create_shipment_status():
     ShipmentStatus.objects.create(name_en='Under Review', name_ar='قيد المراجعة')
     ShipmentStatus.objects.create(name_en='Cancelled', name_ar='تم الإلغاء')
     ShipmentStatus.objects.create(name_en='Completed', name_ar='مكتملة')
+    ShipmentStatus.objects.create(name_en='Delayed', name_ar='متأخرة')
     print('Shipment statuses created')
+
 
 
 # Create 10 Drivers
