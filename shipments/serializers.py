@@ -1,48 +1,65 @@
 from rest_framework import serializers
-from .models import Shipment
+from .models import Shipment, ShipmentStatus
+from django.contrib.auth.models import User
+from .models import Driver, Branch, Recipient, City  # حسب أسماء موديلاتك
 
 class ShipmentSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-    driver = serializers.SerializerMethodField()
-    customer_branch = serializers.SerializerMethodField()
-    recipient = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
-    origin_city = serializers.SerializerMethodField()
-    destination_city = serializers.SerializerMethodField()
-    client = serializers.SerializerMethodField()
-    branch = serializers.SerializerMethodField()
-
-
-
+    user = serializers.SlugRelatedField(
+        slug_field='username',
+        queryset=User.objects.all()
+    )
+    driver = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Driver.objects.all()
+    )
+    customer_branch = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Branch.objects.all()
+    )
+    recipient = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Recipient.objects.all()
+    )
+    origin_city = serializers.SlugRelatedField(
+        slug_field='ar_city',
+        queryset=City.objects.all()
+    )
+    destination_city = serializers.SlugRelatedField(
+        slug_field='ar_city',
+        queryset=City.objects.all()
+    )
+    status = serializers.SlugRelatedField(
+        slug_field='name_ar',
+        queryset=ShipmentStatus.objects.all()
+    )
+    
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
         model = Shipment
-        fields = ['id', 'user', 'driver', 'customer_branch', 'customer_invoice_number', 'recipient', 'fare', 'premium', 'fare_return', 'origin_city', 'destination_city', 'status', 'client', 'branch']
-    
-    def get_user(self, obj):
-        return obj.user.username
-    
-    def get_driver(self, obj):
-        return obj.driver.name
-    
-    def get_customer_branch(self, obj):
-        return obj.customer_branch.name
-    
-    def get_recipient(self, obj):
-        return obj.recipient.name
-    
-    def get_status(self, obj):
-        return obj.status.name_en
-    
-    def get_origin_city(self, obj):
-        return obj.origin_city.en_city
-    
-    def get_destination_city(self, obj):
-        return obj.destination_city.en_city
-    
-    def get_client(self, obj):
-        return obj.customer_branch.client.name
-    
-    def get_branch(self, obj):
-        return obj.customer_branch.name
-    
+        fields = [
+            'id',
+            'tracking_number',
+            'customer_invoice_number',
+            'fare',
+            'premium',
+            'fare_return',
+            'code',
+            'days_stayed',
+            'stay_cost',
+            'deducted',
+            'days_to_arrive',
+            'expected_arrival_date',
+            'actual_delivery_date',
+            'notes',
+            'user',
+            'driver',
+            'customer_branch',
+            'recipient',
+            'origin_city',
+            'destination_city',
+            'status',
+            'created_at',
+            'updated_at'
+        ]

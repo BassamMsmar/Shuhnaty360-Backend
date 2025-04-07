@@ -45,6 +45,7 @@ urlpatterns = [
     path('clients/', include('clients.urls')),
     path('shipments/', include('shipments.urls')),
     path('recipient/', include('recipient.urls')),
+    path('accounts/', include('accounts.urls')),
 
     path('api-auth/', include('rest_framework.urls')),
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0),

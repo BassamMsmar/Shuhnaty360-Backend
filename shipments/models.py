@@ -104,6 +104,7 @@ class Shipment(models.Model):
     )
     # Timestamps and notes
     created_at = models.DateTimeField("Created At", default=timezone.now)
+    updated_at = models.DateTimeField("Updated At", auto_now=True)
 
     days_to_arrive = models.IntegerField("Days to Arrive", null=True, blank=True, default=3)
     expected_arrival_date = models.DateTimeField(
