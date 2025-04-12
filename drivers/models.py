@@ -17,12 +17,14 @@ class Driver(models.Model):
         max_length=10,
         choices=[
             ('available', 'Available'),
-            ('busy', 'Busy'),
+            ('busy', 'Busy'), 
             ('offline', 'Offline'),
         ],
         default='available',
         verbose_name='حالة السائق'
     )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاريخ الإنشاء')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاريخ التحديث')
 
     class Meta:
         verbose_name = 'سائق'
