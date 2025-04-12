@@ -17,7 +17,6 @@ class Driver(models.Model):
         max_length=10,
         choices=[
             ('available', 'Available'),
-            ('busy', 'Busy'),
             ('offline', 'Offline'),
         ],
         default='available',
