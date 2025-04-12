@@ -32,11 +32,15 @@ class Branch(models.Model):
         City, on_delete=models.CASCADE, related_name="clients", verbose_name="المدينة")
         
     address = models.CharField(verbose_name="العنوان", max_length=255)
+    
     name_address = models.CharField(
         verbose_name="اسم العنوان", max_length=255, blank=True, null=True)
     
     phone_number = models.CharField(
         max_length=20, verbose_name="رقم الهاتف",  null=True, blank=True)
+    
+    second_phone_number = models.CharField(
+        max_length=20, verbose_name="رقم الهاتف الثاني",  null=True, blank=True)
 
     class Meta:
         verbose_name = "فرع"
