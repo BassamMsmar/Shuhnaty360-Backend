@@ -150,3 +150,17 @@ class Shipment(models.Model):
     class Meta:
         verbose_name = "الشحنه"
         verbose_name_plural = "الشحنات"
+
+class ShipmentHistory(models.Model):
+    shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE, related_name='history')
+    status = models.ForeignKey(ShipmentStatus, on_delete=models.SET_NULL, null=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    notes = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"History for {self.shipment.tracking_number} - Status: {self.status.name_en}"
+
+    class Meta:
+        verbose_name = "تاريخ الشحنه"
+        verbose_name_plural = "تواريخ الشحنات"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Shipment, ShipmentStatus
+from .models import Shipment, ShipmentStatus, ShipmentHistory
 # Register your models here.
 
 class ShipmentAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ class ShipmentAdmin(admin.ModelAdmin):
 
 admin.site.register(Shipment, ShipmentAdmin )
 admin.site.register(ShipmentStatus)
+admin.site.register(ShipmentHistory)
