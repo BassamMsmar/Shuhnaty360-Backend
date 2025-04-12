@@ -11,7 +11,7 @@ class ShipmentHistorySerializer(serializers.ModelSerializer):
 
 
 class ShipmentSerializer(serializers.ModelSerializer):
-    histories = ShipmentHistorySerializer(many=True, read_only=True)
+    history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -41,6 +41,6 @@ class ShipmentSerializer(serializers.ModelSerializer):
             'status',
             'created_at',
             'updated_at',
-            'histories',
+            'history',
         ]
 
