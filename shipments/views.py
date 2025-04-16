@@ -9,12 +9,12 @@ from django.utils import timezone
 
 
 from .models import Shipment, ShipmentHistory, ShipmentStatus
-from .serializers import ShipmentSerializer, ShipmentHistorySerializer
+from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentHistorySerializer
 
 # Create your views here.
 class ShipmentViewSet(generics.ListCreateAPIView):
     queryset = Shipment.objects.all()
-    serializer_class = ShipmentSerializer
+    serializer_class = ShipmentSerializerList
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['user', 'driver', 'customer_branch', 'customer_invoice_number', 'recipient', 'status']
@@ -24,7 +24,7 @@ class ShipmentViewSet(generics.ListCreateAPIView):
 
 class ShipmentDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Shipment.objects.all()
-    serializer_class = ShipmentSerializer
+    serializer_class = ShipmentSerializerDetail
     permission_classes = [IsAuthenticated]
 
     def perform_update(self, serializer):
