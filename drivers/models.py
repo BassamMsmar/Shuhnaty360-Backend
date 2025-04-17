@@ -1,5 +1,16 @@
 from django.db import models
 
+class TruckType(models.Model):
+    name = models.CharField(max_length=100, verbose_name='نوع الشاحنة')
+    description = models.TextField(verbose_name='الوصف', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'نوع الشاحنة'
+        verbose_name_plural = 'أنواع الشاحنات'
+
+    def __str__(self):
+        return self.name  
+
 class Driver(models.Model):
     name = models.CharField(max_length=255, verbose_name='اسم السائق')
     phone_number = models.CharField(max_length=20, verbose_name='رقم الهاتف')
@@ -12,6 +23,13 @@ class Driver(models.Model):
     )
     identity_number = models.CharField(max_length=20, verbose_name='رقم الهوية')
     vehicle_number = models.CharField(max_length=20, verbose_name='رقم المركبة')
+    truck_type = models.ForeignKey(
+        'TruckType',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='نوع الشاحنة'
+    )
 
     status = models.CharField(
         max_length=10,

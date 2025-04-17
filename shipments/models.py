@@ -113,6 +113,9 @@ class Shipment(models.Model):
     actual_delivery_date = models.DateTimeField(
         "Actual Delivery Date", null=True, blank=True)
     
+    weight = models.FloatField("وزن الشحنة (كجم)", null=True, blank=True)
+    contents = models.TextField("محتويات الشحنة", null=True, blank=True)
+    
     notes = models.TextField("Notes", null=True, blank=True)
 
 

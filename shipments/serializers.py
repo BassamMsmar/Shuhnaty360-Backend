@@ -52,6 +52,9 @@ class ShipmentSerializerList(serializers.ModelSerializer):
         ]
 
 class ShipmentSerializerDetail(serializers.ModelSerializer): # to return all fields in detail  and view in drive as id 
+    status = serializers.SlugRelatedField(read_only=True, slug_field='name_ar')
+    origin_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
+    destination_city  = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
     history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -78,6 +81,8 @@ class ShipmentSerializerDetail(serializers.ModelSerializer): # to return all fie
             'days_to_arrive',
             'expected_arrival_date',
             'actual_delivery_date',
+            'weight',
+            'contents',
             'notes',
             'status',
             'created_at',
