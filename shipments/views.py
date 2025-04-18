@@ -12,7 +12,7 @@ from .models import Shipment, ShipmentHistory, ShipmentStatus
 from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializercreate
 
 # Create your views here.
-class ShipmentViewSet(generics.ListCreateAPIView):
+class ShipmentListCreateView(generics.ListCreateAPIView):
     queryset = Shipment.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
