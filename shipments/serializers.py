@@ -34,7 +34,6 @@ class ShipmentSerializercreate(serializers.ModelSerializer):
             'recipient',
             'notes_recipient',
          
-
             'fare',
             'premium',
             'fare_return',
@@ -42,6 +41,7 @@ class ShipmentSerializercreate(serializers.ModelSerializer):
             'stay_cost',
             'deducted',
 
+            'status',
         ]
 
 
