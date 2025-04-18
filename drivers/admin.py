@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Driver
+from .models import Driver, TruckType
 # Register your models here.
 
 
@@ -10,3 +10,4 @@ class DriverAdmin(admin.ModelAdmin):
 
     
 admin.site.register(Driver, DriverAdmin)
+admin.site.register(TruckType)
