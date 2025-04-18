@@ -41,6 +41,7 @@ class Driver(models.Model):
         default='available',
         verbose_name='حالة السائق'
     )
+    is_active = models.BooleanField(default=True, verbose_name='نشط')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاريخ الإنشاء')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='تاريخ التحديث')
 

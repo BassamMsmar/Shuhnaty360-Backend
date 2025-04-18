@@ -9,6 +9,41 @@ class ShipmentHistorySerializer(serializers.ModelSerializer):
         model = ShipmentHistory
         fields = '__all__'
 
+class ShipmentSerializercreate(serializers.ModelSerializer):
+    class Meta:
+        model = Shipment
+        fields = [
+            'user',
+            
+            'driver', 
+            'origin_city',
+            'destination_city',
+
+            'loading_date',
+            'days_to_arrive',
+            'expected_arrival_date',
+
+            'contents',
+            'weight',
+            'notes',
+
+            'customer_branch',
+            'customer_invoice_number',
+            'notes_customer',
+
+            'recipient',
+            'notes_recipient',
+         
+
+            'fare',
+            'premium',
+            'fare_return',
+            'days_stayed',
+            'stay_cost',
+            'deducted',
+
+        ]
+
 
 class ShipmentSerializerList(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(read_only=True, slug_field='username')
