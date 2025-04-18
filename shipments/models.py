@@ -8,11 +8,6 @@ from recipient.models import Recipient
 from cities.models import City
 import uuid
 
-import qrcode
-from io import BytesIO
-from django.core.files import File
-from PIL import Image
-
 # Assuming the following models exist in your project:
 # User, Driver, Branch, ShipmentStatus, City
 
@@ -63,6 +58,7 @@ class Shipment(models.Model):
         null=True,
         blank=True
     )
+    notes_customer = models.TextField("ملاحظات العميل", null=True, blank=True)
 
 
 
@@ -73,6 +69,7 @@ class Shipment(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
+    notes_recipient = models.TextField("ملاحظات المستلم", null=True, blank=True)
 
     # Fare details
     fare = models.IntegerField("Fare")
@@ -85,9 +82,6 @@ class Shipment(models.Model):
     destination_city = models.ForeignKey(
         City, on_delete=models.SET_NULL, related_name="destination_shipments", verbose_name="مدينة الوجهة", null=True, blank=True
     )
-
-    # QR Code image for tracking
-    code = models.ImageField(blank=True, null=True, upload_to='code')
 
     # Additional shipment details
     days_stayed = models.IntegerField("Days Stayed", null=True, blank=True)
@@ -102,21 +96,23 @@ class Shipment(models.Model):
         null=True,
         blank=True
     )
-    # Timestamps and notes
-    created_at = models.DateTimeField("Created At", default=timezone.now)
-    updated_at = models.DateTimeField("Updated At", auto_now=True)
-
-    days_to_arrive = models.IntegerField("Days to Arrive", null=True, blank=True, default=3)
+    
+    loading_date = models.DateTimeField("تاريخ التحميل", null=True, blank=True)
+    days_to_arrive = models.IntegerField("عدد الأيام  الوصول", null=True, blank=True, default=3)
     expected_arrival_date = models.DateTimeField(
-        "Expected Arrival Date", null=True, blank=True)
+        "تاريخ الوصول المتوقع", null=True, blank=True) # 
     
     actual_delivery_date = models.DateTimeField(
-        "Actual Delivery Date", null=True, blank=True)
+        "تاريخ الوصول الفعلي", null=True, blank=True)
     
-    weight = models.FloatField("وزن الشحنة (كجم)", null=True, blank=True)
+    weight = models.FloatField("وزن الشحنة (طن)", null=True, blank=True)
     contents = models.TextField("محتويات الشحنة", null=True, blank=True)
     
-    notes = models.TextField("Notes", null=True, blank=True)
+    notes = models.TextField("ملاحظات", null=True, blank=True)
+
+    # Timestamps and notes
+    created_at = models.DateTimeField("تاريخ الانشاء", default=timezone.now)
+    updated_at = models.DateTimeField("تاريخ التحديث", auto_now=True)
 
 
     def save(self, *args, **kwargs):
@@ -149,6 +145,15 @@ class Shipment(models.Model):
         
     def __str__(self):
         return f"Shipment {self.tracking_number}"
+    
+    def save(self, *args, **kwargs):
+        if not self.tracking_number:
+            self.tracking_number = self.generate_tracking_number()
+        super().save(*args, **kwargs)
+
+    def generate_tracking_number(self):
+        # توليد رقم تتبع فريد (مثلاً: SHIP-ABC1234567)
+        return f'{uuid.uuid4().hex[:10].upper()}'
 
     class Meta:
         verbose_name = "الشحنه"

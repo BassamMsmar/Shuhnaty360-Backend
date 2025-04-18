@@ -9,16 +9,28 @@ from django.utils import timezone
 
 
 from .models import Shipment, ShipmentHistory, ShipmentStatus
-from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentHistorySerializer
+from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializercreate
 
 # Create your views here.
 class ShipmentViewSet(generics.ListCreateAPIView):
     queryset = Shipment.objects.all()
-    serializer_class = ShipmentSerializerList
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['user', 'driver', 'customer_branch', 'customer_invoice_number', 'recipient', 'status']
     search_fields = ['tracking_number']
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ShipmentSerializercreate
+        return ShipmentSerializerList
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        shipment = serializer.save()
+        # نرجع البيانات باستخدام Serializer العرض
+        output_serializer = ShipmentSerializerList(shipment, context={'request': request})
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
 
 
 
