@@ -9,6 +9,7 @@ class Client(models.Model):
         verbose_name="العنوان", max_length=255, blank=True, null=True)
     phone_number = models.CharField(
         max_length=20, verbose_name="رقم الهاتف", null=True, blank=True)
+    secand_phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف الثاني", null=True, blank=True)
     email = models.EmailField(
         unique=True, verbose_name="البريد الإلكتروني", null=True, blank=True)
     Commercial_registration_number = models.CharField(

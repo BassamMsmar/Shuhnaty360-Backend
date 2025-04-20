@@ -7,6 +7,9 @@ class Recipient(models.Model):
     city  = models.ForeignKey(City, on_delete=models.CASCADE, related_name="recipients", verbose_name="المدينة")
     address = models.CharField(verbose_name="العنوان",max_length=255, blank=True, null=True)
     phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف", blank=True, null=True)
+    phone_number = models.CharField(
+        max_length=20, verbose_name="رقم الهاتف", null=True, blank=True)
+    secand_phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف الثاني", null=True, blank=True)
     email = models.EmailField(unique=True, verbose_name="البريد الإلكتروني", blank=True, null=True)
 
     class Meta:
