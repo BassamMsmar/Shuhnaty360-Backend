@@ -9,7 +9,7 @@ class Recipient(models.Model):
     phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف", blank=True, null=True)
     phone_number = models.CharField(
         max_length=20, verbose_name="رقم الهاتف", null=True, blank=True)
-    secand_phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف الثاني", null=True, blank=True)
+    second_phone_number = models.CharField(max_length=20, verbose_name="رقم الهاتف الثاني", null=True, blank=True)
     email = models.EmailField(unique=True, verbose_name="البريد الإلكتروني", blank=True, null=True)
 
     class Meta:
