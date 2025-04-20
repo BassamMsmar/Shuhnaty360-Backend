@@ -10,4 +10,4 @@ class ClientSerializer(serializers.ModelSerializer):
     branches = BranchSerializer(many=True, read_only=True)
     class Meta:
         model = Client
-        fields = ['id', 'name', 'address', 'phone_number', 'email', 'dicription', 'branches']
+        fields = ['id', 'name', 'address', 'phone_number','second_phone_number', 'email', 'dicription', 'branches']
