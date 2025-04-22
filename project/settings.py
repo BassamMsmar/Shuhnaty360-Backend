@@ -26,7 +26,7 @@ SECRET_KEY = '%siq0h*e(5($jg-k3n_cv1ctdz6d1rq061b5yt6p!l=q5lx9kb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['shuhnaty.com', '137.184.61.215']
+ALLOWED_HOSTS = [ 'www.shuhnaty.com', 'shuhnaty.com', '137.184.61.215']
 # ALLOWED_HOSTS = ['*']
 
 
