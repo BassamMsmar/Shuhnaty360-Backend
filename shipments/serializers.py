@@ -1,8 +1,12 @@
 from rest_framework import serializers
 from .models import Shipment, ShipmentStatus, ShipmentHistory
 from django.contrib.auth.models import User
-from .models import Driver, Branch, Recipient, City  # حسب أسماء موديلاتك
+from .models import Driver, Branch, Recipient, City, ShipmentStatus  # حسب أسماء موديلاتك
 
+class ShipmentStatusSerializer(serializers.ModelSerializer): # Manege shipment status
+    class Meta:
+        model = ShipmentStatus
+        fields = '__all__'
 
 class ShipmentHistorySerializer(serializers.ModelSerializer):
     class Meta:
