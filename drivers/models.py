@@ -1,7 +1,8 @@
 from django.db import models
 
 class TruckType(models.Model):
-    name = models.CharField(max_length=100, verbose_name='نوع الشاحنة')
+    name_ar = models.CharField(max_length=100, verbose_name='نوع الشاحنة')
+    name_en = models.CharField(max_length=100, verbose_name='Truck_Type')
     description = models.TextField(verbose_name='الوصف', null=True, blank=True)
 
     class Meta:
@@ -9,8 +10,7 @@ class TruckType(models.Model):
         verbose_name_plural = 'أنواع الشاحنات'
 
     def __str__(self):
-        return self.name  
-
+        return f"{self.name_ar} - {self.name_en}"
 class Driver(models.Model):
     name = models.CharField(max_length=255, verbose_name='اسم السائق')
     phone_number = models.CharField(max_length=20, verbose_name='رقم الهاتف')

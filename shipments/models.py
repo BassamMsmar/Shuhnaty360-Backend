@@ -3,7 +3,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
 from drivers.models import Driver
-from clients.models import Branch
+from clients.models import Branch, Client
 from recipient.models import Recipient
 from cities.models import City
 import uuid
@@ -45,14 +45,20 @@ class Shipment(models.Model):
     )
 
     # Receiver (Customer's branch)
-    customer_branch = models.ForeignKey(
+    client = models.ForeignKey(
+        Client,
+        related_name='shipments_customer',
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    client_branch = models.ForeignKey(
         Branch,
         related_name='shipments_company',
         on_delete=models.SET_NULL,
         null=True
     )
 
-    customer_invoice_number = models.CharField(
+    client_invoice_number = models.CharField(
         "Customer Invoice Number",
         max_length=50,  # قم بتحديد الطول المناسب حسب نظام الفواتير لديك
         null=True,
@@ -112,7 +118,20 @@ class Shipment(models.Model):
 
     # Timestamps and notes
     created_at = models.DateTimeField("تاريخ الانشاء", default=timezone.now)
+    loading_at = models.DateTimeField("تاريخ التحميل", default=timezone.now)
     updated_at = models.DateTimeField("تاريخ التحديث", auto_now=True)
+
+
+    @property
+    def total_cost(self):
+        """حساب التكلفة الإجمالية للشحنة"""
+        fare = self.fare or 0
+        premium = self.premium or 0
+        deducted = self.deducted or 0
+        stay_cost = self.stay_cost or 0
+        fare_return = self.fare_return or 0
+        return fare + premium - deducted + stay_cost + fare_return
+
 
 
     def save(self, *args, **kwargs):
@@ -122,24 +141,6 @@ class Shipment(models.Model):
 
         if not self.tracking_number:
             self.tracking_number = str(uuid.uuid4().int)[:10]  # رقم عشوائي مكون من 10 أرقام
-
-        # if not self.code:
-        # # Generate QR code
-        #     qr = qrcode.QRCode(
-        #         version=1,
-        #         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        #         box_size=4,
-        #         border=4,
-        #     )
-        #     qr.add_data(f'http://127.0.0.1:8000/shipment/{self.id}/')
-        #     qr.make(fit=True)
-
-        #     img = qr.make_image(fill_color="black", back_color="white")
-
-        #     # Save QR code to image field
-        #     buffer = BytesIO()
-        #     img.save(buffer, format='PNG')
-        #     self.code.save(f'{self.id}_qrcode.png', File(buffer), save=False)
 
         super().save(*args, **kwargs)
         

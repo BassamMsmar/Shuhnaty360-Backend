@@ -16,7 +16,7 @@ class ShipmentListCreateView(generics.ListCreateAPIView):
     queryset = Shipment.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['user', 'driver', 'customer_branch', 'customer_invoice_number', 'recipient', 'status']
+    filterset_fields = ['user', 'driver', 'client','client_branch', 'client_invoice_number', 'recipient', 'status']
     search_fields = ['tracking_number']
 
     def get_serializer_class(self):

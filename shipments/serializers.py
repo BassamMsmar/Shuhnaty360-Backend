@@ -31,8 +31,9 @@ class ShipmentSerializercreate(serializers.ModelSerializer):
             'weight',
             'notes',
 
-            'customer_branch',
-            'customer_invoice_number',
+            'client',
+            'client_branch',
+            'client_invoice_number',
             'notes_customer',
 
             'recipient',
@@ -50,9 +51,11 @@ class ShipmentSerializercreate(serializers.ModelSerializer):
 
 
 class ShipmentSerializerList(serializers.ModelSerializer):
+    total_cost = serializers.ReadOnlyField()
     user = serializers.SlugRelatedField(read_only=True, slug_field='username')
     driver = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    customer_branch = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    client = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    client_branch = serializers.SlugRelatedField(read_only=True, slug_field='name')
     recipient = serializers.SlugRelatedField(read_only=True, slug_field='name')
     origin_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
     destination_city  = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')   
@@ -60,7 +63,7 @@ class ShipmentSerializerList(serializers.ModelSerializer):
     history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    loading_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = Shipment
@@ -69,8 +72,9 @@ class ShipmentSerializerList(serializers.ModelSerializer):
             'tracking_number',
             'user',
             'driver',
-            'customer_branch',
-            'customer_invoice_number',
+            'client',
+            'client_branch',
+            'client_invoice_number',
             'notes_customer',
             'recipient',
             'notes_recipient',
@@ -82,6 +86,7 @@ class ShipmentSerializerList(serializers.ModelSerializer):
             'days_stayed',
             'stay_cost',
             'deducted',
+            'total_cost',
             'days_to_arrive',
             'expected_arrival_date',
             'actual_delivery_date',
@@ -89,19 +94,20 @@ class ShipmentSerializerList(serializers.ModelSerializer):
             'weight',
             'contents',
             'status',
-            'created_at',
+            'loading_at',
             'updated_at',
             'history',
         ]
 
-class ShipmentSerializerDetail(serializers.ModelSerializer): # to return all fields in detail  and view in drive as id 
+class ShipmentSerializerDetail(serializers.ModelSerializer):
+    total_cost = serializers.ReadOnlyField() # to return all fields in detail  and view in drive as id 
     status = serializers.SlugRelatedField(read_only=True, slug_field='name_ar')
     origin_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
     destination_city  = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
     history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    loading_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = Shipment
@@ -110,8 +116,9 @@ class ShipmentSerializerDetail(serializers.ModelSerializer): # to return all fie
             'tracking_number',
             'user',
             'driver',
-            'customer_branch',
-            'customer_invoice_number',
+            'client',
+            'client_branch',
+            'client_invoice_number',
             'recipient',
             'origin_city',
             'destination_city',
@@ -121,6 +128,7 @@ class ShipmentSerializerDetail(serializers.ModelSerializer): # to return all fie
             'days_stayed',
             'stay_cost',
             'deducted',
+            'total_cost',
             'days_to_arrive',
             'expected_arrival_date',
             'actual_delivery_date',
@@ -128,7 +136,7 @@ class ShipmentSerializerDetail(serializers.ModelSerializer): # to return all fie
             'contents',
             'notes',
             'status',
-            'created_at',
+            'loading_at',
             'updated_at',
             'history',
         ]
