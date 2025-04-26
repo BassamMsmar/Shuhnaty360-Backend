@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
 
-from .models import Driver
-from .serializers import DriverSerializer
+from .models import Driver, TruckType
+from .serializers import DriverSerializer, TruckTypeSerializer
 
 # Create your views here.
 class DriverViewSet(generics.ListCreateAPIView):
@@ -16,4 +16,9 @@ class DriverViewSet(generics.ListCreateAPIView):
 class DriverRetrieveUpdateDestroyt(generics.RetrieveUpdateDestroyAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
+    permission_classes = [IsAdminUser]
+
+class TruckTypeViewSet(generics.ListCreateAPIView):
+    queryset = TruckType.objects.all()
+    serializer_class = TruckTypeSerializer
     permission_classes = [IsAdminUser]

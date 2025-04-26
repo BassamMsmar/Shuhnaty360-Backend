@@ -12,5 +12,9 @@ class UsersViewSet(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
+class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UsersSerializer
+    permission_classes = [IsAdminUser]
 
 
