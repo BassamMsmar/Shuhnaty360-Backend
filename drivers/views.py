@@ -11,14 +11,14 @@ from .serializers import DriverSerializer, TruckTypeSerializer
 class DriverViewSet(generics.ListCreateAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 class DriverRetrieveUpdateDestroyt(generics.RetrieveUpdateDestroyAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 class TruckTypeViewSet(generics.ListCreateAPIView):
     queryset = TruckType.objects.all()
     serializer_class = TruckTypeSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]

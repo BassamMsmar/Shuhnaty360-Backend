@@ -11,9 +11,9 @@ from .serializers import RecipientSerializer
 class RecipientViewSet(generics.ListCreateAPIView):
     queryset = Recipient.objects.all()
     serializer_class = RecipientSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 class RecipientDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Recipient.objects.all()
     serializer_class = RecipientSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
