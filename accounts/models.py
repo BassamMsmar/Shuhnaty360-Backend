@@ -2,29 +2,24 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-
-from profile_company.models import CompanyBranch
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
-
-
-class profile (models.Model):
-    user = models.OneToOneField(
-        User, related_name='profile', on_delete=models.CASCADE)
-    phone = models.CharField(max_length=100, blank=True, null=True)
+class CustomUser(AbstractUser):
+    phone = models.CharField(_('Phone'), max_length=100, blank=True, null=True)
     company_branch = models.ForeignKey(
-        CompanyBranch, related_name='user_company_branch', on_delete=models.SET_NULL, blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+        'profile_company.CompanyBranch',
+        related_name='user_company_branch',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+    email = models.EmailField(_('Email'), unique=True, blank=True, null=True)
 
     def __str__(self):
-        return self.user.first_name
+        return self.first_name
 
     class Meta:
-        verbose_name = 'صفجة المستخدم'
-        verbose_name_plural = 'صفحات المستخدمين'
-
-
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        profile.objects.create(user=instance)
+        verbose_name = _('User Profile')
+        verbose_name_plural = _('User Profiles')
