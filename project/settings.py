@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'shipments',
     'recipient',
     'cities',
+    'profile_company',
 ]
 
 MIDDLEWARE = [

@@ -39,6 +39,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('profile_company/', include('profile_company.urls')),  
 
     path('cities/', include('cities.urls')),
     path('drivers/', include('drivers.urls')),
