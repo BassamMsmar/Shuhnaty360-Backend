@@ -1,13 +1,16 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 from drivers.models import Driver
 from clients.models import Branch, Client
 from recipient.models import Recipient
 from cities.models import City
 import uuid
 
+
+User = get_user_model()
 # Assuming the following models exist in your project:
 # User, Driver, Branch, ShipmentStatus, City
 
