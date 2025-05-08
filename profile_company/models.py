@@ -36,14 +36,6 @@ class CompanyBranch(models.Model):
     email = models.EmailField(verbose_name='البريد الالكتروني', null=True, blank=True)
     address = models.TextField(verbose_name='العنوان', null=True, blank=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
-    branch_manager = models.ForeignKey(
-        'accounts.CustomUser',
-        related_name='managed_branches',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name='مدير الفرع'
-    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
