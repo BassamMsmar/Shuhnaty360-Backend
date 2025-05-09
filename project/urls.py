@@ -19,29 +19,41 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
+
 from django.urls import re_path
 from rest_framework import permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import AllowAny
+
+class SwaggerJWTAuth(JWTAuthentication):
+    def authenticate(self, request):
+        auth = request.META.get('HTTP_AUTHORIZATION', '').split()
+        if not auth or auth[0].lower() != 'bearer':
+            return None
+        return super().authenticate(request)
+
 schema_view = get_schema_view(
    openapi.Info(
-      title="Snippets API",
+      title="Shuhnaty API",
       default_version='v1',
-      description="Test description",
+      description="API Documentation for Shuhnaty Shipping System",
       terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contact@snippets.local"),
-      license=openapi.License(name="BSD License"),
+      contact=openapi.Contact(email="contact@shuhnaty.com"),
+      license=openapi.License(name="Private License"),
    ),
    public=True,
-   permission_classes=(permissions.AllowAny,),
-   authentication_classes=(JWTAuthentication,),
+   permission_classes=(AllowAny,),
+   authentication_classes=(SwaggerJWTAuth,),
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('profile_company/', include('profile_company.urls')),  
+
 
     path('cities/', include('cities.urls')),
     path('drivers/', include('drivers.urls')),
