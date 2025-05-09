@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Frontend settings
+FRONTEND_URL = 'http://localhost:3000'  # Change this to your frontend URL in production
+
 
 # Application definition
 
