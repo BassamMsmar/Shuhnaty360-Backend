@@ -142,3 +142,32 @@ class ShipmentSerializerDetail(serializers.ModelSerializer):
             'history',
         ]
 
+class ShipmentSerializerUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Shipment
+        fields = [
+    'driver',
+    'client_invoice_number',
+    'client',
+    'client_branch',
+    'recipient',
+    'status',
+    'origin_city',
+    'destination_city',
+    'days_to_arrive',
+    'loading_date',
+    'days_stayed',
+    'actual_delivery_date',
+    'expected_arrival_date',
+    'notes',
+    'notes_customer',
+    'notes_recipient',
+    'fare_return',
+    'deducted',
+    'stay_cost',
+    'weight',
+    'contents',
+    'fare',
+    'premium',
+    'total_cost',
+        ]

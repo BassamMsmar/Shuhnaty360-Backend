@@ -69,8 +69,6 @@ class Shipment(models.Model):
     )
     notes_customer = models.TextField("ملاحظات العميل", null=True, blank=True)
 
-
-
     # Recipient details
     recipient = models.ForeignKey(
         Recipient,

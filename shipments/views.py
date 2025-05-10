@@ -9,7 +9,7 @@ from django.utils import timezone
 
 
 from .models import Shipment, ShipmentHistory, ShipmentStatus
-from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializercreate, ShipmentStatusSerializer
+from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializercreate, ShipmentStatusSerializer, ShipmentSerializerUpdate
 
 # Create your views here.
 class ShipmentListCreateView(generics.ListCreateAPIView):
@@ -34,9 +34,16 @@ class ShipmentListCreateView(generics.ListCreateAPIView):
 
 
 
-class ShipmentDetails(generics.RetrieveUpdateDestroyAPIView):
+class ShipmentDetails(generics.RetrieveDestroyAPIView):
     queryset = Shipment.objects.all()
     serializer_class = ShipmentSerializerDetail
+    permission_classes = [IsAuthenticated]
+
+    
+
+class ShipmentUpdate(generics.UpdateAPIView):
+    queryset = Shipment.objects.all()
+    serializer_class = ShipmentSerializerUpdate
     permission_classes = [IsAuthenticated]
 
     def perform_update(self, serializer):
@@ -65,7 +72,6 @@ class ShipmentDetails(generics.RetrieveUpdateDestroyAPIView):
         else:
             print("لم تتغير الحالة، لم يتم إنشاء سجل.")
 
-
 class ShipmentStatus(generics.ListCreateAPIView):
     queryset = ShipmentStatus.objects.all()
     serializer_class = ShipmentStatusSerializer
@@ -78,3 +84,5 @@ class ShipmentStatus(generics.ListCreateAPIView):
         shipment_status = self.get_queryset()
         serializer = self.get_serializer(shipment_status, many=True)
         return Response(serializer.data)
+
+

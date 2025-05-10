@@ -17,3 +17,4 @@ class CompanyProfileAdmin(admin.ModelAdmin):
 class CompanyBranchAdmin(admin.ModelAdmin):
     list_display = ('branch_name_ar', 'branch_name_en', 'company')
     search_fields = ('branch_name_ar', 'branch_name_en')
+

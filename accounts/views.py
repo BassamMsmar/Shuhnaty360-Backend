@@ -1,43 +1,40 @@
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from django.contrib.auth import get_user_model
+from rest_framework import generics
+from .serializers import UsersSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-from .models import CustomUser
-from .serializers import UsersSerializer, RegisterSerializer
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework.permissions import IsAdminUser
 
 # Create your views here.
-class UsersViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()
+class UsersViewSet(generics.ListCreateAPIView):
+    queryset = get_user_model().objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
-
-class RegisterView(viewsets.ViewSet):
-    permission_classes = [AllowAny]
-
-    def create(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'message': 'تم التسجيل بنجاح',
-                'user': UsersSerializer(user).data,
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token)
-                }
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class LoginView(TokenObtainPairView):
-    serializer_class = TokenObtainPairSerializer
 
 class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
-    queryset = CustomUser.objects.all()
+    queryset = get_user_model().objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # نحصل على refresh token من الطلب
+            refresh_token = request.data.get('refresh_token')
+            
+            # نتحقق من صحة token
+            token = RefreshToken(refresh_token)
+            
+            # نضيف token إلى blacklist
+            token.blacklist()
+            
+            return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
+        except TokenError:
+            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)

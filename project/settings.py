@@ -27,6 +27,9 @@ DEBUG = True
 ALLOWED_HOSTS = [ 'www.shuhnaty.com', 'shuhnaty.com', '137.184.61.215']
 # ALLOWED_HOSTS = ['*']
 
+# Frontend settings
+FRONTEND_URL = 'http://localhost:3000'  # Change this to your frontend URL in production
+
 
 # Application definition
 
@@ -167,3 +170,14 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'JWT Authorization header using the Bearer scheme. Example: "Bearer {your_token}"',
+        }
+    },
+}
