@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from accounts.models import CustomUser as User
 from django.contrib.auth.password_validation import validate_password
 
-User = get_user_model()
+
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
