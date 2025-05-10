@@ -15,6 +15,26 @@ class CustomUser(AbstractUser):
     )
     email = models.EmailField(unique=True, blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'المستخدم'
+        verbose_name_plural = 'المستخدمين'
+
+    # Add related_names to override default reverse accessors
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='customuser_set',
+        blank=True,
+        verbose_name='groups',
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='customuser_set',
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this user.',
+    )
+
     def __str__(self):
         return self.first_name
 
