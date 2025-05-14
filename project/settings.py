@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [ 'www.shuhnaty.com', 'shuhnaty.com', '137.184.61.215', '127.0.0
 # ALLOWED_HOSTS = ['*']
 
 # Frontend settings
-FRONTEND_URL = 'http://localhost:5173'  # Change this to your frontend URL in production
+FRONTEND_URL = 'http://localhost:3000'  # Change this to your frontend URL in production
 
 
 # Application definition
