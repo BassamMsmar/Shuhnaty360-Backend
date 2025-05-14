@@ -1,40 +1,98 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login, logout
 from rest_framework import generics
-from .serializers import UsersSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.settings import api_settings
-from rest_framework.permissions import IsAdminUser
+from .serializers import UsersSerializer, UserLoginSerializer
+from rest_framework import status
 
 # Create your views here.
+
 class UsersViewSet(generics.ListCreateAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Successfully retrieved users list',
+            'data': response.data
+        })
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'User created successfully',
+            'data': response.data
+        })
 
 class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'User details retrieved successfully',
+            'data': response.data
+        })
+
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'User updated successfully',
+            'data': response.data
+        })
+
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'User updated successfully',
+            'data': response.data
+        })
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'User deleted successfully'
+        })
+
+class LoginView(APIView):
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            login(request, user)
+            return Response({
+                'status': 'success',
+                'message': 'Login successful',
+                'user_id': user.id,
+                'is_staff': user.is_staff,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name
+            })
+        return Response({
+            'status': 'error',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        try:
-            # نحصل على refresh token من الطلب
-            refresh_token = request.data.get('refresh_token')
-            
-            # نتحقق من صحة token
-            token = RefreshToken(refresh_token)
-            
-            # نضيف token إلى blacklist
-            token.blacklist()
-            
-            return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
-        except TokenError:
-            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+        logout(request)
+        return Response({
+            'status': 'success',
+            'message': 'Logout successful'
+        })
