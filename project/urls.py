@@ -51,6 +51,9 @@ urlpatterns = [
     path('recipient/', include('recipient.urls')),
     path('accounts/', include('accounts.urls')),
 
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+
     # DRF login/logout URLs for the browsable API and Swagger
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
