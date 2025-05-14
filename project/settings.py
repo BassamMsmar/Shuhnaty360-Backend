@@ -205,7 +205,7 @@ SWAGGER_SETTINGS = {
     ],
     'DEFAULT_PAGINATOR_INSPECTORS': [
         'drf_yasg.inspectors.DjangoRestResponsePagination',
-        'drf_yasg.inspectors.CoreJSONAPICompatInspector',
+        'drf_yasg.inspectors.CoreApiCompatInspector',
     ]
 }
 
