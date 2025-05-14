@@ -22,19 +22,9 @@ from django.conf import settings
 
 from django.urls import re_path
 from rest_framework import permissions
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
-
-class SwaggerJWTAuth(JWTAuthentication):
-    def authenticate(self, request):
-        auth = request.META.get('HTTP_AUTHORIZATION', '').split()
-        if not auth or auth[0].lower() != 'bearer':
-            return None
-        return super().authenticate(request)
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -47,7 +37,6 @@ schema_view = get_schema_view(
    ),
    public=True,
    permission_classes=(AllowAny,),
-   authentication_classes=(SwaggerJWTAuth,),
 )
 
 urlpatterns = [
@@ -62,7 +51,8 @@ urlpatterns = [
     path('recipient/', include('recipient.urls')),
     path('accounts/', include('accounts.urls')),
 
-    path('api-auth/', include('rest_framework.urls')),
+    # DRF login/logout URLs for the browsable API and Swagger
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0),
          name='schema-json'),
     path('', schema_view.with_ui('swagger',
