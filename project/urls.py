@@ -41,16 +41,14 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('profile_company/', include('profile_company.urls')),  
-
-
-    path('cities/', include('cities.urls')),
-    path('drivers/', include('drivers.urls')),
-    path('clients/', include('clients.urls')),
-    path('shipments/', include('shipments.urls')),
-    path('recipient/', include('recipient.urls')),
-    path('accounts/', include('accounts.urls')),
-
+    path('api/accounts/', include('accounts.urls')),
+    path('api/cities/', include('cities.urls')),
+    path('api/clients/', include('clients.urls')),
+    path('api/drivers/', include('drivers.urls')),
+    path('api/shipments/', include('shipments.urls')),
+    path('api/recipient/', include('recipient.urls')),
+    path('api/profile/', include('profile_company.urls')),
+    path('api/payment-vouchers/', include('payment_vouchers.urls')),
     # DRF login/logout URLs for the browsable API and Swagger
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0),

@@ -54,11 +54,19 @@ class Shipment(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
+
+    def get_client_branch_choices(self):
+        """تصفية فروع العميل المختار فقط"""
+        if self.client:
+            return [(branch.id, str(branch)) for branch in self.client.branches.all()]
+        return []
+
     client_branch = models.ForeignKey(
         Branch,
         related_name='shipments_company',
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        limit_choices_to={'client': models.F('client')}
     )
 
     client_invoice_number = models.CharField(

@@ -56,7 +56,18 @@ class ShipmentSerializerList(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(read_only=True, slug_field='username')
     driver = serializers.SlugRelatedField(read_only=True, slug_field='name')
     client = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    client_branch = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    
+    def get_fields(self):
+        fields = super().get_fields()
+        if 'client' in self.context['request'].data:
+            client_id = self.context['request'].data['client']
+            fields['client_branch'].queryset = Branch.objects.filter(client_id=client_id)
+        return fields
+    
+    client_branch = serializers.SlugRelatedField(
+        queryset=Branch.objects.all(),
+        slug_field='name'
+    )
     recipient = serializers.SlugRelatedField(read_only=True, slug_field='name')
     origin_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
     destination_city  = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')   

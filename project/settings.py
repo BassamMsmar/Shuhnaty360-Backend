@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'recipient',
     'cities',
     'profile_company',
+    'payment_vouchers',
 ]
 
 MIDDLEWARE = [
