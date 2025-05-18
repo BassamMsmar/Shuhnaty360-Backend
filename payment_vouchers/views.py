@@ -19,6 +19,22 @@ class PaymentVoucherListCreateView(generics.ListCreateAPIView):
         """إنشاء سند جديد"""
         serializer.save(creator=self.request.user)
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Successfully retrieved payment vouchers list',
+            'data': response.data
+        })
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Payment voucher created successfully',
+            'data': response.data
+        })
+
 class PaymentVoucherDetailView(generics.RetrieveUpdateDestroyAPIView):
     """عرض وتحديث وحذف سند"""
     queryset = PaymentVoucher.objects.all()
@@ -31,7 +47,11 @@ class PaymentVoucherDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(serializer.data)
+        return Response({
+            'status': 'success',
+            'message': 'Payment voucher updated successfully',
+            'data': serializer.data
+        })
 
     def perform_update(self, serializer):
         """تنفيذ التحديث"""

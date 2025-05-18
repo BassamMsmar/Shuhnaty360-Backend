@@ -39,7 +39,4 @@ class PaymentVoucherSerializer(serializers.ModelSerializer):
         except Shipment.DoesNotExist:
             raise serializers.ValidationError('الشحنة غير موجودة')
 
-    def update(self, instance, validated_data):
-        """تحديث سند موجود"""
-        instance.save()
-        return instance
+

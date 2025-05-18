@@ -53,7 +53,8 @@ class PaymentVoucher(models.Model):
                 shipment=self.shipment,
                 status=completed_status,
                 user=self.creator,
-                notes=self.note
+                notes=self.note,
+                updated_at=self.updated_at
             )
 
     def update_status(self, user, notes):
@@ -66,5 +67,6 @@ class PaymentVoucher(models.Model):
             shipment=self.shipment,
             status=self.shipment.status,
             user=user,
-            notes=notes
+            notes=notes,
+            updated_at=self.updated_at
         )

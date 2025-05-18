@@ -13,12 +13,72 @@ class DriverViewSet(generics.ListCreateAPIView):
     serializer_class = DriverSerializer
     permission_classes = [IsAuthenticated]
 
-class DriverRetrieveUpdateDestroyt(generics.RetrieveUpdateDestroyAPIView):
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Successfully retrieved drivers list',
+            'data': response.data
+        })
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver created successfully',
+            'data': response.data
+        })
+
+
+
+class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver details retrieved successfully',
+            'data': response.data
+        })
+
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver updated successfully',
+            'data': response.data
+        })
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver deleted successfully',
+            'data': response.data
+        })
+
 class TruckTypeViewSet(generics.ListCreateAPIView):
     queryset = TruckType.objects.all()
     serializer_class = TruckTypeSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
+
+    
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Successfully retrieved truck types list',
+            'data': response.data
+        })
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Truck type created successfully',
+            'data': response.data
+        })
