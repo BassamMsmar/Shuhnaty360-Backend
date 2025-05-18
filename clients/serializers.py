@@ -11,9 +11,15 @@ class ClientSerializer(serializers.ModelSerializer):
     branches = BranchSerializer(many=True, read_only=True)
     class Meta:
         model = Client
-        fields = ['id', 'name', 'address', 'phone_number','second_phone_number', 'email', 'dicription', 'branches']
+        fields = '__all__'
 
-class ClientBranchSerializer(serializers.ModelSerializer):
+class ClientBranchCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
-        fields = ['id', 'name', 'address', 'phone_number','second_phone_number']
+        fields = '__all__'
+class ClientBranchListSerializer(serializers.ModelSerializer):
+    client = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    city = serializers.SlugRelatedField(slug_field='ar_city', read_only=True)
+    class Meta:
+        model = Branch
+        fields = '__all__'

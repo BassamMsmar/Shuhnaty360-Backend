@@ -12,7 +12,7 @@ User = get_user_model()
 class UsersViewSet(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -32,22 +32,27 @@ class UsersViewSet(generics.ListCreateAPIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-        
-        if user is not None:
+        serializer = UserLoginSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
             login(request, user)
             return Response({
                 'status': 'success',
-                'message': 'Successfully logged in'
+                'message': 'Login successful',
+                'user_id': user.id,
+                'is_staff': user.is_staff,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name
             })
         return Response({
             'status': 'error',
-            'message': 'Invalid credentials'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class LogoutView(APIView):
@@ -97,34 +102,3 @@ class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
             'message': 'User deleted successfully'
         })
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            login(request, user)
-            return Response({
-                'status': 'success',
-                'message': 'Login successful',
-                'user_id': user.id,
-                'is_staff': user.is_staff,
-                'username': user.username,
-                'email': user.email,
-                'first_name': user.first_name,
-                'last_name': user.last_name
-            })
-        return Response({
-            'status': 'error',
-            'errors': serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        logout(request)
-        return Response({
-            'status': 'success',
-            'message': 'Logout successful'
-        })
