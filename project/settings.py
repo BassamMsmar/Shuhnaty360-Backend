@@ -94,7 +94,9 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,  # Number of items per page
 }
 
 
@@ -169,24 +171,4 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
-
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Basic': {
-            'type': 'basic'
-        }
-    },
-    'USE_SESSION_AUTH': True,
-    'LOGIN_URL': 'rest_framework:login',
-    'LOGOUT_URL': 'rest_framework:logout',
-    'SECURITY_REQUIREMENTS': [],
-    'DEFAULT_INFO': 'path_to_your_swagger_info',  # تأكد من تحديد مسار ملف swagger_info
-    'VALIDATOR_URL': None,  # تعطيل التحقق من صحة البيانات في بيئة الإنتاج
-    'OPERATIONS_SORTER': 'method',  # ترتيب العمليات بناءً على الطريقة (GET, POST, ...)
-    'PAGINATOR': 'drf_yasg.inspectors.DjangoRestResponsePagination',  # إضافة الدعم للتقسيم للصفحات
-    'INSPECTORS': [
-        'drf_yasg.inspectors.DjangoRestResponsePagination',
-        'drf_yasg.inspectors.CoreApiCompatInspector',
-    ]
-}
 
