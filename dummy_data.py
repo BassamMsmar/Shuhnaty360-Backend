@@ -79,59 +79,77 @@ def create_company_profiles():
     fake = Faker()
     cities = list(City.objects.all())
     
-    # Check if company profiles already exist
-    if CompanyProfile.objects.count() >= 3:
-        print('Company profiles already exist')
-        return
-        
-    for i in range(1, 4):  # Create 3 company profiles
-        company_name_en = f'{fake.company()} Company {i}'
-        company_name_ar = f'شركة {fake.company()} {i}'
-        
-        # Check if a company with this name already exists
-        if not CompanyProfile.objects.filter(company_name_en=company_name_en).exists():
-            CompanyProfile.objects.create(
-                company_name_ar=company_name_ar,
-                company_name_en=company_name_en,
-                company_description_ar=fake.paragraph(),
-                company_description_en=fake.paragraph(),
-                main_phone_number=fake.phone_number(),
-                secondary_phone_number=fake.phone_number() if random.choice([True, False]) else None,
-                email=fake.company_email(),
-                website=f'https://www.{fake.domain_name()}' if random.choice([True, False]) else None,
-                address=fake.address(),
-                city=random.choice(cities) if cities else None,
-                is_active=True,
-                created_at=timezone.now() - timedelta(days=random.randint(30, 365)),
-                updated_at=timezone.now() - timedelta(days=random.randint(1, 30))
-            )
-            print(f'Company Profile {i} created')
-        else:
-            print(f'Company profile {company_name_en} already exists')
+    # Check if company profile already exists
+    if CompanyProfile.objects.exists():
+        print('Company profile already exists')
+        return None
+    
+    # Generate phone numbers with max 20 characters
+    def get_phone_number():
+        # Generate phone number and ensure it's not longer than 20 characters
+        phone = fake.numerify(text='+9665########')
+        return phone[:20]
+    
+    # Create one company profile
+    company_name_en = 'Aljeed Transportations'
+    company_name_ar = 'شركة الجيد للنقليات'
+    
+    company = CompanyProfile.objects.create(
+        company_name_ar=company_name_ar,
+        company_name_en=company_name_en,
+        company_description_ar='شركة رائدة في مجال الشحن والتوصيل',
+        company_description_en='Leading company in shipping and delivery services',
+        main_phone_number=get_phone_number(),
+        secondary_phone_number=get_phone_number(),
+        email='info@aljeed.com',
+        website='https://www.aljeed.com',
+        address='الرياض، المملكة العربية السعودية',
+        city=random.choice(cities) if cities else None,
+        is_active=True,
+        created_at=timezone.now() - timedelta(days=365),
+        updated_at=timezone.now() - timedelta(days=30)
+    )
+    print('Company Profile created successfully')
+    return company
 
 # Create company branches
 def create_company_branches():
     fake = Faker()
-    companies = CompanyProfile.objects.all()
-    cities = City.objects.all()
+    cities = list(City.objects.all())
     
-    for company in companies:
-        # Create 2-4 branches for each company
-        for i in range(1, random.randint(2, 5)):
-            CompanyBranch.objects.create(
-                company=company,
-                branch_name_ar=f'فرع {fake.city()} {i}',
-                branch_name_en=f'{fake.city()} Branch {i}',
-                main_phone_number=fake.phone_number(),
-                secondary_phone_number=fake.phone_number() if random.choice([True, False]) else None,
-                email=fake.company_email(),
-                address=fake.address(),
-                city=random.choice(cities) if cities.exists() else None,
-                is_active=True,
-                created_at=timezone.now() - timedelta(days=random.randint(30, 365)),
-                updated_at=timezone.now() - timedelta(days=random.randint(1, 30))
-            )
-            print(f'Company Branch created for {company}')
+    # Get the company or create it if it doesn't exist
+    company = CompanyProfile.objects.first()
+    if not company:
+        company = create_company_profiles()
+        if not company:  # If creation failed
+            return
+    
+    # Check if branches already exist
+    if CompanyBranch.objects.count() >= 6:
+        print('Branches already exist')
+        return
+    
+    branch_cities = random.sample(cities, min(6, len(cities)))  # Get 6 unique cities or less if not enough
+    
+    # Create exactly 6 branches
+    for i in range(1, 7):
+        city = branch_cities[i % len(branch_cities)] if branch_cities else None
+        branch_name = f'الفرع الرئيسي {i}' if i == 1 else f'فرع {fake.city()[:15]}'
+        
+        CompanyBranch.objects.create(
+            company=company,
+            branch_name_ar=branch_name,
+            branch_name_en=f'{fake.city()} Branch {i}',
+            main_phone_number=fake.phone_number(),
+            secondary_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+            email=fake.company_email(),
+            address=fake.address(),
+            city=city,
+            is_active=True,
+            created_at=timezone.now() - timedelta(days=random.randint(30, 365)),
+            updated_at=timezone.now() - timedelta(days=random.randint(1, 30))
+        )
+        print(f'Company Branch created for {company}')
 
 
 # Create 5 Clients
