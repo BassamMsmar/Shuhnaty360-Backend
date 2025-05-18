@@ -12,7 +12,7 @@ User = get_user_model()
 class UsersViewSet(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
