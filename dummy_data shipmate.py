@@ -95,8 +95,8 @@ def create_company_profiles():
                 company_name_en=company_name_en,
                 company_description_ar=fake.paragraph(),
                 company_description_en=fake.paragraph(),
-                main_phone_number=fake.phone_number(),
-                secondary_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+                main_phone_number=fake.phone_number()[:10],
+                secondary_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
                 email=fake.company_email(),
                 website=f'https://www.{fake.domain_name()}' if random.choice([True, False]) else None,
                 address=fake.address(),
@@ -122,8 +122,8 @@ def create_company_branches():
                 company=company,
                 branch_name_ar=f'فرع {fake.city()} {i}',
                 branch_name_en=f'{fake.city()} Branch {i}',
-                main_phone_number=fake.phone_number(),
-                secondary_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+                main_phone_number=fake.phone_number()[:10],
+                secondary_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
                 email=fake.company_email(),
                 address=fake.address(),
                 city=random.choice(cities) if cities.exists() else None,
@@ -150,9 +150,9 @@ def create_client():
             Client.objects.create(
                 name=fake.company(), 
                 address=fake.address(), 
-                phone_number=fake.phone_number(), 
+                phone_number=fake.phone_number()[:10], 
                 email=client_email,
-                second_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+                second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
                 Commercial_registration_number=fake.numerify(text='##########') if random.choice([True, False]) else None,
                 dicription=fake.paragraph() if random.choice([True, False]) else None
             )
@@ -171,9 +171,9 @@ def create_branch():
             name=fake.company(), 
             city=random.choice(cities), 
             address=fake.address(), 
-            phone_number=fake.phone_number(),
+            phone_number=fake.phone_number()[:10],
             name_address=fake.street_name() if random.choice([True, False]) else None,
-            second_phone_number=fake.phone_number() if random.choice([True, False]) else None
+            second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None
         )
         print(f'Branch {i} created')
 # Create Truck Types
@@ -232,7 +232,7 @@ def create_driver():
     for i in range(1, 11):
         Driver.objects.create(
             name=fake.name(),
-            phone_number=fake.phone_number(),
+            phone_number=fake.phone_number()[:10],
             nationality=fake.country(),
             language=random.choice(['en', 'ar', 'ur']),
             identity_number=fake.numerify(text='############'),
@@ -252,10 +252,10 @@ def create_recipient():
     for i in range(1, 11):
         Recipient.objects.create(
             name=fake.name(),
-            phone_number=fake.phone_number(),
+            phone_number=fake.phone_number()[:10],
             address=fake.address(),
             city=random.choice(cities),
-            second_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+            second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
             email=fake.email() if random.choice([True, False]) else None
         )
         print(f'Recipient {i} created')
