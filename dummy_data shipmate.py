@@ -262,7 +262,7 @@ def create_recipient():
 
 def create_shipment():
     # Check if we already have shipments
-    if Shipment.objects.count() > 50:
+    if Shipment.objects.count() > 1000:
         print('Shipments already exist')
         return
         

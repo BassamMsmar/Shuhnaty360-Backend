@@ -163,14 +163,18 @@ def create_client():
         
     for i in range(1, 6):
         client_email = fake.email()
+        # Generate phone number with max 20 characters
+        phone = fake.phone_number()[:10]
+        second_phone = fake.phone_number()[:10] if random.choice([True, False]) else None
+        
         # Check if a client with this email already exists
         if not Client.objects.filter(email=client_email).exists():
             Client.objects.create(
                 name=fake.company(), 
                 address=fake.address(), 
-                phone_number=fake.phone_number(), 
+                phone_number=phone, 
                 email=client_email,
-                second_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+                second_phone_number=second_phone,
                 Commercial_registration_number=fake.numerify(text='##########') if random.choice([True, False]) else None,
                 dicription=fake.paragraph() if random.choice([True, False]) else None
             )
@@ -280,7 +284,7 @@ def create_recipient():
 
 def create_shipment():
     # Check if we already have shipments
-    if Shipment.objects.count() > 50:
+    if Shipment.objects.count() > 100:
         print('Shipments already exist')
         return
         
