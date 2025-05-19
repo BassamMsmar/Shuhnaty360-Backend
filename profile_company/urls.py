@@ -4,5 +4,5 @@ from .views import CompanyProfileViewSet, CompanyBranchViewSet
 
 urlpatterns = [
     path('api/', CompanyProfileViewSet.as_view(), name='CompanyProfile-list-create'),
-    path('api/<int:pk>', CompanyBranchViewSet.as_view(), name='CompanyBranch-detail'),
+    path('api/branch/', CompanyBranchViewSet.as_view(), name='CompanyBranch-list-create'),
 ]
