@@ -59,7 +59,7 @@ def create_user():
             password='password', 
             first_name=fake.first_name(),
             last_name=fake.last_name(),
-            phone=fake.phone_number(),
+            phone=fake.phone_number()[:10],
             company_branch=company_branch
         )
         print(f'User {i} created')
