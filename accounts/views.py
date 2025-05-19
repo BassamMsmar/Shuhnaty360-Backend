@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model, login, logout, authenticate
-from .serializers import UsersSerializer, UserLoginSerializer
+from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer
 
 User = get_user_model()
 
 # Create your views here.
 
-class UsersViewSet(generics.ListCreateAPIView):
+class UsersViewSet(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
@@ -21,6 +21,13 @@ class UsersViewSet(generics.ListCreateAPIView):
             'message': 'Successfully retrieved users list',
             'data': response.data
         })
+
+
+class UsersCreateSet(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [IsAdminUser]
+
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)

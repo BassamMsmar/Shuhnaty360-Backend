@@ -7,12 +7,6 @@ from django.utils.translation import gettext_lazy as _
 User = get_user_model()
 
 
-
-class LoginSerializer(serializers.Serializer):
-    """Serializer for login credentials."""
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
-
 class UserLoginSerializer(serializers.Serializer):
     """Serializer for user login."""
     username = serializers.CharField(required=True)
@@ -44,17 +38,24 @@ class UserLoginSerializer(serializers.Serializer):
         return attrs
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """Serializer for user registration."""
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
-
+    password = serializers.CharField(
+        write_only=True, 
+        required=True,
+        validators=[validate_password],
+        style={'input_type': 'password'}
+    )
+    password2 = serializers.CharField(
+        write_only=True, 
+        required=True,
+        style={'input_type': 'password'}
+    )
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch')
+        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
-            'email': {'required': True},
+            'email': {'required': False},
         }
 
     def validate(self, attrs):
@@ -69,7 +70,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             phone=validated_data.get('phone', ''),
-            company_branch=validated_data.get('company_branch', '')
+            company_branch=validated_data.get('company_branch', ''),
+            is_staff=validated_data.get('is_staff', False),
+            is_superuser=validated_data.get('is_superuser', False)
         )
         user.set_password(validated_data['password'])
         user.save()
@@ -78,6 +81,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser',]
         read_only_fields = ['id', 'date_joined']
       
