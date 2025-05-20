@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Driver, TruckType
 from .serializers import DriverSerializer, TruckTypeSerializer
@@ -12,6 +13,7 @@ class DriverViewSet(generics.ListCreateAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -35,6 +37,7 @@ class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -64,6 +67,7 @@ class TruckTypeViewSet(generics.ListCreateAPIView):
     queryset = TruckType.objects.all()
     serializer_class = TruckTypeSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     
 

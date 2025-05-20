@@ -3,6 +3,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import PaymentVoucher
 from .serializers import PaymentVoucherSerializer
@@ -14,6 +15,7 @@ class PaymentVoucherListCreateView(generics.ListCreateAPIView):
     queryset = PaymentVoucher.objects.all()
     serializer_class = PaymentVoucherSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def perform_create(self, serializer):
         """إنشاء سند جديد"""
@@ -40,6 +42,7 @@ class PaymentVoucherDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = PaymentVoucher.objects.all()
     serializer_class = PaymentVoucherSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def update(self, request, *args, **kwargs):
         """تحديث سند"""

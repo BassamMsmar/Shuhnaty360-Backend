@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.utils import timezone
@@ -15,6 +16,7 @@ from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, Shipm
 class ShipmentListCreateView(generics.ListCreateAPIView):
     queryset = Shipment.objects.all()
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['user', 'driver', 'client','client_branch', 'client_invoice_number', 'recipient', 'status']
     search_fields = ['tracking_number']
@@ -38,6 +40,38 @@ class ShipmentDetails(generics.RetrieveDestroyAPIView):
     queryset = Shipment.objects.all()
     serializer_class = ShipmentSerializerDetail
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment details retrieved successfully',
+            'data': response.data
+        })
+    
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment deleted successfully'
+        })
+    
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment updated successfully',
+            'data': response.data
+        })
+    
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment updated successfully',
+            'data': response.data
+        })
 
     
 
@@ -45,6 +79,7 @@ class ShipmentUpdate(generics.UpdateAPIView):
     queryset = Shipment.objects.all()
     serializer_class = ShipmentSerializerUpdate
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def perform_update(self, serializer):
         # جلب الشحنة القديمة
@@ -72,17 +107,32 @@ class ShipmentUpdate(generics.UpdateAPIView):
         else:
             print("لم تتغير الحالة، لم يتم إنشاء سجل.")
 
+      # جلب الشحنة القديمة
+        
+
 class ShipmentStatus(generics.ListCreateAPIView):
     queryset = ShipmentStatus.objects.all()
     serializer_class = ShipmentStatusSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['name_ar', 'name_en']
     search_fields = ['name_ar', 'name_en']
 
     def get(self, request, *args, **kwargs):
-        shipment_status = self.get_queryset()
-        serializer = self.get_serializer(shipment_status, many=True)
-        return Response(serializer.data)
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment status retrieved successfully',
+            'data': response.data
+        })
+    
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment status created successfully',
+            'data': response.data
+        })
 
 

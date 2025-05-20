@@ -49,6 +49,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         required=True,
         style={'input_type': 'password'}
     )
+    
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser')
