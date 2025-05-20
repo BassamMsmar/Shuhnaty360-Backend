@@ -4,6 +4,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from django.contrib.auth import get_user_model, login, logout
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
 from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer
 
 User = get_user_model()
@@ -14,6 +17,7 @@ class UsersViewSet(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -28,6 +32,7 @@ class UsersCreateSet(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
 
     def post(self, request, *args, **kwargs):
@@ -41,7 +46,8 @@ class UsersCreateSet(generics.CreateAPIView):
 
 class LoginView(GenericAPIView):
     permission_classes = [AllowAny]
-    serializer_class = UserLoginSerializer  # هذا مهم لكي تظهر الحقول في Swagger
+    serializer_class = UserLoginSerializer
+    authentication_classes = [JWTAuthentication]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, context={'request': request})
@@ -68,6 +74,7 @@ class LoginView(GenericAPIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def post(self, request):
         logout(request)
@@ -81,6 +88,7 @@ class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)

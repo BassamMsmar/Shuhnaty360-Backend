@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Client, Branch
 from .serializers import ClientSerializer, ClientBranchCreateSerializer, ClientBranchListSerializer
@@ -13,6 +14,7 @@ class ClientViewSet(generics.ListCreateAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -36,6 +38,7 @@ class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -72,6 +75,7 @@ class ClientBranchList(generics.ListAPIView):
     queryset = Branch.objects.all()
     serializer_class = ClientBranchListSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -84,6 +88,7 @@ class ClientBranchCreate(generics.CreateAPIView):
     queryset = Branch.objects.all()
     serializer_class = ClientBranchCreateSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -97,6 +102,7 @@ class ClientBranchSDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Branch.objects.all()
     serializer_class = ClientBranchListSerializer
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)

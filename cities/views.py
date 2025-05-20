@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import City
 from .serializers import CitySerializer
@@ -11,6 +12,7 @@ class CityViewSet(generics.ListCreateAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -24,6 +26,7 @@ class CityDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
