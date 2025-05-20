@@ -2,7 +2,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
-from django.contrib.auth import get_user_model, login, logout, authenticate
+from rest_framework.generics import GenericAPIView
+from django.contrib.auth import get_user_model, login, logout
 from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer
 
 User = get_user_model()
@@ -37,28 +38,31 @@ class UsersCreateSet(generics.CreateAPIView):
             'data': response.data
         })
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            login(request, user)
-            return Response({
-                'status': 'success',
-                'message': 'Login successful',
-                'user_id': user.id,
-                'is_staff': user.is_staff,
-                'username': user.username,
-                'email': user.email,
-                'first_name': user.first_name,
-                'last_name': user.last_name
-            })
-        return Response({
-            'status': 'error',
-            'errors': serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
 
+class LoginView(GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserLoginSerializer  # هذا مهم لكي تظهر الحقول في Swagger
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        
+        user = serializer.validated_data['user']
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        return Response({
+            'status': 'success',
+            'message': 'Login successful',
+            'user_id': user.id,
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone': user.phone,
+            'company_branch': user.company_branch
+        })
 
 
 
