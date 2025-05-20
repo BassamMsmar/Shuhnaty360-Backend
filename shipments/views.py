@@ -39,6 +39,37 @@ class ShipmentDetails(generics.RetrieveDestroyAPIView):
     serializer_class = ShipmentSerializerDetail
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment details retrieved successfully',
+            'data': response.data
+        })
+    
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment deleted successfully'
+        })
+    
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment updated successfully',
+            'data': response.data
+        })
+    
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment updated successfully',
+            'data': response.data
+        })
+
     
 
 class ShipmentUpdate(generics.UpdateAPIView):
@@ -72,6 +103,9 @@ class ShipmentUpdate(generics.UpdateAPIView):
         else:
             print("لم تتغير الحالة، لم يتم إنشاء سجل.")
 
+      # جلب الشحنة القديمة
+        
+
 class ShipmentStatus(generics.ListCreateAPIView):
     queryset = ShipmentStatus.objects.all()
     serializer_class = ShipmentStatusSerializer
@@ -81,8 +115,19 @@ class ShipmentStatus(generics.ListCreateAPIView):
     search_fields = ['name_ar', 'name_en']
 
     def get(self, request, *args, **kwargs):
-        shipment_status = self.get_queryset()
-        serializer = self.get_serializer(shipment_status, many=True)
-        return Response(serializer.data)
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment status retrieved successfully',
+            'data': response.data
+        })
+    
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment status created successfully',
+            'data': response.data
+        })
 
 
