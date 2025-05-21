@@ -55,11 +55,6 @@ class Shipment(models.Model):
         null=True
     )
 
-    def get_client_branch_choices(self):
-        """تصفية فروع العميل المختار فقط"""
-        if self.client:
-            return [(branch.id, str(branch)) for branch in self.client.branches.all()]
-        return []
 
     client_branch = models.ForeignKey(
         Branch,

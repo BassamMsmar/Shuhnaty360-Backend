@@ -17,6 +17,7 @@ class ClientBranchCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = '__all__'
+        
 class ClientBranchListSerializer(serializers.ModelSerializer):
     client = serializers.SlugRelatedField(slug_field='name', read_only=True)
     city = serializers.SlugRelatedField(slug_field='ar_city', read_only=True)

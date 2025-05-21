@@ -14,7 +14,10 @@ class ShipmentHistorySerializer(serializers.ModelSerializer):
         model = ShipmentHistory
         fields = '__all__'
 
-class ShipmentSerializercreate(serializers.ModelSerializer):
+class ShipmentSerializerCreate(serializers.ModelSerializer):
+    loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = Shipment
         fields = [
@@ -27,6 +30,7 @@ class ShipmentSerializercreate(serializers.ModelSerializer):
             'loading_date',
             'days_to_arrive',
             'expected_arrival_date',
+            'actual_delivery_date',
 
             'contents',
             'weight',
@@ -75,7 +79,7 @@ class ShipmentSerializerList(serializers.ModelSerializer):
     history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    loading_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = Shipment
@@ -106,7 +110,7 @@ class ShipmentSerializerList(serializers.ModelSerializer):
             'weight',
             'contents',
             'status',
-            'loading_at',
+            'loading_date',
             'updated_at',
             'history',
         ]
@@ -119,7 +123,7 @@ class ShipmentSerializerDetail(serializers.ModelSerializer):
     history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    loading_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = Shipment
@@ -148,7 +152,7 @@ class ShipmentSerializerDetail(serializers.ModelSerializer):
             'contents',
             'notes',
             'status',
-            'loading_at',
+            'loading_date',
             'updated_at',
             'history',
         ]
