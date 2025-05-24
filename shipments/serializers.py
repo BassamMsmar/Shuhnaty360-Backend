@@ -3,6 +3,11 @@ from .models import Shipment, ShipmentStatus, ShipmentHistory
 from django.contrib.auth import get_user_model
 from .models import Driver, Branch, Recipient, City, ShipmentStatus  # حسب أسماء موديلاتك
 
+from cities.models import City
+from clients.models import Client, Branch   
+from drivers.models import Driver
+from recipient.models import Recipient
+
 User = get_user_model()
 class ShipmentStatusSerializer(serializers.ModelSerializer): # Manege shipment status
     class Meta:
@@ -13,6 +18,42 @@ class ShipmentHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ShipmentHistory
         fields = '__all__'
+
+class CitySerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ['id', 'ar_city', 'en_city']
+
+class ClientSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = ['id', 'name']
+
+class BranchSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = Branch
+        fields = ['id', 'name']
+
+class DriverSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = Driver
+        fields = ['id', 'name']
+
+class RecipientSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = Recipient
+        fields = ['id', 'name']
+
+class ShipmentStatusSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = ShipmentStatus
+        fields = ['id', 'name_ar', 'name_en']
+
+class UserSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
 
 class ShipmentSerializerCreate(serializers.ModelSerializer):
     loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -57,25 +98,20 @@ class ShipmentSerializerCreate(serializers.ModelSerializer):
 
 class ShipmentSerializerList(serializers.ModelSerializer):
     total_cost = serializers.ReadOnlyField()
-    user = serializers.SlugRelatedField(read_only=True, slug_field='username')
-    driver = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    client = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    
+    user = UserSerializerMini(read_only=True)
+    driver = DriverSerializerMini(read_only=True)
+    client = ClientSerializerMini(read_only=True)
+    client_branch = BranchSerializerMini(read_only=True)
+    recipient = RecipientSerializerMini(read_only=True)
+    origin_city = CitySerializerMini(read_only=True)
+    destination_city = CitySerializerMini(read_only=True)
+    status = ShipmentStatusSerializerMini(read_only=True)    
     def get_fields(self):
         fields = super().get_fields()
         if 'client' in self.context['request'].data:
             client_id = self.context['request'].data['client']
             fields['client_branch'].queryset = Branch.objects.filter(client_id=client_id)
         return fields
-    
-    client_branch = serializers.SlugRelatedField(
-        queryset=Branch.objects.all(),
-        slug_field='name'
-    )
-    recipient = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    origin_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
-    destination_city  = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')   
-    status  = serializers.SlugRelatedField(read_only=True, slug_field='name_ar')
     history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -117,9 +153,9 @@ class ShipmentSerializerList(serializers.ModelSerializer):
 
 class ShipmentSerializerDetail(serializers.ModelSerializer):
     total_cost = serializers.ReadOnlyField() # to return all fields in detail  and view in drive as id 
-    status = serializers.SlugRelatedField(read_only=True, slug_field='name_ar')
-    origin_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
-    destination_city  = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
+    status = ShipmentStatusSerializerMini(read_only=True)
+    origin_city = CitySerializerMini(read_only=True)
+    destination_city  = CitySerializerMini(read_only=True)
     history = ShipmentHistorySerializer(many=True, read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
