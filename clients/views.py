@@ -7,12 +7,12 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Client, Branch
-from .serializers import ClientSerializer, ClientBranchCreateSerializer, ClientBranchListSerializer
+from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList
 
 # Create your views here.
 class ClientViewSet(generics.ListCreateAPIView):
     queryset = Client.objects.all()
-    serializer_class = ClientSerializer
+    serializer_class = ClientSerializerList
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
 
@@ -36,7 +36,7 @@ class ClientViewSet(generics.ListCreateAPIView):
 
 class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()
-    serializer_class = ClientSerializer
+    serializer_class = ClientSerializerDetails
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
 
