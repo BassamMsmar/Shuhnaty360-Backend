@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
 
+from profile_company.models import CompanyBranch
+
 User = get_user_model()
 
 
@@ -79,7 +81,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class CompanyBranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyBranch
+        fields = ['id', 'branch_name_ar', 'branch_name_en']
+        ref_name = "AccountsCompanyBranch"
 class UsersSerializer(serializers.ModelSerializer):
+    company_branch = CompanyBranchSerializer()
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser',]

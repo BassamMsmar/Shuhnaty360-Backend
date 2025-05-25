@@ -1,13 +1,21 @@
 from rest_framework import serializers
 from .models import Client, Branch
 
-
+from cities.serializers import CitySerializer
 
 class BranchSerializer(serializers.ModelSerializer):
+    city = CitySerializer()
     class Meta:
         model = Branch
         fields = '__all__'
-class ClientSerializer(serializers.ModelSerializer):
+
+
+class ClientSerializerList(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = '__all__'
+
+class ClientSerializerDetails(serializers.ModelSerializer):
     branches = BranchSerializer(many=True, read_only=True)
     class Meta:
         model = Client
@@ -17,10 +25,15 @@ class ClientBranchCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = '__all__'
+
+class ClientMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        fields = ['id', 'name']
         
 class ClientBranchListSerializer(serializers.ModelSerializer):
-    client = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    city = serializers.SlugRelatedField(slug_field='ar_city', read_only=True)
+    client = ClientMiniSerializer()
+    city = CitySerializer()
     class Meta:
         model = Branch
         fields = '__all__'
