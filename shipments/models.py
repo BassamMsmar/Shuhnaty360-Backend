@@ -122,7 +122,6 @@ class Shipment(models.Model):
 
     # Timestamps and notes
     created_at = models.DateTimeField("تاريخ الانشاء", default=timezone.now)
-    loading_at = models.DateTimeField("تاريخ التحميل", default=timezone.now)
     updated_at = models.DateTimeField("تاريخ التحديث", auto_now=True)
 
 
