@@ -53,7 +53,6 @@ class Migration(migrations.Migration):
                 ('contents', models.TextField(blank=True, null=True, verbose_name='محتويات الشحنة')),
                 ('notes', models.TextField(blank=True, null=True, verbose_name='ملاحظات')),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='تاريخ الانشاء')),
-                ('loading_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='تاريخ التحميل')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='تاريخ التحديث')),
                 ('client', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='shipments_customer', to='clients.client')),
                 ('client_branch', models.ForeignKey(limit_choices_to={'client': models.F('client')}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='shipments_company', to='clients.branch')),
