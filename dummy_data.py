@@ -351,7 +351,6 @@ def create_shipment():
             contents=fake.paragraph() if random.choice([True, False]) else None,
             notes=fake.sentence() if random.choice([True, False]) else None,
             created_at=loading_date - timedelta(days=random.randint(1, 3)),
-            loading_at=loading_date,
             updated_at=timezone.now() - timedelta(days=random.randint(0, 5))
         )
         
