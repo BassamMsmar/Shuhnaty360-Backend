@@ -121,4 +121,3 @@ class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
             'status': 'success',
             'message': 'User deleted successfully'
         })
-

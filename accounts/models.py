@@ -17,4 +17,3 @@ class CustomUser(AbstractUser):
     class Meta:
         verbose_name = 'المستخدم'
         verbose_name_plural = 'المستخدمين'
-
