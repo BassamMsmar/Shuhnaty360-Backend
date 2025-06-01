@@ -14,7 +14,7 @@ from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, Shipm
 
 # Create your views here.
 class ShipmentListView(generics.ListAPIView): # فصلنا دالة الاضافة عن العرض لان العرض يوجد حقول للقرائة فقط
-    queryset = Shipment.objects.all().order_by('id')
+    queryset = Shipment.objects.all().order_by('-id')
     serializer_class = ShipmentSerializerList
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
