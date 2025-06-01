@@ -54,7 +54,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser')
+        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser', 'is_active')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
@@ -75,7 +75,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone=validated_data.get('phone', ''),
             company_branch=validated_data.get('company_branch', ''),
             is_staff=validated_data.get('is_staff', False),
-            is_superuser=validated_data.get('is_superuser', False)
+            is_superuser=validated_data.get('is_superuser', False),
+            is_active=validated_data.get('is_active', True)
         )
         user.set_password(validated_data['password'])
         user.save()

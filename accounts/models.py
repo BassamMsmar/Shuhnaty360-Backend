@@ -11,7 +11,6 @@ class CustomUser(AbstractUser):
         related_name='user_company_branch',
         on_delete=models.SET_NULL,
         blank=True,
-        null=True
     )
     email = models.EmailField(unique=True, blank=True, null=True)
 
