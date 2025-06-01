@@ -1,0 +1,10 @@
+{
+    "cascade.execution.allowList": [
+        "git status",
+        "git add",
+        "git commit",
+        "git push",
+        "git rev-parse --is-inside-work-tree"
+    ],
+    "cascade.execution.denyList": []
+}

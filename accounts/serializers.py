@@ -1,23 +1,21 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
-from django.contrib.auth import get_user_model, login, logout
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import serializers
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.password_validation import validate_password
+from django.utils.translation import gettext_lazy as _
 
-
-from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer
+from profile_company.models import CompanyBranch
 
 User = get_user_model()
 
-# Create your views here.
 
-class UsersViewSet(generics.ListAPIView):
-    queryset = User.objects.all().order_by('id')
-    serializer_class = UsersSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
+class UserLoginSerializer(serializers.Serializer):
+    """Serializer for user login."""
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(
+        style={'input_type': 'password'},
+        write_only=True
+    )
 
     def validate(self, attrs):
         """Validate user credentials."""
@@ -56,7 +54,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser')
+        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser', 'is_active')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
@@ -77,7 +75,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone=validated_data.get('phone', ''),
             company_branch=validated_data.get('company_branch', ''),
             is_staff=validated_data.get('is_staff', False),
-            is_superuser=validated_data.get('is_superuser', False)
+            is_superuser=validated_data.get('is_superuser', False),
+            is_active=validated_data.get('is_active', True)
         )
         user.set_password(validated_data['password'])
         user.save()
@@ -89,9 +88,8 @@ class CompanyBranchSerializer(serializers.ModelSerializer):
         fields = ['id', 'branch_name_ar', 'branch_name_en']
         ref_name = "AccountsCompanyBranch"
 class UsersSerializer(serializers.ModelSerializer):
-    company_branch = CompanyBranchSerializer()
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser',]
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active']
         read_only_fields = ['id', 'date_joined']
       
