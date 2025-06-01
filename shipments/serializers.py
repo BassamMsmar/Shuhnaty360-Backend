@@ -5,7 +5,7 @@ from .models import Driver, Branch, Recipient, City, ShipmentStatus  # حسب أ
 
 from cities.models import City
 from clients.models import Client, Branch   
-from drivers.models import Driver
+from drivers.models import Driver , TruckType
 from recipient.models import Recipient
 
 User = get_user_model()
@@ -59,12 +59,14 @@ class ShipmentSerializerCreate(serializers.ModelSerializer):
     loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    truck_type = serializers.CharField(read_only=True)
     class Meta:
         model = Shipment
         fields = [
             'user',
             
             'driver', 
+            'truck_type',
             'origin_city',
             'destination_city',
 
@@ -124,6 +126,7 @@ class ShipmentSerializerList(serializers.ModelSerializer):
             'tracking_number',
             'user',
             'driver',
+            'truck_type',
             'client',
             'client_branch',
             'client_invoice_number',
@@ -168,6 +171,7 @@ class ShipmentSerializerDetail(serializers.ModelSerializer):
             'tracking_number',
             'user',
             'driver',
+            'truck_type',
             'client',
             'client_branch',
             'client_invoice_number',
@@ -198,6 +202,7 @@ class ShipmentSerializerUpdate(serializers.ModelSerializer):
         model = Shipment
         fields = [
     'driver',
+    'truck_type',
     'client_invoice_number',
     'client',
     'client_branch',

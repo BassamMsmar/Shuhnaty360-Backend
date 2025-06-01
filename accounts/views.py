@@ -14,7 +14,7 @@ User = get_user_model()
 # Create your views here.
 
 class UsersViewSet(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('id')
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
@@ -26,6 +26,7 @@ class UsersViewSet(generics.ListAPIView):
             'message': 'Successfully retrieved users list',
             'data': response.data
         })
+
 
 
 class UsersCreateSet(generics.CreateAPIView):
@@ -120,4 +121,3 @@ class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
             'status': 'success',
             'message': 'User deleted successfully'
         })
-
