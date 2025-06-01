@@ -14,7 +14,7 @@ from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, Shipm
 
 # Create your views here.
 class ShipmentListView(generics.ListAPIView): # فصلنا دالة الاضافة عن العرض لان العرض يوجد حقول للقرائة فقط
-    queryset = Shipment.objects.all()
+    queryset = Shipment.objects.all().order_by('id')
     serializer_class = ShipmentSerializerList
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -71,21 +71,6 @@ class ShipmentDetails(generics.RetrieveDestroyAPIView): # دالة عرض بيا
             'message': 'Shipment deleted successfully'
         })
     
-    def put(self, request, *args, **kwargs):
-        response = super().put(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Shipment updated successfully',
-            'data': response.data
-        })
-    
-    def patch(self, request, *args, **kwargs):
-        response = super().patch(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Shipment updated successfully',
-            'data': response.data
-        })
 
     
 

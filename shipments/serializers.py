@@ -54,12 +54,20 @@ class UserSerializerMini(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username']
 
-
 class ShipmentSerializerCreate(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
+    driver = serializers.PrimaryKeyRelatedField(queryset=Driver.objects.all(), required=True)
+    truck_type = serializers.PrimaryKeyRelatedField(queryset=TruckType.objects.all(), required=True)
+    origin_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=True)
+    destination_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=True)
+    client = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all(), required=True)
+    client_branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all(), required=True)
+    recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all(), required=True)
+    status = serializers.PrimaryKeyRelatedField(queryset=ShipmentStatus.objects.all(), required=True)
+    fare = serializers.IntegerField(required=True)
     loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    truck_type = serializers.CharField(read_only=True)
     class Meta:
         model = Shipment
         fields = [
@@ -198,6 +206,15 @@ class ShipmentSerializerDetail(serializers.ModelSerializer):
         ]
 
 class ShipmentSerializerUpdate(serializers.ModelSerializer):
+    driver = serializers.PrimaryKeyRelatedField(queryset=Driver.objects.all(), required=True)
+    truck_type = serializers.PrimaryKeyRelatedField(queryset=TruckType.objects.all(), required=True)
+    origin_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=True)
+    destination_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=True)
+    client = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all(), required=True)
+    client_branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all(), required=True)
+    recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all(), required=True)
+    status = serializers.PrimaryKeyRelatedField(queryset=ShipmentStatus.objects.all(), required=True)
+    fare = serializers.IntegerField(required=True)
     class Meta:
         model = Shipment
         fields = [

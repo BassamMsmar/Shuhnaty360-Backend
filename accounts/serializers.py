@@ -1,123 +1,95 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
-from django.contrib.auth import get_user_model, login, logout
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import serializers
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.password_validation import validate_password
+from django.utils.translation import gettext_lazy as _
 
-
-from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer
+from profile_company.models import CompanyBranch
 
 User = get_user_model()
 
-# Create your views here.
 
-class UsersViewSet(generics.ListAPIView):
-    queryset = User.objects.all().order_by('id')
-    serializer_class = UsersSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
+class UserLoginSerializer(serializers.Serializer):
+    """Serializer for user login."""
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(
+        style={'input_type': 'password'},
+        write_only=True
+    )
 
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Successfully retrieved users list',
-            'data': response.data
-        })
+    def validate(self, attrs):
+        """Validate user credentials."""
+        username = attrs.get('username')
+        password = attrs.get('password')
 
+        if username and password:
+            user = authenticate(
+                request=self.context.get('request'),
+                username=username,
+                password=password
+            )
+            
+            if not user:
+                msg = _('Unable to log in with provided credentials.')
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = _('Must include "username" and "password".')
+            raise serializers.ValidationError(msg, code='authorization')
 
+        attrs['user'] = user
+        return attrs
 
-class UsersCreateSet(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True, 
+        required=True,
+        validators=[validate_password],
+        style={'input_type': 'password'}
+    )
+    password2 = serializers.CharField(
+        write_only=True, 
+        required=True,
+        style={'input_type': 'password'}
+    )
+    
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser', 'is_active')
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'email': {'required': False},
+        }
 
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
 
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'User created successfully',
-            'data': response.data
-        })
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            phone=validated_data.get('phone', ''),
+            company_branch=validated_data.get('company_branch', ''),
+            is_staff=validated_data.get('is_staff', False),
+            is_superuser=validated_data.get('is_superuser', False),
+            is_active=validated_data.get('is_active', True)
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
-
-class LoginView(GenericAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = UserLoginSerializer
-    authentication_classes = [JWTAuthentication]
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        
-        user = serializer.validated_data['user']
-        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-        return Response({
-            'status': 'success',
-            'message': 'Login successful',
-            'user_id': user.id,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser,
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'phone': user.phone,
-            'company_branch': user.company_branch
-        })
-
-
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def post(self, request):
-        logout(request)
-        return Response({
-            'status': 'success',
-            'message': 'Successfully logged out'
-        })
-
-
-class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
-    queryset = get_user_model().objects.all()
-    serializer_class = UsersSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'User details retrieved successfully',
-            'data': response.data
-        })
-
-    def put(self, request, *args, **kwargs):
-        response = super().put(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'User updated successfully',
-            'data': response.data
-        })
-
-    def patch(self, request, *args, **kwargs):
-        response = super().patch(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'User updated successfully',
-            'data': response.data
-        })
-
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'User deleted successfully'
-        })
+class CompanyBranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyBranch
+        fields = ['id', 'branch_name_ar', 'branch_name_en']
+        ref_name = "AccountsCompanyBranch"
+class UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active']
+        read_only_fields = ['id', 'date_joined']
+      

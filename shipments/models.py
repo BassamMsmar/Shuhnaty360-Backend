@@ -3,7 +3,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 
-from drivers.models import Driver
+from drivers.models import Driver, TruckType
 from clients.models import Branch, Client
 from recipient.models import Recipient
 from cities.models import City
@@ -43,6 +43,12 @@ class Shipment(models.Model):
     driver = models.ForeignKey(
         Driver,
         related_name='shipments_driver',
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    truck_type = models.ForeignKey(
+        TruckType,
+        related_name='shipments_truck_type',
         on_delete=models.SET_NULL,
         null=True
     )
