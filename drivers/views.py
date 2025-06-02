@@ -6,12 +6,12 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Driver, TruckType
-from .serializers import DriverSerializer, TruckTypeSerializer
+from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreateSerializer
 
 # Create your views here.
-class DriverViewSet(generics.ListCreateAPIView):
+class DriverListViewSet(generics.ListAPIView):
     queryset = Driver.objects.all()
-    serializer_class = DriverSerializer
+    serializer_class = DriverListSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -22,6 +22,13 @@ class DriverViewSet(generics.ListCreateAPIView):
             'message': 'Successfully retrieved drivers list',
             'data': response.data
         })
+
+class DriverCreateViewSet(generics.CreateAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverCreateSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -35,7 +42,7 @@ class DriverViewSet(generics.ListCreateAPIView):
 
 class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Driver.objects.all()
-    serializer_class = DriverSerializer
+    serializer_class = DriverCreateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -49,6 +56,14 @@ class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         response = super().put(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver updated successfully',
+            'data': response.data
+        })
+
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
         return Response({
             'status': 'success',
             'message': 'Driver updated successfully',
