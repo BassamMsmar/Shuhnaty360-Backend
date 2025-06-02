@@ -38,6 +38,10 @@ class DriverSerializerMini(serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = ['id', 'name']
+class TruckTypeSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = TruckType
+        fields = ['id', 'name_ar']
 
 class RecipientSerializerMini(serializers.ModelSerializer):
     class Meta:
@@ -110,6 +114,7 @@ class ShipmentSerializerList(serializers.ModelSerializer):
     total_cost = serializers.ReadOnlyField()
     user = UserSerializerMini(read_only=True)
     driver = DriverSerializerMini(read_only=True)
+    truck_type = TruckTypeSerializerMini(read_only=True)
     client = ClientSerializerMini(read_only=True)
     client_branch = BranchSerializerMini(read_only=True)
     recipient = RecipientSerializerMini(read_only=True)

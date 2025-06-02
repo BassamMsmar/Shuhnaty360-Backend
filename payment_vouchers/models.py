@@ -41,7 +41,6 @@ class PaymentVoucher(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # تحديث حالة الشحنة إلى مكتملة عند إنشاء السند
         if not self.shipment.status.name_ar == "مكتملة":
             completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
             self.shipment.status = completed_status
