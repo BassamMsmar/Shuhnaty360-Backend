@@ -23,6 +23,21 @@ class DriverListViewSet(generics.ListAPIView):
             'data': response.data
         })
 
+class DriverRetrieve(generics.RetrieveDestroyAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverListSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver details retrieved successfully',
+            'data': response.data
+        })
+
+
 class DriverCreateViewSet(generics.CreateAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverCreateSerializer
@@ -39,20 +54,13 @@ class DriverCreateViewSet(generics.CreateAPIView):
         })
 
 
-
-class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+class DriverUpdate(generics.UpdateAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverCreateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Driver details retrieved successfully',
-            'data': response.data
-        })
+
 
     def put(self, request, *args, **kwargs):
         response = super().put(request, *args, **kwargs)
@@ -70,13 +78,9 @@ class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
             'data': response.data
         })
 
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Driver deleted successfully',
-            'data': response.data
-        })
+
+
+
 
 class TruckTypeViewSet(generics.ListCreateAPIView):
     queryset = TruckType.objects.all()

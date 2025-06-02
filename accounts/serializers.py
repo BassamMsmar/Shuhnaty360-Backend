@@ -82,12 +82,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class CompanyBranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyBranch
         fields = ['id', 'branch_name_ar', 'branch_name_en']
         ref_name = "AccountsCompanyBranch"
+        
 class UsersSerializer(serializers.ModelSerializer):
+    company_branch = CompanyBranchSerializer()
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active']

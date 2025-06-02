@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class PaymentVoucherSerializer(serializers.ModelSerializer):
-    """Serializer للسندات المالية"""
     shipment = ShipmentSerializerList(read_only=True)
     creator = serializers.SlugRelatedField(
         read_only=True,
@@ -25,7 +24,6 @@ class PaymentVoucherSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def create(self, validated_data):
-        """إنشاء سند جديد"""
         shipment_id = self.context['request'].data.get('shipment')
         creator = self.context['request'].user
         

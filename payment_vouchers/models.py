@@ -8,7 +8,7 @@ User = get_user_model()
 
 # Create your models here.
 class PaymentVoucher(models.Model):
-    """نموذج السندات المالية"""
+
     shipment = models.OneToOneField(
         Shipment,
         on_delete=models.CASCADE,
@@ -40,7 +40,6 @@ class PaymentVoucher(models.Model):
         return f"سند صرف للشحنة {self.shipment.tracking_number}"
 
     def save(self, *args, **kwargs):
-        """تحديث حالة الشحنة عند إنشاء السند"""
         super().save(*args, **kwargs)
         # تحديث حالة الشحنة إلى مكتملة عند إنشاء السند
         if not self.shipment.status.name_ar == "مكتملة":
@@ -58,11 +57,9 @@ class PaymentVoucher(models.Model):
             )
 
     def update_status(self, user, notes):
-        """تحديث حالة السند"""
         self.updated_at = timezone.now()
         self.save()
         
-        # إنشاء سجل في التاريخ
         ShipmentHistory.objects.create(
             shipment=self.shipment,
             status=self.shipment.status,

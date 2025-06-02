@@ -37,3 +37,8 @@ class ClientBranchListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = '__all__'
+class ClientBranchUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Branch
+        fields = '__all__'
