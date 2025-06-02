@@ -6,12 +6,12 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Driver, TruckType
-from .serializers import DriverSerializer, TruckTypeSerializer
+from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreateSerializer
 
 # Create your views here.
-class DriverViewSet(generics.ListCreateAPIView):
+class DriverListViewSet(generics.ListAPIView):
     queryset = Driver.objects.all()
-    serializer_class = DriverSerializer
+    serializer_class = DriverListSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -23,19 +23,9 @@ class DriverViewSet(generics.ListCreateAPIView):
             'data': response.data
         })
 
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Driver created successfully',
-            'data': response.data
-        })
-
-
-
-class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+class DriverRetrieve(generics.RetrieveDestroyAPIView):
     queryset = Driver.objects.all()
-    serializer_class = DriverSerializer
+    serializer_class = DriverListSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -47,6 +37,31 @@ class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
             'data': response.data
         })
 
+
+class DriverCreateViewSet(generics.CreateAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverCreateSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver created successfully',
+            'data': response.data
+        })
+
+
+class DriverUpdate(generics.UpdateAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverCreateSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+
+
     def put(self, request, *args, **kwargs):
         response = super().put(request, *args, **kwargs)
         return Response({
@@ -55,13 +70,17 @@ class DriverRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
             'data': response.data
         })
 
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
         return Response({
             'status': 'success',
-            'message': 'Driver deleted successfully',
+            'message': 'Driver updated successfully',
             'data': response.data
         })
+
+
+
+
 
 class TruckTypeViewSet(generics.ListCreateAPIView):
     queryset = TruckType.objects.all()

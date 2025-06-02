@@ -7,7 +7,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Client, Branch
-from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList
+from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList, ClientBranchUpdateSerializer
 
 # Create your views here.
 class ClientViewSet(generics.ListCreateAPIView):
@@ -98,7 +98,7 @@ class ClientBranchCreate(generics.CreateAPIView):
             'data': response.data
         })
 
-class ClientBranchSDetail(generics.RetrieveUpdateDestroyAPIView):
+class ClientBranchSDetail(generics.RetrieveDestroyAPIView):
     queryset = Branch.objects.all()
     serializer_class = ClientBranchListSerializer
     permission_classes = [IsAdminUser]
@@ -111,7 +111,12 @@ class ClientBranchSDetail(generics.RetrieveUpdateDestroyAPIView):
             'message': 'Branch details retrieved successfully',
             'data': response.data
         })
-    
+class ClientBranchUpdate(generics.UpdateAPIView):
+    queryset = Branch.objects.all()
+    serializer_class = ClientBranchUpdateSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
     def put(self, request, *args, **kwargs):
         response = super().put(request, *args, **kwargs)
         return Response({
@@ -128,9 +133,4 @@ class ClientBranchSDetail(generics.RetrieveUpdateDestroyAPIView):
             'data': response.data
         })
     
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Branch deleted successfully'
-        })  
+
