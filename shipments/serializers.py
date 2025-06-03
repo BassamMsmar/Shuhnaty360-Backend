@@ -3,10 +3,19 @@ from .models import Shipment, ShipmentStatus, ShipmentHistory
 from django.contrib.auth import get_user_model
 from .models import Driver, Branch, Recipient, City, ShipmentStatus  # حسب أسماء موديلاتك
 
+
 from cities.models import City
 from clients.models import Client, Branch   
 from drivers.models import Driver , TruckType
 from recipient.models import Recipient
+
+from accounts.serializers import UsersSerializer
+from clients.serializers import ClientBranchCreateSerializer, ClientSerializerList
+from drivers.serializers import DriverListSerializer
+from recipient.serializers import RecipientSerializerList
+from cities.serializers import CitySerializer
+from drivers.serializers import TruckTypeSerializer
+
 
 User = get_user_model()
 class ShipmentStatusSerializer(serializers.ModelSerializer): # Manege shipment status
@@ -14,10 +23,6 @@ class ShipmentStatusSerializer(serializers.ModelSerializer): # Manege shipment s
         model = ShipmentStatus
         fields = '__all__'
 
-class ShipmentHistorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ShipmentHistory
-        fields = '__all__'
 
 class CitySerializerMini(serializers.ModelSerializer):
     class Meta:
@@ -57,6 +62,14 @@ class UserSerializerMini(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username']
+class ShipmentHistorySerializer(serializers.ModelSerializer):
+    user = UserSerializerMini(read_only=True)
+    status = ShipmentStatusSerializerMini(read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    
+    class Meta:
+        model = ShipmentHistory
+        fields = '__all__'
 
 class ShipmentSerializerCreate(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
@@ -169,15 +182,16 @@ class ShipmentSerializerList(serializers.ModelSerializer):
 
 class ShipmentSerializerDetail(serializers.ModelSerializer):
     total_cost = serializers.ReadOnlyField()
-    user = UserSerializerMini(read_only=True)
-    driver = DriverSerializerMini(read_only=True)
-    truck_type = TruckTypeSerializerMini(read_only=True)
-    client = ClientSerializerMini(read_only=True)
-    client_branch = BranchSerializerMini(read_only=True)
-    recipient = RecipientSerializerMini(read_only=True)
-    origin_city = CitySerializerMini(read_only=True)
-    destination_city = CitySerializerMini(read_only=True)
-    status = ShipmentStatusSerializerMini(read_only=True)    
+    user = UsersSerializer(read_only=True)
+    driver = DriverListSerializer(read_only=True)
+    truck_type = TruckTypeSerializer(read_only=True)
+    client = ClientSerializerList(read_only=True)
+    client_branch = ClientBranchCreateSerializer(read_only=True)
+    recipient = RecipientSerializerList(read_only=True)
+    origin_city = CitySerializer(read_only=True)
+    destination_city = CitySerializer(read_only=True)
+    status = ShipmentStatusSerializer(read_only=True)    
+    
     def get_fields(self):
         fields = super().get_fields()
         if 'client' in self.context['request'].data:
