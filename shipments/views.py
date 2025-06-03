@@ -23,7 +23,7 @@ class ShipmentListView(generics.ListAPIView): # فصلنا دالة الاضاف
      'recipient', 'status', 'origin_city',
       'destination_city' ,'loading_date',
       'actual_delivery_date']
-    search_fields = ['tracking_number']
+    search_fields = ['tracking_number' ]
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
