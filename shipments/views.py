@@ -19,11 +19,10 @@ class ShipmentListView(generics.ListAPIView): # فصلنا دالة الاضاف
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['user', 'driver', 'client','client_branch', 'client_invoice_number',
+    filterset_fields = ['user', 'driver', 'client','client_branch',
      'recipient', 'status', 'origin_city',
-      'destination_city' ,'loading_date',
-      'actual_delivery_date']
-    search_fields = ['tracking_number' ]
+      'destination_city' ,'loading_date']
+    search_fields = ['tracking_number', 'client_invoice_number']
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
