@@ -5,11 +5,20 @@ from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from django.contrib.auth import get_user_model, login, logout
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-
-from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer
+from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer, UsersUpdateSerializer, CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
 
 User = get_user_model()
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+# Custom Token Refresh View
+class CustomTokenRefreshView(TokenRefreshView):
+    serializer_class = CustomTokenRefreshSerializer
+
 
 # Create your views here.
 
@@ -46,7 +55,7 @@ class UsersCreateSet(generics.CreateAPIView):
 
 
 
-class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
+class UserDetaliCreateSet(generics.RetrieveDestroyAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UsersSerializer
     permission_classes = [IsAdminUser]
@@ -60,13 +69,19 @@ class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
             'data': response.data
         })
 
-    def put(self, request, *args, **kwargs):
-        response = super().put(request, *args, **kwargs)
+  
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
         return Response({
             'status': 'success',
-            'message': 'User updated successfully',
-            'data': response.data
+            'message': 'User deleted successfully'
         })
+
+class UserUpdateSet(generics.UpdateAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = UsersUpdateSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def patch(self, request, *args, **kwargs):
         response = super().patch(request, *args, **kwargs)
@@ -74,11 +89,4 @@ class UserDetaliCreateSet(generics.RetrieveUpdateDestroyAPIView):
             'status': 'success',
             'message': 'User updated successfully',
             'data': response.data
-        })
-
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'User deleted successfully'
         })

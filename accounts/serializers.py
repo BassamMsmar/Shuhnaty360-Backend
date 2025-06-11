@@ -4,10 +4,62 @@ from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from profile_company.models import CompanyBranch
 
 User = get_user_model()
 
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def get_token(self, user):
+        token = super().get_token(user)
+        
+        # Add custom claims
+        token['user'] = {
+            'id': user.id,
+            'username': user.username,
+        }
+        
+        return token
+
+    
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        # Add custom data to the response
+        data['user'] = {
+            'id': self.user.id,
+            'username': self.user.username,
+        }
+        
+        return data
+
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # استخراج التوكن الجديد
+        refresh = RefreshToken(attrs['refresh'])
+        access_token = str(refresh.access_token)
+        data['access'] = access_token
+
+        # جلب المستخدم من الـ payload
+        user_id = refresh['user_id']
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('User not found')
+
+        # إضافة معلومات المستخدم للرد
+        data['user'] = {
+            'id': user.id,
+            'username': user.username,
+        }
+
+        return data
 
 class UserLoginSerializer(serializers.Serializer):
     """Serializer for user login."""
@@ -94,5 +146,22 @@ class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active']
+        read_only_fields = ['id', 'date_joined']
+      
+class UsersUpdateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True, 
+        required=True,
+        validators=[validate_password],
+        style={'input_type': 'password'}
+    )
+    password2 = serializers.CharField(
+        write_only=True, 
+        required=True,
+        style={'input_type': 'password'}
+    )
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active', 'password', 'password2']
         read_only_fields = ['id', 'date_joined']
       
