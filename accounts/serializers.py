@@ -16,26 +16,26 @@ User = get_user_model()
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(self, user):
         token = super().get_token(user)
-        
+
         # Add custom claims
         token['user'] = {
             'id': user.id,
             'username': user.username,
         }
-        
+
         return token
 
-    
     def validate(self, attrs):
         data = super().validate(attrs)
-        
+
         # Add custom data to the response
         data['user'] = {
             'id': self.user.id,
             'username': self.user.username,
         }
-        
+
         return data
+
 
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
@@ -61,6 +61,7 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
 
         return data
 
+
 class UserLoginSerializer(serializers.Serializer):
     """Serializer for user login."""
     username = serializers.CharField(required=True)
@@ -80,7 +81,7 @@ class UserLoginSerializer(serializers.Serializer):
                 username=username,
                 password=password
             )
-            
+
             if not user:
                 msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg, code='authorization')
@@ -91,22 +92,24 @@ class UserLoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
-        write_only=True, 
+        write_only=True,
         required=True,
         validators=[validate_password],
         style={'input_type': 'password'}
     )
     password2 = serializers.CharField(
-        write_only=True, 
+        write_only=True,
         required=True,
         style={'input_type': 'password'}
     )
-    
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name', 'phone', 'company_branch', 'is_staff', 'is_superuser', 'is_active')
+        fields = ('username', 'email', 'password', 'password2', 'first_name', 'last_name',
+                  'phone', 'company_branch', 'is_staff', 'is_superuser', 'is_active')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
@@ -115,7 +118,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+            raise serializers.ValidationError(
+                {"password": "Password fields didn't match."})
         return attrs
 
     def create(self, validated_data):
@@ -140,28 +144,61 @@ class CompanyBranchSerializer(serializers.ModelSerializer):
         model = CompanyBranch
         fields = ['id', 'branch_name_ar', 'branch_name_en']
         ref_name = "AccountsCompanyBranch"
-        
+
+
 class UsersSerializer(serializers.ModelSerializer):
     company_branch = CompanyBranchSerializer()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff',
+                  'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active']
         read_only_fields = ['id', 'date_joined']
-      
+
+
 class UsersUpdateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
-        write_only=True, 
-        required=True,
+        write_only=True,
         validators=[validate_password],
-        style={'input_type': 'password'}
+        style={'input_type': 'password'},
+        required=False,
+        allow_blank=True
     )
     password2 = serializers.CharField(
-        write_only=True, 
-        required=True,
-        style={'input_type': 'password'}
+        write_only=True,
+        style={'input_type': 'password'},
+        required=False,
+        allow_blank=True
     )
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'phone', 'company_branch', 'is_superuser', 'is_active', 'password', 'password2']
+        fields = [
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'is_staff', 'is_active', 'date_joined',
+            'phone', 'company_branch', 'is_superuser',
+            'password', 'password2'
+        ]
         read_only_fields = ['id', 'date_joined']
-      
+
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password2 = attrs.get('password2')
+        if password or password2:
+            if password != password2:
+                raise serializers.ValidationError(
+                    {"password": "Password fields didn't match."})
+        return attrs
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        validated_data.pop('password2', None)  # Remove it if exists
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
