@@ -17,3 +17,7 @@ class CompanyProfileSerializer(serializers.ModelSerializer):
         model = CompanyProfile
         fields = ['id', 'company_name_ar', 'company_name_en', 'company_logo', 'company_description_ar', 'company_description_en', 'main_phone_number', 'secondary_phone_number', 'email', 'website', 'address', 'city', 'branches', 'created_at', 'updated_at']
 
+class CompanyProfileSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyProfile
+        fields = ['id', 'company_name_ar', 'company_name_en', 'company_logo', 'company_description_ar', 'company_description_en', 'main_phone_number', 'secondary_phone_number', 'email', 'website', 'address', 'city']

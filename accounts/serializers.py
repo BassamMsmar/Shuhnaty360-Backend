@@ -8,7 +8,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Toke
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from profile_company.models import CompanyBranch
+from profile_company.models import CompanyBranch, CompanyProfile
+from profile_company.serializers import CompanyProfileSerializerMini
 
 User = get_user_model()
 
@@ -139,10 +140,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+
 class CompanyBranchSerializer(serializers.ModelSerializer):
+    company = CompanyProfileSerializerMini()
     class Meta:
         model = CompanyBranch
-        fields = ['id', 'branch_name_ar', 'branch_name_en']
+        fields = '__all__'
         ref_name = "AccountsCompanyBranch"
 
 
