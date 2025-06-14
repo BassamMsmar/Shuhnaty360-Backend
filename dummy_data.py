@@ -59,7 +59,7 @@ def create_user():
             password='password', 
             first_name=fake.first_name(),
             last_name=fake.last_name(),
-            phone=fake.phone_number(),
+            phone=fake.phone_number()[:10],
             company_branch=company_branch
         )
         print(f'User {i} created')
@@ -88,7 +88,7 @@ def create_company_profiles():
     def get_phone_number():
         # Generate phone number and ensure it's not longer than 20 characters
         phone = fake.numerify(text='+9665########')
-        return phone[:20]
+        return phone[:10]
     
     # Create one company profile
     company_name_en = 'Aljeed Transportations'
@@ -140,8 +140,8 @@ def create_company_branches():
             company=company,
             branch_name_ar=branch_name,
             branch_name_en=f'{fake.city()} Branch {i}',
-            main_phone_number=fake.phone_number(),
-            secondary_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+            main_phone_number=fake.phone_number()[:10],
+            secondary_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
             email=fake.company_email(),
             address=fake.address(),
             city=city,
@@ -163,14 +163,18 @@ def create_client():
         
     for i in range(1, 6):
         client_email = fake.email()
+        # Generate phone number with max 20 characters
+        phone = fake.phone_number()[:10]
+        second_phone = fake.phone_number()[:10] if random.choice([True, False]) else None
+        
         # Check if a client with this email already exists
         if not Client.objects.filter(email=client_email).exists():
             Client.objects.create(
                 name=fake.company(), 
                 address=fake.address(), 
-                phone_number=fake.phone_number(), 
+                phone_number=phone, 
                 email=client_email,
-                second_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+                second_phone_number=second_phone,
                 Commercial_registration_number=fake.numerify(text='##########') if random.choice([True, False]) else None,
                 dicription=fake.paragraph() if random.choice([True, False]) else None
             )
@@ -189,9 +193,9 @@ def create_branch():
             name=fake.company(), 
             city=random.choice(cities), 
             address=fake.address(), 
-            phone_number=fake.phone_number(),
+            phone_number=fake.phone_number()[:10],
             name_address=fake.street_name() if random.choice([True, False]) else None,
-            second_phone_number=fake.phone_number() if random.choice([True, False]) else None
+            second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None
         )
         print(f'Branch {i} created')
 # Create Truck Types
@@ -250,7 +254,7 @@ def create_driver():
     for i in range(1, 11):
         Driver.objects.create(
             name=fake.name(),
-            phone_number=fake.phone_number(),
+            phone_number=fake.phone_number()[:10],
             nationality=fake.country(),
             language=random.choice(['en', 'ar', 'ur']),
             identity_number=fake.numerify(text='############'),
@@ -270,17 +274,17 @@ def create_recipient():
     for i in range(1, 11):
         Recipient.objects.create(
             name=fake.name(),
-            phone_number=fake.phone_number(),
+            phone_number=fake.phone_number()[:10],
             address=fake.address(),
             city=random.choice(cities),
-            second_phone_number=fake.phone_number() if random.choice([True, False]) else None,
+            second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
             email=fake.email() if random.choice([True, False]) else None
         )
         print(f'Recipient {i} created')
 
 def create_shipment():
     # Check if we already have shipments
-    if Shipment.objects.count() > 50:
+    if Shipment.objects.count() > 100:
         print('Shipments already exist')
         return
         
