@@ -61,7 +61,7 @@ class ShipmentStatusSerializerMini(serializers.ModelSerializer):
 class UserSerializerMini(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'last_name', 'first_name']
 class ShipmentHistorySerializer(serializers.ModelSerializer):
     user = UserSerializerMini(read_only=True)
     status = ShipmentStatusSerializerMini(read_only=True)
