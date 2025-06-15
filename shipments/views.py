@@ -13,16 +13,33 @@ from .models import Shipment, ShipmentHistory, ShipmentStatus
 from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializerCreate, ShipmentStatusSerializer, ShipmentSerializerUpdate
 
 # Create your views here.
-class ShipmentListView(generics.ListAPIView): # فصلنا دالة الاضافة عن العرض لان العرض يوجد حقول للقرائة فقط
+
+# فصلنا العرض عن الاضافة لان الاضافة يوجد حقول للكتابة فقط
+class ShipmentListView(generics.ListAPIView): 
     queryset = Shipment.objects.all().order_by('-id')
     serializer_class = ShipmentSerializerList
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['user', 'driver', 'client','client_branch',
-     'recipient', 'status', 'origin_city',
-      'destination_city' ,'loading_date']
+    filterset_fields = {
+        'user': ['exact'],
+        'driver': ['exact'],
+        'client': ['exact'],
+        'client_branch': ['exact'],
+        'recipient': ['exact'],
+        'status': ['exact'],
+        'origin_city': ['exact'],
+        'destination_city': ['exact'],
+        'loading_date': ['gte', 'lte'],  
+    }
     search_fields = ['tracking_number', 'client_invoice_number']
+
+    def get_queryset(self):
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            return Shipment.objects.all().order_by('-id')
+        else:
+            return Shipment.objects.filter(user=self.request.user).order_by('-id')
+
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
