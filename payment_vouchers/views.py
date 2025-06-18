@@ -6,14 +6,14 @@ from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import PaymentVoucher
-from .serializers import PaymentVoucherSerializer
+from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherUpdateSerializer
 
 # Create your views here.
 
-class PaymentVoucherListCreateView(generics.ListCreateAPIView):
+class PaymentVoucherListView(generics.ListAPIView):
     """عرض قائمة السندات وإنشاء سند جديد"""
     queryset = PaymentVoucher.objects.all()
-    serializer_class = PaymentVoucherSerializer
+    serializer_class = PaymentVoucherCreateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -29,6 +29,15 @@ class PaymentVoucherListCreateView(generics.ListCreateAPIView):
             'data': response.data
         })
 
+
+
+class PaymentVoucherCreateView(generics.CreateAPIView):
+    """إنشاء سند جديد"""
+    queryset = PaymentVoucher.objects.all()
+    serializer_class = PaymentVoucherCreateSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         return Response({
@@ -40,7 +49,7 @@ class PaymentVoucherListCreateView(generics.ListCreateAPIView):
 class PaymentVoucherDetailView(generics.RetrieveUpdateDestroyAPIView):
     """عرض وتحديث وحذف سند"""
     queryset = PaymentVoucher.objects.all()
-    serializer_class = PaymentVoucherSerializer
+    serializer_class = PaymentVoucherUpdateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
