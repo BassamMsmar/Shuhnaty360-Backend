@@ -6,7 +6,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Driver, TruckType
-from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreateSerializer
+from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreateSerializer, DriverOptionSerializer, TruckTypeOptionSerializer
 
 # Create your views here.
 class DriverListViewSet(generics.ListAPIView):
@@ -103,5 +103,35 @@ class TruckTypeViewSet(generics.ListCreateAPIView):
         return Response({
             'status': 'success',
             'message': 'Truck type created successfully',
+            'data': response.data
+        })
+
+
+class TruckTypeOptionsView(generics.ListAPIView):
+    queryset = TruckType.objects.all()
+    serializer_class = TruckTypeOptionSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Truck types options retrieved successfully',
+            'data': response.data
+        })
+
+
+class DriverOptionsView(generics.ListAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverOptionSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Drivers options retrieved successfully',
             'data': response.data
         })

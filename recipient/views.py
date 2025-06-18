@@ -6,7 +6,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Recipient
-from .serializers import RecipientSerializerList, RecipientSerializerCreate
+from .serializers import RecipientSerializerList, RecipientSerializerCreate, RecipientOptionSerializer
 
 # Create your views here.
 class RecipientViewSet(generics.ListAPIView):
@@ -73,3 +73,18 @@ class RecipientDetails(generics.RetrieveUpdateDestroyAPIView):
             'status': 'success',
             'message': 'Successfully deleted recipient'
         }, status=status.HTTP_204_NO_CONTENT)
+
+
+class RecipientOptionsView(generics.ListAPIView):
+    queryset = Recipient.objects.all()
+    serializer_class = RecipientOptionSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Recipients options retrieved successfully',
+            'data': response.data
+        })

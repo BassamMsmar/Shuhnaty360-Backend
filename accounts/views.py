@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model, login, logout
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from .serializers import UsersSerializer, UserLoginSerializer, RegisterSerializer, UsersUpdateSerializer, CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
+from .serializers import UsersSerializer, RegisterSerializer, UsersUpdateSerializer, CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer, UserOptionSerializer
 
 User = get_user_model()
 
@@ -90,3 +90,22 @@ class UserUpdateSet(generics.UpdateAPIView):
             'message': 'User updated successfully',
             'data': response.data
         })
+    
+class UsersOptionsView(generics.ListAPIView):
+    queryset = User.objects.all().order_by('id')
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = UserOptionSerializer
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Users options retrieved successfully',
+            'data': response.data
+        })
+
+
+
+
+
