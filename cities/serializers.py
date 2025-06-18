@@ -12,3 +12,16 @@ class CitySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "City with this name already exists.")
         return attrs
+
+
+
+class CityOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = City
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return obj.ar_city

@@ -10,7 +10,7 @@ from django.utils import timezone
 
 
 from .models import Shipment, ShipmentHistory, ShipmentStatus
-from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializerCreate, ShipmentStatusSerializer, ShipmentSerializerUpdate
+from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializerCreate, ShipmentStatusSerializer, ShipmentSerializerUpdate, ShipmentOptionSerializer, ShipmentStatusOptionSerializer
 
 # Create your views here.
 
@@ -133,7 +133,7 @@ class ShipmentUpdate(generics.UpdateAPIView):
       # جلب الشحنة القديمة
         
 
-class ShipmentStatus(generics.ListCreateAPIView):
+class ShipmentStatusView(generics.ListCreateAPIView):
     queryset = ShipmentStatus.objects.all()
     serializer_class = ShipmentStatusSerializer
     permission_classes = [IsAuthenticated]
@@ -159,3 +159,31 @@ class ShipmentStatus(generics.ListCreateAPIView):
         })
 
 
+class ShipmentStatusOptionsView(generics.ListAPIView):
+    queryset = ShipmentStatus.objects.all().order_by('-id')
+    serializer_class = ShipmentStatusOptionSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment status options retrieved successfully',
+            'data': response.data
+        })
+
+
+class ShipmentOptionsView(generics.ListAPIView):
+    queryset = Shipment.objects.all().order_by('-id')
+    serializer_class = ShipmentOptionSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Shipment options retrieved successfully',
+            'data': response.data
+        })

@@ -7,7 +7,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Client, Branch
-from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList, ClientBranchUpdateSerializer
+from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList, ClientBranchUpdateSerializer, ClientOptionSerializer, ClientBranchOptionSerializer
 
 # Create your views here.
 class ClientViewSet(generics.ListCreateAPIView):
@@ -133,4 +133,30 @@ class ClientBranchUpdate(generics.UpdateAPIView):
             'data': response.data
         })
     
+class ClientOptionsView(generics.ListAPIView):
+    queryset = Client.objects.all()
+    serializer_class = ClientOptionSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Clients options retrieved successfully',
+            'data': response.data
+        })
+
+class ClientBranchOptionsView(generics.ListAPIView):
+    queryset = Branch.objects.all()
+    serializer_class = ClientBranchOptionSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Branches options retrieved successfully',
+            'data': response.data
+        })

@@ -18,3 +18,26 @@ class DriverCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = '__all__'
+
+
+class DriverOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = Driver
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return obj.name
+
+class TruckTypeOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = TruckType
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return obj.name

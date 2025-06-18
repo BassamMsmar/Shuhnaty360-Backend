@@ -42,3 +42,26 @@ class ClientBranchUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = '__all__'
+
+class ClientOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = Client
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return obj.name
+
+class ClientBranchOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+    client = serializers.IntegerField(source='client.id')
+
+    class Meta:
+        model = Branch
+        fields = ['value', 'label', 'client']
+
+    def get_label(self, obj):
+        return obj.branch_name_ar

@@ -5,7 +5,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import City
-from .serializers import CitySerializer
+from .serializers import CitySerializer, CityOptionSerializer
 
 # Create your views here.
 class CityViewSet(generics.ListCreateAPIView):
@@ -57,4 +57,19 @@ class CityDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response({
             'status': 'success',
             'message': 'City deleted successfully'
+        })
+
+
+class CityOptionsView(generics.ListAPIView):
+    queryset = City.objects.all()
+    serializer_class = CityOptionSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Cities options retrieved successfully',
+            'data': response.data
         })

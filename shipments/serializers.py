@@ -275,3 +275,26 @@ class ShipmentSerializerUpdate(serializers.ModelSerializer):
     'premium',
     'total_cost',
         ]
+
+class ShipmentOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = Shipment
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return obj.id
+
+class ShipmentStatusOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = ShipmentStatus
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return obj.id
+

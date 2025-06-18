@@ -205,3 +205,15 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class UserOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = User
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return f"{obj.first_name} {obj.last_name}".strip() or obj.username
