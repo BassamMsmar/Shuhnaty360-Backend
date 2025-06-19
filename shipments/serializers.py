@@ -124,27 +124,17 @@ class ShipmentSerializerCreate(serializers.ModelSerializer):
 
 
 class ShipmentSerializerList(serializers.ModelSerializer):
-    total_cost = serializers.ReadOnlyField()
     user = UserSerializerMini(read_only=True)
     driver = DriverSerializerMini(read_only=True)
-    truck_type = TruckTypeSerializerMini(read_only=True)
     client = ClientSerializerMini(read_only=True)
     client_branch = BranchSerializerMini(read_only=True)
     recipient = RecipientSerializerMini(read_only=True)
     origin_city = CitySerializerMini(read_only=True)
     destination_city = CitySerializerMini(read_only=True)
     status = ShipmentStatusSerializerMini(read_only=True)    
-    def get_fields(self):
-        fields = super().get_fields()
-        if 'client' in self.context['request'].data:
-            client_id = self.context['request'].data['client']
-            fields['client_branch'].queryset = Branch.objects.filter(client_id=client_id)
-        return fields
-    history = ShipmentHistorySerializer(many=True, read_only=True)
-    expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    
+
     loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = Shipment
         fields = [
@@ -152,32 +142,14 @@ class ShipmentSerializerList(serializers.ModelSerializer):
             'tracking_number',
             'user',
             'driver',
-            'truck_type',
             'client',
             'client_branch',
             'client_invoice_number',
-            'notes_customer',
             'recipient',
-            'notes_recipient',
             'origin_city',
             'destination_city',
-            'fare',
-            'premium',
-            'fare_return',
-            'days_stayed',
-            'stay_cost',
-            'deducted',
-            'total_cost',
-            'days_to_arrive',
-            'expected_arrival_date',
-            'actual_delivery_date',
-            'notes',
-            'weight',
-            'contents',
             'status',
             'loading_date',
-            'updated_at',
-            'history',
         ]
 
 class ShipmentSerializerDetail(serializers.ModelSerializer):

@@ -1,0 +1,264 @@
+[1mdiff --git a/db.sqlite3 b/db.sqlite3[m
+[1mindex 20bbeae..f942f3c 100644[m
+Binary files a/db.sqlite3 and b/db.sqlite3 differ
+[1mdiff --git a/shipments/admin.py b/shipments/admin.py[m
+[1mindex e9bb62c..35af816 100644[m
+[1m--- a/shipments/admin.py[m
+[1m+++ b/shipments/admin.py[m
+[36m@@ -3,9 +3,9 @@[m [mfrom .models import Shipment, ShipmentStatus, ShipmentHistory[m
+ # Register your models here.[m
+ [m
+ class ShipmentAdmin(admin.ModelAdmin):[m
+[31m-    list_display = ['id', 'driver', 'client_branch', 'recipient', 'status', 'loading_date'][m
+[32m+[m[32m    list_display = ['id', 'tracking_number', 'driver', 'client_branch', 'recipient', 'status', 'loading_date'][m
+     list_filter = ['status', 'loading_date'][m
+[31m-    search_fields = ['name', 'phone', 'address'][m
+[32m+[m[32m    search_fields = ['tracking_number', 'client_invoice_number'][m
+ [m
+ class ShipmentStatusAdmin(admin.ModelAdmin):[m
+     list_display = ['id', 'name_ar', 'name_en'][m
+[36m@@ -13,9 +13,14 @@[m [mclass ShipmentStatusAdmin(admin.ModelAdmin):[m
+     search_fields = ['name_ar', 'name_en'][m
+ [m
+ class ShipmentHistoryAdmin(admin.ModelAdmin):[m
+[31m-    list_display = ['id', 'shipment', 'user', 'status', 'updated_at', 'notes'][m
+[31m-    list_filter = ['shipment', 'user', 'status', 'updated_at', 'notes'][m
+[31m-    search_fields = ['shipment', 'user', 'status', 'updated_at', 'notes'][m
+[32m+[m[32m    list_display = ['id', 'shipment_id', 'user', 'old_status', 'new_status', 'action', 'updated_at', 'notes'][m
+[32m+[m[32m    list_filter = ['shipment', 'user', 'old_status', 'new_status', 'action', 'updated_at'][m
+[32m+[m[32m    search_fields = ['shipment__id', 'user__username', 'old_status__name_ar', 'new_status__name_ar', 'action', 'notes'][m
+[32m+[m[41m    [m
+[32m+[m[32m    def shipment_id(self, obj):[m
+[32m+[m[32m        return obj.shipment.id if obj.shipment else None[m
+[32m+[m[32m    shipment_id.short_description = 'Shipment ID'[m
+[32m+[m[32m    shipment_id.admin_order_field = 'shipment__id'[m
+ [m
+ admin.site.register(Shipment, ShipmentAdmin )[m
+ admin.site.register(ShipmentStatus, ShipmentStatusAdmin)[m
+[1mdiff --git a/shipments/models.py b/shipments/models.py[m
+[1mindex 9aa96d8..ac126c3 100644[m
+[1m--- a/shipments/models.py[m
+[1m+++ b/shipments/models.py[m
+[36m@@ -137,9 +137,10 @@[m [mclass Shipment(models.Model):[m
+         fare = self.fare or 0[m
+         premium = self.premium or 0[m
+         deducted = self.deducted or 0[m
+[32m+[m[32m        days_stayed = self.days_stayed or 0[m
+         stay_cost = self.stay_cost or 0[m
+         fare_return = self.fare_return or 0[m
+[31m-        return fare + premium - deducted + stay_cost + fare_return[m
+[32m+[m[32m        return fare + premium - deducted + (stay_cost * days_stayed) + fare_return[m
+ [m
+ [m
+ [m
+[36m@@ -171,13 +172,20 @@[m [mclass Shipment(models.Model):[m
+ [m
+ class ShipmentHistory(models.Model):[m
+     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE, related_name='history')[m
+[31m-    status = models.ForeignKey(ShipmentStatus, on_delete=models.SET_NULL, null=True)[m
+[31m-    updated_at = models.DateTimeField(auto_now_add=True)[m
+[32m+[m[32m    old_status = models.ForeignKey(ShipmentStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='old_histories')[m
+[32m+[m[32m    new_status = models.ForeignKey(ShipmentStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='new_histories')[m
+[32m+[m[32m    action = models.CharField(max_length=10, default='PUT')  # Since it's an update view[m
+     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)[m
+[32m+[m[32m    updated_at = models.DateTimeField(auto_now_add=True)[m
+     notes = models.TextField(null=True, blank=True)[m
+ [m
+     def __str__(self):[m
+[31m-        return f"History for {self.shipment.tracking_number} - Status: {self.status.name_en}"[m
+[32m+[m[32m        user_name = self.user.get_full_name() if self.user else "مستخدم غير معروف"[m
+[32m+[m[32m        old = self.old_status.name_ar if self.old_status else "بدون حالة"[m
+[32m+[m[32m        new = self.new_status.name_ar if self.new_status else "بدون حالة"[m
+[32m+[m[32m        shipment_number = self.shipment.tracking_number[m
+[32m+[m[32m        date = self.updated_at.strftime('%Y-%m-%d %H:%M')[m
+[32m+[m[32m        return f"قام {user_name} بتحديث حالة الشحنة رقم {shipment_number} من '{old}' إلى '{new}' بتاريخ {date}"[m
+ [m
+     class Meta:[m
+         verbose_name = "تاريخ الشحنه"[m
+[1mdiff --git a/shipments/serializers.py b/shipments/serializers.py[m
+[1mindex 5cd30b1..f2e8f27 100644[m
+[1m--- a/shipments/serializers.py[m
+[1m+++ b/shipments/serializers.py[m
+[36m@@ -124,27 +124,17 @@[m [mclass ShipmentSerializerCreate(serializers.ModelSerializer):[m
+ [m
+ [m
+ class ShipmentSerializerList(serializers.ModelSerializer):[m
+[31m-    total_cost = serializers.ReadOnlyField()[m
+     user = UserSerializerMini(read_only=True)[m
+     driver = DriverSerializerMini(read_only=True)[m
+[31m-    truck_type = TruckTypeSerializerMini(read_only=True)[m
+     client = ClientSerializerMini(read_only=True)[m
+     client_branch = BranchSerializerMini(read_only=True)[m
+     recipient = RecipientSerializerMini(read_only=True)[m
+     origin_city = CitySerializerMini(read_only=True)[m
+     destination_city = CitySerializerMini(read_only=True)[m
+     status = ShipmentStatusSerializerMini(read_only=True)    [m
+[31m-    def get_fields(self):[m
+[31m-        fields = super().get_fields()[m
+[31m-        if 'client' in self.context['request'].data:[m
+[31m-            client_id = self.context['request'].data['client'][m
+[31m-            fields['client_branch'].queryset = Branch.objects.filter(client_id=client_id)[m
+[31m-        return fields[m
+[31m-    history = ShipmentHistorySerializer(many=True, read_only=True)[m
+[31m-    expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)[m
+[31m-    actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)[m
+[32m+[m[41m    [m
+[32m+[m
+     loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)[m
+[31m-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)[m
+     class Meta:[m
+         model = Shipment[m
+         fields = [[m
+[36m@@ -152,32 +142,14 @@[m [mclass ShipmentSerializerList(serializers.ModelSerializer):[m
+             'tracking_number',[m
+             'user',[m
+             'driver',[m
+[31m-            'truck_type',[m
+             'client',[m
+             'client_branch',[m
+             'client_invoice_number',[m
+[31m-            'notes_customer',[m
+             'recipient',[m
+[31m-            'notes_recipient',[m
+             'origin_city',[m
+             'destination_city',[m
+[31m-            'fare',[m
+[31m-            'premium',[m
+[31m-            'fare_return',[m
+[31m-            'days_stayed',[m
+[31m-            'stay_cost',[m
+[31m-            'deducted',[m
+[31m-            'total_cost',[m
+[31m-            'days_to_arrive',[m
+[31m-            'expected_arrival_date',[m
+[31m-            'actual_delivery_date',[m
+[31m-            'notes',[m
+[31m-            'weight',[m
+[31m-            'contents',[m
+             'status',[m
+             'loading_date',[m
+[31m-            'updated_at',[m
+[31m-            'history',[m
+         ][m
+ [m
+ class ShipmentSerializerDetail(serializers.ModelSerializer):[m
+[1mdiff --git a/shipments/views.py b/shipments/views.py[m
+[1mindex e81b1df..1d9b32e 100644[m
+[1m--- a/shipments/views.py[m
+[1m+++ b/shipments/views.py[m
+[36m@@ -30,7 +30,7 @@[m [mclass ShipmentListView(generics.ListAPIView):[m
+         'status': ['exact'],[m
+         'origin_city': ['exact'],[m
+         'destination_city': ['exact'],[m
+[31m-        'loading_date': ['gte', 'lte'],  [m
+[32m+[m[32m        'loading_date': ['gte', 'lte'],[m[41m [m
+     }[m
+     search_fields = ['tracking_number', 'client_invoice_number'][m
+ [m
+[36m@@ -49,23 +49,39 @@[m [mclass ShipmentListView(generics.ListAPIView):[m
+             'data': response.data[m
+         })[m
+ [m
+[31m-class ShipmentCreateView(generics.CreateAPIView): # دالة اضافة الشحنة[m
+[32m+[m[32mclass ShipmentCreateView(generics.CreateAPIView):[m
+     queryset = Shipment.objects.all()[m
+     serializer_class = ShipmentSerializerCreate[m
+     permission_classes = [IsAuthenticated][m
+     authentication_classes = [JWTAuthentication][m
+ [m
+     def create(self, request, *args, **kwargs):[m
+[32m+[m[32m        user_name = request.user.get_full_name() if request.user else "مستخدم غير معروف"[m
+[32m+[m[32m        # 1. التحقق من البيانات[m
+         serializer = self.get_serializer(data=request.data)[m
+         serializer.is_valid(raise_exception=True)[m
+[31m-        shipment = serializer.save()[m
+[32m+[m
+[32m+[m[32m        # 2. إنشاء الشحنة وربطها بالمستخدم[m
+[32m+[m[32m        shipment = serializer.save(user=request.user)[m
+[32m+[m
+[32m+[m[32m        # 3. إنشاء سجل في تاريخ الشحنة[m
+[32m+[m[32m        ShipmentHistory.objects.create([m
+[32m+[m[32m            shipment=shipment,[m
+[32m+[m[32m            user=request.user,[m
+[32m+[m[32m            old_status=None,[m
+[32m+[m[32m            new_status=shipment.status,[m
+[32m+[m[32m            action='POST',[m
+[32m+[m[32m            notes=f"قام {user_name} بإنشاء الشحنة بالحالة '{shipment.status}' تلقائيًا",[m
+[32m+[m[32m            updated_at=timezone.now()[m
+[32m+[m[32m        )[m
+[32m+[m
+[32m+[m[32m        # 4. تحضير الإخراج النهائي[m
+         output_serializer = ShipmentSerializerList(shipment, context={'request': request})[m
+         return Response({[m
+             'status': 'success',[m
+             'message': 'Shipment created successfully',[m
+             'data': output_serializer.data[m
+         }, status=status.HTTP_201_CREATED)[m
+[31m-[m
+ class ShipmentDetails(generics.RetrieveDestroyAPIView): # دالة عرض بيانات تفصيلية عن شحنة[m
+     queryset = Shipment.objects.all()[m
+     serializer_class = ShipmentSerializerDetail[m
+[36m@@ -82,9 +98,10 @@[m [mclass ShipmentDetails(generics.RetrieveDestroyAPIView): # دالة عرض بيا[m
+     [m
+     def delete(self, request, *args, **kwargs):[m
+         response = super().delete(request, *args, **kwargs)[m
+[31m-        return Response({[m
+[32m+[m[32m        return Response({[m[41m   [m
+             'status': 'success',[m
+[31m-            'message': 'Shipment deleted successfully'[m
+[32m+[m[32m            'message': 'Shipment deleted successfully',[m
+[32m+[m[32m            'data': response.data[m
+         })[m
+     [m
+ [m
+[36m@@ -97,41 +114,31 @@[m [mclass ShipmentUpdate(generics.UpdateAPIView):[m
+     authentication_classes = [JWTAuthentication][m
+ [m
+     def perform_update(self, serializer):[m
+[32m+[m[32m        user_name = self.request.user.get_full_name() if self.request.user else "مستخدم غير معروف"[m
+         old_instance = self.get_object()[m
+         old_status = old_instance.status[m
+[31m-        [m
+[31m-        # Save the updated instance[m
+[32m+[m
+         updated_instance = serializer.save()[m
+ [m
+[31m-        # Check if status has changed[m
+[32m+[m[32m        # إذا تغيرت الحالة[m
+         if old_status != updated_instance.status:[m
+[31m-            # Create shipment history record[m
+             ShipmentHistory.objects.create([m
+                 shipment=updated_instance,[m
+                 user=self.request.user,[m
+[31m-                status=updated_instance.status,[m
+[31m-                updated_at=timezone.now(),[m
+[31m-                notes=f"Status changed from {old_status} to {updated_instance.status}"[m
+[32m+[m[32m                old_status=old_status,[m
+[32m+[m[32m                new_status=updated_instance.status,[m
+[32m+[m[32m                action=self.request.method,  # 'PUT'[m
+[32m+[m[32m                notes=f"قام {user_name} بتحديث حالة الشحنة من '{old_status}' إلى '{updated_instance.status}'"[m
+             )[m
+     [m
+[31m-    def update(self, request, *args, **kwargs):[m
+[31m-        response = super().update(request, *args, **kwargs)[m
+[32m+[m[32m    def patch(self, request, *args, **kwargs):[m
+[32m+[m[32m        response = super().patch(request, *args, **kwargs)[m
+         return Response({[m
+             'status': 'success',[m
+             'message': 'Shipment updated successfully',[m
+             'data': response.data[m
+         })[m
+         [m
+[31m-    def partial_update(self, request, *args, **kwargs):[m
+[31m-        response = super().partial_update(request, *args, **kwargs)[m
+[31m-        return Response({[m
+[31m-            'status': 'success',[m
+[31m-            'message': 'Shipment partially updated successfully',[m
+[31m-            'data': response.data[m
+[31m-        })[m
+[31m-[m
+[31m-      # جلب الشحنة القديمة[m
+[31m-        [m
+ [m
+ class ShipmentStatusView(generics.ListCreateAPIView):[m
+     queryset = ShipmentStatus.objects.all()[m

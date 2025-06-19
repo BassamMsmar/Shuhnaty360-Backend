@@ -137,9 +137,10 @@ class Shipment(models.Model):
         fare = self.fare or 0
         premium = self.premium or 0
         deducted = self.deducted or 0
+        days_stayed = self.days_stayed or 0
         stay_cost = self.stay_cost or 0
         fare_return = self.fare_return or 0
-        return fare + premium - deducted + stay_cost + fare_return
+        return fare + premium - deducted + (stay_cost * days_stayed) + fare_return
 
 
 
@@ -171,13 +172,20 @@ class Shipment(models.Model):
 
 class ShipmentHistory(models.Model):
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE, related_name='history')
-    status = models.ForeignKey(ShipmentStatus, on_delete=models.SET_NULL, null=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    old_status = models.ForeignKey(ShipmentStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='old_histories')
+    new_status = models.ForeignKey(ShipmentStatus, on_delete=models.SET_NULL, null=True, blank=True, related_name='new_histories')
+    action = models.CharField(max_length=10, default='PUT')  # Since it's an update view
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"History for {self.shipment.tracking_number} - Status: {self.status.name_en}"
+        user_name = self.user.get_full_name() if self.user else "مستخدم غير معروف"
+        old = self.old_status.name_ar if self.old_status else "بدون حالة"
+        new = self.new_status.name_ar if self.new_status else "بدون حالة"
+        shipment_number = self.shipment.tracking_number
+        date = self.updated_at.strftime('%Y-%m-%d %H:%M')
+        return f"قام {user_name} بتحديث حالة الشحنة رقم {shipment_number} من '{old}' إلى '{new}' بتاريخ {date}"
 
     class Meta:
         verbose_name = "تاريخ الشحنه"
