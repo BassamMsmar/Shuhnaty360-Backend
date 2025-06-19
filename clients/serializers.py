@@ -64,4 +64,4 @@ class ClientBranchOptionSerializer(serializers.ModelSerializer):
         fields = ['value', 'label', 'client']
 
     def get_label(self, obj):
-        return obj.branch_name_ar
+        return obj.name
