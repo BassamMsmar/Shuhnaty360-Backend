@@ -30,7 +30,7 @@ class ShipmentListView(generics.ListAPIView):
         'status': ['exact'],
         'origin_city': ['exact'],
         'destination_city': ['exact'],
-        'loading_date': ['gte', 'lte'],  
+        'loading_date': ['gte', 'lte'], 
     }
     search_fields = ['tracking_number', 'client_invoice_number']
 
@@ -49,23 +49,39 @@ class ShipmentListView(generics.ListAPIView):
             'data': response.data
         })
 
-class ShipmentCreateView(generics.CreateAPIView): # دالة اضافة الشحنة
+class ShipmentCreateView(generics.CreateAPIView):
     queryset = Shipment.objects.all()
     serializer_class = ShipmentSerializerCreate
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def create(self, request, *args, **kwargs):
+        user_name = request.user.get_full_name() if request.user else "مستخدم غير معروف"
+        # 1. التحقق من البيانات
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        shipment = serializer.save()
+
+        # 2. إنشاء الشحنة وربطها بالمستخدم
+        shipment = serializer.save(user=request.user)
+
+        # 3. إنشاء سجل في تاريخ الشحنة
+        ShipmentHistory.objects.create(
+            shipment=shipment,
+            user=request.user,
+            old_status=None,
+            new_status=shipment.status,
+            action='POST',
+            notes=f"قام {user_name} بإنشاء الشحنة بالحالة '{shipment.status}' تلقائيًا",
+            updated_at=timezone.now()
+        )
+
+        # 4. تحضير الإخراج النهائي
         output_serializer = ShipmentSerializerList(shipment, context={'request': request})
         return Response({
             'status': 'success',
             'message': 'Shipment created successfully',
             'data': output_serializer.data
         }, status=status.HTTP_201_CREATED)
-
 class ShipmentDetails(generics.RetrieveDestroyAPIView): # دالة عرض بيانات تفصيلية عن شحنة
     queryset = Shipment.objects.all()
     serializer_class = ShipmentSerializerDetail
@@ -82,9 +98,10 @@ class ShipmentDetails(generics.RetrieveDestroyAPIView): # دالة عرض بيا
     
     def delete(self, request, *args, **kwargs):
         response = super().delete(request, *args, **kwargs)
-        return Response({
+        return Response({   
             'status': 'success',
-            'message': 'Shipment deleted successfully'
+            'message': 'Shipment deleted successfully',
+            'data': response.data
         })
     
 
@@ -97,40 +114,30 @@ class ShipmentUpdate(generics.UpdateAPIView):
     authentication_classes = [JWTAuthentication]
 
     def perform_update(self, serializer):
+        user_name = self.request.user.get_full_name() if self.request.user else "مستخدم غير معروف"
         old_instance = self.get_object()
         old_status = old_instance.status
-        
-        # Save the updated instance
+
         updated_instance = serializer.save()
 
-        # Check if status has changed
+        # إذا تغيرت الحالة
         if old_status != updated_instance.status:
-            # Create shipment history record
             ShipmentHistory.objects.create(
                 shipment=updated_instance,
                 user=self.request.user,
-                status=updated_instance.status,
-                updated_at=timezone.now(),
-                notes=f"Status changed from {old_status} to {updated_instance.status}"
+                old_status=old_status,
+                new_status=updated_instance.status,
+                action=self.request.method,  # 'PUT'
+                notes=f"قام {user_name} بتحديث حالة الشحنة من '{old_status}' إلى '{updated_instance.status}'"
             )
     
-    def update(self, request, *args, **kwargs):
-        response = super().update(request, *args, **kwargs)
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
         return Response({
             'status': 'success',
             'message': 'Shipment updated successfully',
             'data': response.data
         })
-        
-    def partial_update(self, request, *args, **kwargs):
-        response = super().partial_update(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Shipment partially updated successfully',
-            'data': response.data
-        })
-
-      # جلب الشحنة القديمة
         
 
 class ShipmentStatusView(generics.ListCreateAPIView):
