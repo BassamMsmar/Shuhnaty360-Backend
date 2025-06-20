@@ -22,6 +22,14 @@ class PaymentVoucher(models.Model):
         related_name='created_payment_vouchers',
         verbose_name='منشئ السند'
     )
+    fare = models.IntegerField("Fare")
+    premium = models.IntegerField("Premium", null=True, blank=True)
+    fare_return = models.IntegerField("Return", null=True, blank=True)
+    days_stayed = models.IntegerField("Days Stayed", null=True, blank=True)
+    stay_cost = models.IntegerField("Stay Cost", null=True, blank=True)
+    deducted = models.IntegerField("Deducted", null=True, blank=True)
+
+    
     note = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(
         'تاريخ الإنشاء',
@@ -41,13 +49,25 @@ class PaymentVoucher(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        if not self.shipment.status.name_ar == "مكتملة":
-            completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
-            self.shipment.status = completed_status
-            self.shipment.save()
+
+    @property
+    def total_cost(self):
+        """حساب التكلفة الإجمالية للشحنة"""
+        fare = self.fare or 0
+        premium = self.premium or 0
+        deducted = self.deducted or 0
+        days_stayed = self.days_stayed or 0
+        stay_cost = self.stay_cost or 0
+        fare_return = self.fare_return or 0
+        return fare + premium - deducted + (stay_cost * days_stayed) + fare_return
+        
+    if not self.shipment.status.name_ar == "مكتملة":
+        completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
+        self.shipment.status = completed_status
+        self.shipment.save()
             
-            # إنشاء سجل في التاريخ
-            ShipmentHistory.objects.create(
+        # إنشاء سجل في التاريخ
+        ShipmentHistory.objects.create(
                 shipment=self.shipment,
                 status=completed_status,
                 user=self.creator,
