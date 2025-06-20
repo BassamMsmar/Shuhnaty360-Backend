@@ -15,14 +15,14 @@ class PaymentVoucher(models.Model):
         related_name='payment_voucher',
         verbose_name='الشحنة المرتبطة'
     )
-    creator = models.ForeignKey(
+    created_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         related_name='created_payment_vouchers',
         verbose_name='منشئ السند'
     )
-    fare = models.IntegerField("Fare")
+    fare = models.IntegerField("Fare", null=True, blank=True)
     premium = models.IntegerField("Premium", null=True, blank=True)
     fare_return = models.IntegerField("Return", null=True, blank=True)
     days_stayed = models.IntegerField("Days Stayed", null=True, blank=True)
@@ -47,9 +47,6 @@ class PaymentVoucher(models.Model):
     def __str__(self):
         return f"سند صرف للشحنة {self.shipment.tracking_number}"
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
     @property
     def total_cost(self):
         """حساب التكلفة الإجمالية للشحنة"""
@@ -61,28 +58,25 @@ class PaymentVoucher(models.Model):
         fare_return = self.fare_return or 0
         return fare + premium - deducted + (stay_cost * days_stayed) + fare_return
         
-    if not self.shipment.status.name_ar == "مكتملة":
-        completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
-        self.shipment.status = completed_status
-        self.shipment.save()
-            
-        # إنشاء سجل في التاريخ
-        ShipmentHistory.objects.create(
+        
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        try:
+            completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
+        except ShipmentStatus.DoesNotExist:
+            completed_status = None
+
+        if completed_status and self.shipment.status.name_ar != "مكتملة":
+            old_status = self.shipment.status
+            self.shipment.status = completed_status
+            self.shipment.save()
+
+            ShipmentHistory.objects.create(
                 shipment=self.shipment,
-                status=completed_status,
-                user=self.creator,
-                notes=self.note,
-                updated_at=self.updated_at
+                old_status=old_status,
+                new_status=completed_status,
+                user=self.created_by,
+                notes=self.note or f"تم إنشاء سند صرف للشحنة بواسطة {self.created_by.get_full_name()}" if self.created_by else "تم إنشاء سند صرف",
+                action="PUT"
             )
 
-    def update_status(self, user, notes):
-        self.updated_at = timezone.now()
-        self.save()
-        
-        ShipmentHistory.objects.create(
-            shipment=self.shipment,
-            status=self.shipment.status,
-            user=user,
-            notes=notes,
-            updated_at=self.updated_at
-        )

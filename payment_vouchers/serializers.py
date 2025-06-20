@@ -5,40 +5,6 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
-    shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
-    creator = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username'
-    )
-
-    class Meta:
-        model = PaymentVoucher
-        fields = [
-            'id',
-            'shipment',
-            'note',
-            'creator',
-            'created_at',
-            'updated_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
-
-    def create(self, validated_data):
-        shipment_id = self.context['request'].data.get('shipment')
-        creator = self.context['request'].user
-        
-        try:
-            shipment = Shipment.objects.get(id=shipment_id)
-            payment_voucher = PaymentVoucher.objects.create(
-                shipment=shipment,
-                creator=creator
-            )
-            return payment_voucher
-        except Shipment.DoesNotExist:
-            raise serializers.ValidationError('الشحنة غير موجودة')
-
-
 class ShipmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shipment
@@ -46,46 +12,119 @@ class ShipmentSerializer(serializers.ModelSerializer):
             'id',
 
         ]
-class PaymentVoucherListSerializer(serializers.ModelSerializer):
-    shipment = ShipmentSerializer(read_only=True)
-    creator = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username'
-    )
 
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PaymentVoucher
-        fields = [
-            'id',
-            'shipment',
-            'creator',
-            'created_at',
-            'updated_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        model = User
+        fields = ['id', 'username', 'last_name', 'first_name']
 
-class PaymentVoucherUpdateSerializer(serializers.ModelSerializer):
-    shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
-    creator = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username'
-    )
+
+class PaymentVoucherListSerializer(serializers.ModelSerializer):
+    shipment = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_by = UserSerializer(read_only=True)
+    total_cost = serializers.SerializerMethodField()
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
     class Meta:
         model = PaymentVoucher
         fields = [
             'id',
             'shipment',
             'note',
-            'creator',
+            'updated_at',
             'created_at',
-            'updated_at'
+            'created_by',
+            'fare',
+            'premium',
+            'fare_return',
+            'days_stayed',
+            'stay_cost',
+            'deducted',
+            'total_cost'
+                ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def get_total_cost(self, obj):
+        return obj.total_cost
+
+class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
+    shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
+    total_cost = serializers.SerializerMethodField()
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+
+    class Meta:
+        model = PaymentVoucher
+        fields = [
+            'id',
+            'shipment',
+            'note',
+            'updated_at',
+            'created_at',
+            'fare',
+            'premium',
+            'fare_return',
+            'days_stayed',
+            'stay_cost',
+            'deducted',
+            'total_cost'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def get_total_cost(self, obj):
+        return obj.total_cost
+
+    def create(self, validated_data):
+        validated_data['created_by'] = self.context['request'].user
+        return super().create(validated_data)
+
+
+
+class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
+    shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
+    created_by = UserSerializer(read_only=True)
+    total_cost = serializers.ReadOnlyField()
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    class Meta:
+        model = PaymentVoucher
+        fields = [
+            'id',
+            'shipment',
+            'note',
+            'created_by',
+            'created_at',
+            'updated_at',
+            'fare',
+            'premium',
+            'fare_return',
+            'days_stayed',
+            'stay_cost',
+            'deducted',
+            'total_cost'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+class PaymentVoucherUpdateSerializer(serializers.ModelSerializer):
+    shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+    class Meta:
+        model = PaymentVoucher
+        fields = [
+            'id',
+            'shipment',
+            'note',
+            'created_at',
+            'updated_at',
+            'fare',
+            'premium',
+            'fare_return',
+            'days_stayed',
+            'stay_cost',
+            'deducted'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
-    def update(self, instance, validated_data):
-        instance.shipment = validated_data.get('shipment', instance.shipment)
-        instance.note = validated_data.get('note', instance.note)
-        instance.creator = validated_data.get('creator', instance.creator)
-        instance.save()
-        return instance

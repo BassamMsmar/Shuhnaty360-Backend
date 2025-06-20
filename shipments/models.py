@@ -17,8 +17,8 @@ User = get_user_model()
 
 # Create your models here.
 class ShipmentStatus(models.Model):
-    name_ar = models.CharField( max_length=50, verbose_name='الحالة')
-    name_en = models.CharField( max_length=50, verbose_name='Status')
+    name_ar = models.CharField(max_length=50, verbose_name='الحالة')
+    name_en = models.CharField(max_length=50, verbose_name='Status')
 
     def __str__(self):
         return self.name_ar
@@ -155,7 +155,7 @@ class Shipment(models.Model):
         super().save(*args, **kwargs)
         
     def __str__(self):
-        return f"Shipment {self.tracking_number}"
+        return f"Shipment {self.id} - {self.tracking_number}"
     
     def save(self, *args, **kwargs):
         if not self.tracking_number:
