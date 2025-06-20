@@ -40,4 +40,4 @@ class TruckTypeOptionSerializer(serializers.ModelSerializer):
         fields = ['value', 'label']
 
     def get_label(self, obj):
-        return obj.name
+        return obj.name_ar
