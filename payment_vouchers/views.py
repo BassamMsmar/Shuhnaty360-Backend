@@ -6,13 +6,13 @@ from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import PaymentVoucher
-from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherUpdateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer
+from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherUpdateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer
 
 # Create your views here.
 
 class PaymentVoucherListView(generics.ListAPIView):
     """عرض قائمة السندات وإنشاء سند جديد"""
-    queryset = PaymentVoucher.objects.all()
+    queryset = PaymentVoucher.objects.all().order_by('-id')
     serializer_class = PaymentVoucherListSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -65,6 +65,16 @@ class PaymentVoucherDetailView(generics.RetrieveDestroyAPIView):
             'data': serializer.data
         })
 
+    def delete(self, request, *args, **kwargs):
+        """حذف سند"""
+        instance = self.get_object()
+        instance.delete()
+        return Response({
+            'status': 'success',
+            'message': 'Payment voucher deleted successfully'
+        })
+
+
  
 class PaymentVoucherUpdateView(generics.UpdateAPIView):
     """تحديث سند"""
@@ -85,12 +95,19 @@ class PaymentVoucherUpdateView(generics.UpdateAPIView):
             'data': serializer.data
         })
 
-    def delete(self, request, *args, **kwargs):
-        """حذف سند"""
-        instance = self.get_object()
-        instance.delete()
+  
+  
+class PaymentVoucherOptionsView(generics.ListAPIView):
+    """عرض قائمة الخيارات لإنشاء سند جديد"""
+    queryset = PaymentVoucher.objects.all()
+    serializer_class = PaymentVoucherOptionsSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
         return Response({
             'status': 'success',
-            'message': 'Payment voucher deleted successfully'
+            'message': 'Successfully retrieved payment vouchers options',
+            'data': response.data
         })
-

@@ -8,6 +8,9 @@ from recipient.models import Recipient
 from cities.models import City
 User = get_user_model()
 
+
+
+
 # Create your models here.
 class PaymentVoucher(models.Model):
 
@@ -17,6 +20,7 @@ class PaymentVoucher(models.Model):
         related_name='payment_voucher',
         verbose_name='الشحنة المرتبطة'
     )
+
     created_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -79,6 +83,25 @@ class PaymentVoucher(models.Model):
         'موافقة',
         default=False
     )
+    receiver_name = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='received_payment_vouchers',
+        verbose_name='مستلم المبلغ'
+
+    )
+
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='approved_payment_vouchers',
+        verbose_name='معتمد السند'
+    )
+
     
     class Meta:
         verbose_name = "سند صرف"
@@ -98,9 +121,9 @@ class PaymentVoucher(models.Model):
         fare_return = self.fare_return or 0
         return fare + premium - deducted + (stay_cost * days_stayed) + fare_return
         
-        
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
         try:
             completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
         except ShipmentStatus.DoesNotExist:
