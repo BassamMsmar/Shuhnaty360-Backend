@@ -1,14 +1,11 @@
 from rest_framework import serializers
 from .models import PaymentVoucher
 from shipments.models import Shipment
+from shipments.serializers import ShipmentSerializerDetail
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-
-class ShipmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shipment
-        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,14 +47,14 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
         validated_data['created_by'] = self.context['request'].user
         return super().create(validated_data)
 
-class shipmentSerializer(serializers.ModelSerializer):
+class ShipmentSerializerDetail(serializers.ModelSerializer):
     class Meta:
         model = Shipment
         fields = '__all__'
         
 
 class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
-    shipment = shipmentSerializer(read_only=True)
+    shipment = ShipmentSerializerDetail(read_only=True)
     created_by = UserSerializer(read_only=True)
     total_cost = serializers.ReadOnlyField()
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
