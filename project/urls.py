@@ -49,6 +49,7 @@ urlpatterns = [
     path('api/recipient/', include('recipient.urls')),
     path('api/profile/', include('profile_company.urls')),
     path('api/payment-vouchers/', include('payment_vouchers.urls')),
+    path('api/dashboard/', include('dashboard.urls')),
     # DRF login/logout URLs for the browsable API and Swagger
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 

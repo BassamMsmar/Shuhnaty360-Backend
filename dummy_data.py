@@ -44,7 +44,7 @@ def create_user():
     fake = Faker()
     branches = list(CompanyBranch.objects.all())
     
-    for i in range(1, 6):
+    for i in range(1, 200):
         username = fake.user_name()
         # Make sure username is unique
         while User.objects.filter(username=username).exists():
@@ -157,11 +157,11 @@ def create_client():
     fake = Faker()
     
     # Check if we already have enough clients
-    if Client.objects.count() >= 5:
+    if Client.objects.count() >= 200:
         print('Clients already exist')
         return
         
-    for i in range(1, 6):
+    for i in range(1, 200):
         client_email = fake.email()
         # Generate phone number with max 20 characters
         phone = fake.phone_number()[:10]
@@ -187,7 +187,7 @@ def create_branch():
     fake = Faker()
     clients = Client.objects.all()
     cities = City.objects.all()
-    for i in range(1, 11):
+    for i in range(1, 1000):
         Branch.objects.create(
             client=random.choice(clients), 
             name=fake.company(), 
@@ -251,7 +251,7 @@ def create_driver():
     fake = Faker()
     truck_types = list(TruckType.objects.all())
     
-    for i in range(1, 11):
+    for i in range(1, 2000):
         Driver.objects.create(
             name=fake.name(),
             phone_number=fake.phone_number()[:10],
@@ -271,7 +271,7 @@ def create_driver():
 def create_recipient():
     fake = Faker()
     cities = City.objects.all()
-    for i in range(1, 11):
+    for i in range(1, 2000):
         Recipient.objects.create(
             name=fake.name(),
             phone_number=fake.phone_number()[:10],
@@ -284,7 +284,7 @@ def create_recipient():
 
 def create_shipment():
     # Check if we already have shipments
-    if Shipment.objects.count() > 100:
+    if Shipment.objects.count() > 1100000:
         print('Shipments already exist')
         return
         
@@ -303,7 +303,7 @@ def create_shipment():
         return
     
     # Create fewer shipments for testing
-    for i in range(1, 20):
+    for i in range(1, 100000):
         # Create a shipment with proper client-branch relationship
         client = random.choice(clients)
         client_branches = Branch.objects.filter(client=client)
@@ -355,7 +355,7 @@ def create_shipment():
         )
         
         # Create shipment history entries
-        create_shipment_history(shipment, statuses, users)
+        # create_shipment_history(shipment, statuses, users)
             
         print(f'Shipment {i} created')
 
@@ -417,16 +417,16 @@ User.objects.filter(is_superuser=False).delete()
 
 # Create data in the correct order
 print('Starting data creation...')
-create_city()
-create_company_profiles()
-create_company_branches()
-create_superuser()
+# create_city()
+# create_company_profiles()
+# create_company_branches()
+# create_superuser()
 create_user()
 create_client()
 create_branch()
-create_truck_types()
+# create_truck_types()
 create_driver()
 create_recipient()
-create_shipment_status()
+# create_shipment_status()
 create_shipment()
 print('Data creation completed successfully!')

@@ -257,7 +257,7 @@ class ShipmentOptionSerializer(serializers.ModelSerializer):
         fields = ['value', 'label']
 
     def get_label(self, obj):
-        return obj.id
+        return obj.tracking_number
 
 class ShipmentStatusOptionSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()
@@ -268,5 +268,5 @@ class ShipmentStatusOptionSerializer(serializers.ModelSerializer):
         fields = ['value', 'label']
 
     def get_label(self, obj):
-        return obj.id
+        return obj.name_ar
 
