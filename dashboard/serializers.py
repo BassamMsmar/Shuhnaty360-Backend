@@ -7,7 +7,3 @@ class ShipmentReportView(serializers.ModelSerializer):
         model = Shipment
         fields = '__all__'
 
-class BranchDetailReportViewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Branch
-        fields = '__all__'
