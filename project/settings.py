@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'cities',
     'profile_company',
     'payment_vouchers',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
