@@ -3,7 +3,9 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 from shipments.models import Shipment, ShipmentStatus, ShipmentHistory
-
+from clients.models import Client, Branch
+from recipient.models import Recipient
+from cities.models import City
 User = get_user_model()
 
 # Create your models here.
@@ -22,6 +24,40 @@ class PaymentVoucher(models.Model):
         related_name='created_payment_vouchers',
         verbose_name='منشئ السند'
     )
+    origin_city = models.ForeignKey(
+        City, on_delete=models.SET_NULL, related_name="origin_payment_vouchers", verbose_name="مدينة التحميل", null=True, blank=True
+    )
+    destination_city = models.ForeignKey(
+        City, on_delete=models.SET_NULL, related_name="destination_payment_vouchers", verbose_name="مدينة الوجهة", null=True, blank=True
+    )
+    client = models.ForeignKey(
+            Client,
+            related_name='payment_vouchers_client',
+            on_delete=models.SET_NULL,
+            null=True
+        )
+
+    client_branch = models.ForeignKey(
+        Branch,
+        related_name='payment_vouchers_client_branch',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    client_invoice_number = models.CharField(
+            "Customer Invoice Number",
+            max_length=50,  # قم بتحديد الطول المناسب حسب نظام الفواتير لديك
+            null=True,
+            blank=True
+        )
+    recipient = models.ForeignKey(
+            Recipient,
+            related_name='payment_vouchers_recipient',
+            on_delete=models.SET_NULL,
+            null=True
+        )
+    actual_delivery_date = models.DateTimeField(
+            "تاريخ الوصول الفعلي", null=True, blank=True)
+        
     fare = models.IntegerField("Fare", null=True, blank=True)
     premium = models.IntegerField("Premium", null=True, blank=True)
     fare_return = models.IntegerField("Return", null=True, blank=True)
@@ -38,6 +74,10 @@ class PaymentVoucher(models.Model):
     updated_at = models.DateTimeField(
         'تاريخ التحديث',
         auto_now=True
+    )
+    is_approved= models.BooleanField(
+        'موافقة',
+        default=False
     )
     
     class Meta:
