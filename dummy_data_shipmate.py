@@ -262,7 +262,7 @@ def create_recipient():
 
 def create_shipment():
     # Check if we already have shipments
-    if Shipment.objects.count() > 1000:
+    if Shipment.objects.count() > 10000000:
         print('Shipments already exist')
         return
         
@@ -281,7 +281,7 @@ def create_shipment():
         return
     
     # Create fewer shipments for testing
-    for i in range(1, 20):
+    for i in range(1, 10000):
         # Create a shipment with proper client-branch relationship
         client = random.choice(clients)
         client_branches = Branch.objects.filter(client=client)
@@ -333,7 +333,7 @@ def create_shipment():
         )
         
         # Create shipment history entries
-        create_shipment_history(shipment, statuses, users)
+        # create_shipment_history(shipment, statuses, users)
             
         print(f'Shipment {i} created')
 

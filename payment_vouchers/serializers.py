@@ -80,10 +80,38 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
         validated_data['created_by'] = self.context['request'].user
         return super().create(validated_data)
 
-
+class shipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shipment
+        fields = ['id'
+        , 'tracking_number'
+        , 'fare'
+        , 'premium'
+        , 'fare_return'
+        , 'days_stayed'
+        , 'stay_cost'
+        , 'deducted'
+        , 'total_cost'
+        , 'user'
+        , 'driver'
+        , 'client'
+        , 'client_branch'
+        , 'client_invoice_number'
+        , 'recipient'
+        , 'origin_city'
+        , 'destination_city'
+        , 'loading_date'
+        , 'days_to_arrive'
+        , 'expected_arrival_date'
+        , 'actual_delivery_date'
+        , 'weight'
+        , 'contents'
+        , 'created_at'
+        , 'updated_at'
+        ]
 
 class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
-    shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
+    shipment = shipmentSerializer(read_only=True)
     created_by = UserSerializer(read_only=True)
     total_cost = serializers.ReadOnlyField()
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -103,7 +131,7 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
             'days_stayed',
             'stay_cost',
             'deducted',
-            'total_cost'
+            'total_cost'    
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 

@@ -32,7 +32,7 @@ class ShipmentListView(generics.ListAPIView):
         'destination_city': ['exact'],
         'loading_date': ['gte', 'lte'], 
     }
-    search_fields = ['tracking_number', 'client_invoice_number']
+    search_fields = ['tracking_number', 'client_invoice_number', 'id']
 
     def get_queryset(self):
         if self.request.user.is_superuser or self.request.user.is_staff:
