@@ -37,21 +37,26 @@ class ShipmentReportView(GenericAPIView):
         # Get filtered counts
         all_shipments = queryset.count()
         
-        # Get branch and status counts from the filtered queryset
-        shipment_by_branch = {
-            branch.branch_name_ar: queryset.filter(user__company_branch=branch).count()
+        # Get branch counts and sort by count in descending order
+        branch_counts = [
+            (branch.branch_name_ar, queryset.filter(user__company_branch=branch).count())
             for branch in CompanyBranch.objects.all()
-        }
+        ]
+        shipment_by_branch = dict(sorted(branch_counts, key=lambda x: x[1], reverse=True))
 
-        shipment_by_user ={
-            user.get_full_name(): queryset.filter(user=user).count()
+        # Get user counts and sort by count in descending order
+        user_counts = [
+            (user.get_full_name() or user.username, queryset.filter(user=user).count())
             for user in User.objects.all()
-        }
+        ]
+        shipment_by_user = dict(sorted(user_counts, key=lambda x: x[1], reverse=True))
 
-        shipment_by_status = {
-            status.name_ar: queryset.filter(status=status).count()
+        # Get status counts and sort by count in descending order
+        status_counts = [
+            (status.name_ar, queryset.filter(status=status).count())
             for status in ShipmentStatus.objects.all()
-        }
+        ]
+        shipment_by_status = dict(sorted(status_counts, key=lambda x: x[1], reverse=True))
 
         # Get date range info from the filtered queryset
         date_range = queryset.aggregate(
