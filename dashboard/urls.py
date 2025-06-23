@@ -1,14 +1,6 @@
 from django.urls import path
-from .views import DashboardView, ShipmentReportView    
+from .views import ShipmentReportView
 
 urlpatterns = [
-    path('', DashboardView.as_view(), name='dashboard'),
-    path('shipments/report/', ShipmentReportView.as_view(), name='shipment-report'),
-]
-from django.urls import path
-from .views import DashboardView, ShipmentReportView    
-
-urlpatterns = [
-    path('', DashboardView.as_view(), name='dashboard'),
-    path('shipments/report/', ShipmentReportView.as_view(), name='shipment-report'),
+    path('shipment-report/', ShipmentReportView.as_view(), name='shipment-report'),
 ]

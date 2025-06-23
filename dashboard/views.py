@@ -1,106 +1,84 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
-from rest_framework import status, filters
-from rest_framework import filters
-
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAdminUser
+from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 from django.db.models import Count, Sum, F, Q, Min, Max
-from shipments.models import Shipment
+
+
 from django.contrib.auth import get_user_model
+
+from shipments.models import Shipment, ShipmentStatus
+from profile_company.models import CompanyBranch
+from drivers.models import Driver
+from clients.models import Client
+from recipient.models import Recipient
+from cities.models import City
+
 
 
 User = get_user_model()
-
-# Create your views here
-
-
-class DashboardView(APIView):
-    def get(self, request):
-        return Response({"message": "Hello, World!"})
 
 
 class ShipmentReportView(GenericAPIView):
     queryset = Shipment.objects.all()
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend]
     filterset_fields = {
-        'user': ['exact'],
-        'client_branch': ['exact'],
-        'status': ['exact'],
-        'created_at': ['gte', 'lte', 'exact'],
+        'loading_date': ['gte', 'lte', 'exact'], 
     }
 
     def get(self, request):
-        # Get base queryset
-        queryset = self.get_queryset().select_related('user', 'client_branch', 'status')
+        # Get the base queryset
+        queryset = self.filter_queryset(self.get_queryset())
         
-        # Apply filters using DjangoFilterBackend
-        queryset = self.filter_queryset(queryset)
+        # Get filtered counts
+        all_shipments = queryset.count()
         
-        # Group by user, branch, and status
-        report = queryset.values(
-            'user__id', 'user__username',
-            'client_branch__id', 'client_branch__name',
-            'status__id', 'status__name_ar'
-        ).annotate(
-            count=Count('id'),
-            total_fare=Sum('fare'),
-            total_premium=Sum('premium'),
-            total_deducted=Sum('deducted'),
-            total_stay_cost=Sum('stay_cost')
-        ).order_by('user__username', 'client_branch__name', 'status__name_ar')
-        
-        # Get first and last shipment dates
+        # Get branch counts and sort by count in descending order
+        branch_counts = [
+            (branch.branch_name_ar, queryset.filter(user__company_branch=branch).count())
+            for branch in CompanyBranch.objects.all()
+        ]
+        shipment_by_branch = dict(sorted(branch_counts, key=lambda x: x[1], reverse=True))
+
+        # Get user counts and sort by count in descending order
+        user_counts = [
+            (user.get_full_name() or user.username, queryset.filter(user=user).count())
+            for user in User.objects.all()
+        ]
+        shipment_by_user = dict(sorted(user_counts, key=lambda x: x[1], reverse=True))
+
+        # Get status counts and sort by count in descending order
+        status_counts = [
+            (status.name_ar, queryset.filter(status=status).count())
+            for status in ShipmentStatus.objects.all()
+        ]
+        shipment_by_status = dict(sorted(status_counts, key=lambda x: x[1], reverse=True))
+
+        # Get date range info from the filtered queryset
         date_range = queryset.aggregate(
-            first_date=Min('created_at'),
-            last_date=Max('created_at')
+            first_date=Min('loading_date'),
+            last_date=Max('loading_date'),
+            total_shipments=Count('id'),
         )
-        
-        # Initialize result structure
-        result = {
-            'المستخدمين': {},
-            'فروع الشركة': {},
-            'التواريخ': {
-                'من': date_range['first_date'].strftime('%Y-%m-%d') if date_range['first_date'] else None,
-                'إلى': date_range['last_date'].strftime('%Y-%m-%d') if date_range['last_date'] else None
-            }
-        }
-        
-        # Calculate shipment counts per user, branch, and status
-        user_counts = {}
-        branch_counts = {}
-        status_counts = {}
-        
-        for item in report:
-            # User counts
-            user_key = item['user__username']
-            if user_key not in user_counts:
-                user_counts[user_key] = 0
-            user_counts[user_key] += item['count']
-            
-            # Branch counts
-            branch_key = item['client_branch__name']
-            if branch_key not in branch_counts:
-                branch_counts[branch_key] = 0
-            branch_counts[branch_key] += item['count']
-            
-            # Status counts
-            status_key = item['status__name_ar']
-            if status_key not in status_counts:
-                status_counts[status_key] = 0
-            status_counts[status_key] += item['count']
-        
-        # Format the response
-        result['المستخدمين'] = user_counts
-        result['فروع الشركة'] = branch_counts
-        result['الحالات'] = status_counts
-        
+
+        # Format dates for response
+        from_date = date_range['first_date'].strftime('%Y-%m-%d') if date_range['first_date'] else None
+        to_date = date_range['last_date'].strftime('%Y-%m-%d') if date_range['last_date'] else None
+
         return Response({
-            'status': 'success',
-            'data': result
-        }, status=status.HTTP_200_OK)
+            'all_shipments': all_shipments,
+            'shipment_by_branch': shipment_by_branch,
+            'shipment_by_status': shipment_by_status,
+            'shipment_by_user': shipment_by_user,
+            'from_date': from_date,
+            'to_date': to_date,
+            'total_shipments_in_range': date_range['total_shipments'],
+            'applied_filters': {
+                'loading_date_gte': request.query_params.get('loading_date__gte'),
+                'loading_date_lte': request.query_params.get('loading_date__lte')
+            }
+        })
