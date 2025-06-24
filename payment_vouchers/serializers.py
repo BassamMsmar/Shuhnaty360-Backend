@@ -32,6 +32,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
         model = PaymentVoucher
         fields = [
             'id',
+            'tracking_number',
             'shipment',
             'origin_city',
             'destination_city',
