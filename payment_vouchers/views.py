@@ -7,8 +7,11 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+
 from .models import PaymentVoucher
 from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherUpdateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer
+from shipments.models import Shipment
+
 
 # Create your views here.
 
@@ -23,10 +26,10 @@ class PaymentVoucherListView(generics.ListAPIView):
     filterset_fields = {
         'id': ['exact'],
         'shipment': ['exact'],
-        'created_by': ['exact'],
-        'is_approved': ['exact'],
-        'approved_by': ['exact'],
-        'receiver_name': ['exact'],
+        'created_by': ['exact'],  # user who created the voucher
+        'is_approved': ['exact'], # if the voucher is approved
+        'approved_by': ['exact'], # user (the is staff) who approved the voucher
+        'receiver_name': ['exact'], # driver name default
         'tracking_number': ['exact'],
         'created_at': ['gte', 'lte'],
     }
@@ -126,3 +129,5 @@ class PaymentVoucherOptionsView(generics.ListAPIView):
             'message': 'Successfully retrieved payment vouchers options',
             'data': response.data
         })
+
+   

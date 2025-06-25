@@ -15,11 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PaymentVoucherListSerializer(serializers.ModelSerializer):
     shipment = serializers.PrimaryKeyRelatedField(read_only=True)
+    driver = serializers.SlugField(read_only=True)
     origin_city = serializers.SlugField(read_only=True)
     destination_city = serializers.SlugField(read_only=True)
     client = serializers.SlugField(read_only=True)
     client_branch = serializers.SlugField(read_only=True)
-    client_invoice_number = serializers.SlugField(read_only=True)
     recipient = serializers.SlugField(read_only=True)
     created_by = serializers.SlugField(read_only=True)
     receiver_name = serializers.SlugField(read_only=True)
@@ -33,6 +33,8 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'shipment',
+            'driver',
+            'tracking_number',
             'origin_city',
             'destination_city',
             'client',
@@ -93,6 +95,9 @@ class PaymentVoucherUpdateSerializer(serializers.ModelSerializer):
         model = PaymentVoucher
         fields = [
             'id',
+            'shipment',
+            'driver',
+            'tracking_number',
             'origin_city',
             'destination_city',
             'client',
@@ -115,12 +120,6 @@ class PaymentVoucherUpdateSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-    def create(self, validated_data):
-        request = self.context['request']
-        validated_data['created_by'] = request.user
-        if validated_data.get('is_approved'):
-            validated_data['approved_by'] = request.user
-        return super().create(validated_data)
 
     def update(self, instance, validated_data):
         request = self.context['request']
@@ -133,6 +132,16 @@ class PaymentVoucherUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+
+
+
+
+
+
+# ------------------------------
+# Option Serializers for Select Fields
+# ------------------------------
+
 class PaymentVoucherOptionsSerializer(serializers.ModelSerializer):
     label = serializers.SerializerMethodField()
     value = serializers.IntegerField(source='id')
@@ -142,4 +151,7 @@ class PaymentVoucherOptionsSerializer(serializers.ModelSerializer):
         fields = ['value', 'label']
     
     def get_label(self, obj):
-        return obj.shipment.tracking_number
+        return obj.shipment.id
+
+
+
