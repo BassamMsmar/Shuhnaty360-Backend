@@ -6,6 +6,7 @@ from shipments.models import Shipment, ShipmentStatus, ShipmentHistory
 from clients.models import Client, Branch
 from recipient.models import Recipient
 from cities.models import City
+from drivers.models import Driver
 User = get_user_model()
 
 
@@ -14,7 +15,7 @@ User = get_user_model()
 # Create your models here.
 class PaymentVoucher(models.Model):
 
-    shipment = models.OneToOneField(
+    shipment = models.ForeignKey(
         Shipment,
         on_delete=models.CASCADE,
         related_name='payment_voucher',
@@ -29,12 +30,19 @@ class PaymentVoucher(models.Model):
         blank=True
     )
 
-    created_by = models.ForeignKey(
-        User,
+    driver = models.ForeignKey(
+        Driver,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='created_payment_vouchers',
-        verbose_name='منشئ السند'
+        related_name='payment_vouchers_driver',
+        verbose_name='السائق'
+    )
+
+    tracking_number = models.CharField(
+        "رقم التتبع",
+        max_length=50,
+        null=True,
+        blank=True
     )
     origin_city = models.ForeignKey(
         City, on_delete=models.SET_NULL, related_name="origin_payment_vouchers", verbose_name="مدينة التحميل", null=True, blank=True
@@ -99,6 +107,13 @@ class PaymentVoucher(models.Model):
         related_name='received_payment_vouchers',
         verbose_name='مستلم المبلغ'
 
+    )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='created_payment_vouchers',
+        verbose_name='منشئ السند'
     )
 
     approved_by = models.ForeignKey(

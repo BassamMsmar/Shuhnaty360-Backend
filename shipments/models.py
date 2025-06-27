@@ -154,9 +154,7 @@ class Shipment(models.Model):
 
         super().save(*args, **kwargs)
         
-    def __str__(self):
-        return f"Shipment {self.id} - {self.tracking_number}"
-    
+
     def save(self, *args, **kwargs):
         if not self.tracking_number:
             self.tracking_number = self.generate_tracking_number()
@@ -165,6 +163,10 @@ class Shipment(models.Model):
     def generate_tracking_number(self):
         # توليد رقم تتبع فريد (مثلاً: SHIP-ABC1234567)
         return f'{uuid.uuid4().hex[:10].upper()}'
+
+    def __str__(self):
+        return f"Shipment {self.id} - {self.tracking_number}"
+    
 
     class Meta:
         verbose_name = "الشحنه"
