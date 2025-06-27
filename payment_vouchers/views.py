@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
 from .models import PaymentVoucher
-from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherUpdateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer
+from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer
 from shipments.models import Shipment
 
 
@@ -65,7 +65,7 @@ class PaymentVoucherCreateView(generics.CreateAPIView):
             'data': response.data
         })
 
-class PaymentVoucherDetailView(generics.RetrieveDestroyAPIView):
+class PaymentVoucherDetailView(generics.RetrieveAPIView):
     """عرض وحذف سند"""
     queryset = PaymentVoucher.objects.all()
     serializer_class = PaymentVoucherDetailSerializer
@@ -84,38 +84,7 @@ class PaymentVoucherDetailView(generics.RetrieveDestroyAPIView):
             'data': serializer.data
         })
 
-    def delete(self, request, *args, **kwargs):
-        """حذف سند"""
-        instance = self.get_object()
-        instance.delete()
-        return Response({
-            'status': 'success',
-            'message': 'Payment voucher deleted successfully'
-        })
-
-
  
-class PaymentVoucherUpdateView(generics.UpdateAPIView):
-    """تحديث سند"""
-    queryset = PaymentVoucher.objects.all()
-    serializer_class = PaymentVoucherUpdateSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def put(self, request, *args, **kwargs):
-        """تحديث سند"""
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response({
-            'status': 'success',
-            'message': 'Payment voucher updated successfully',
-            'data': serializer.data
-        })
-
-  
-  
 class PaymentVoucherOptionsView(generics.ListAPIView):
     """عرض قائمة الخيارات لإنشاء سند جديد"""
     queryset = PaymentVoucher.objects.all()

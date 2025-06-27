@@ -52,7 +52,13 @@ class Shipment(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
-
+    vehicle_number = models.CharField(
+        max_length=20, verbose_name='رقم المركبة' , null=True, blank=True
+    )
+    driver_phone_number = models.CharField(
+        max_length=20, verbose_name='رقم هاتف السائق' , null=True, blank=True
+    )
+    
     # Receiver (Customer's branch)
     client = models.ForeignKey(
         Client,

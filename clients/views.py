@@ -150,7 +150,7 @@ class ClientOptionsView(generics.ListAPIView):
 class ClientBranchOptionsView(generics.ListAPIView):
     queryset = Branch.objects.all()
     serializer_class = ClientBranchOptionSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):

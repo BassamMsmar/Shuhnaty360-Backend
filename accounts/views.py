@@ -93,7 +93,7 @@ class UserUpdateSet(generics.UpdateAPIView):
     
 class UsersOptionsView(generics.ListAPIView):
     queryset = User.objects.all().order_by('id')
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = UserOptionSerializer
 

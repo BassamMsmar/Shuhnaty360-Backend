@@ -125,7 +125,7 @@ class TruckTypeOptionsView(generics.ListAPIView):
 class DriverOptionsView(generics.ListAPIView):
     queryset = Driver.objects.all()
     serializer_class = DriverOptionSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):

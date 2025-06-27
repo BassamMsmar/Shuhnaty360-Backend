@@ -67,7 +67,26 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PaymentVoucher
-        fields = '__all__'
+        fields = [
+            'id',
+            'shipment',
+            'driver',
+            'tracking_number',
+            'origin_city',
+            'destination_city',
+            'client',
+            'client_branch',
+            'issuing_branch',
+            'client_invoice_number',
+            'recipient',
+            'created_at',
+            'created_by',
+            'is_approved',
+            'receiver_name',
+            'approved_by',
+            'updated_at',
+            'total_cost',
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'issuing_branch']
     
     def get_total_cost(self, obj):
@@ -96,53 +115,6 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
         model = PaymentVoucher
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'total_cost']
-
-class PaymentVoucherUpdateSerializer(serializers.ModelSerializer):
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    class Meta:
-        model = PaymentVoucher
-        fields = [
-            'id',
-            'shipment',
-            'driver',
-            'tracking_number',
-            'origin_city',
-            'destination_city',
-            'client',
-            'client_branch',
-            'client_invoice_number',
-            'recipient',
-            'actual_delivery_date',
-            'note',
-            'fare',
-            'premium',
-            'fare_return',
-            'days_stayed',
-            'stay_cost',
-            'deducted',
-            'updated_at',
-            'created_at',
-            'is_approved',
-            'receiver_name',
-            'approved_by',
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
-
-
-    def update(self, instance, validated_data):
-        request = self.context['request']
-        is_approved = validated_data.get('is_approved', instance.is_approved)
-
-        # إذا تم تعيين الموافقة لأول مرة
-        if is_approved and not instance.approved_by:
-            validated_data['approved_by'] = request.user
-
-        return super().update(instance, validated_data)
-
-
-
-
 
 
 

@@ -42,7 +42,7 @@ class CompanyBranchViewSet(generics.ListAPIView):
 
 class CompanyOptionsView(generics.ListAPIView):
     queryset = CompanyProfile.objects.all().order_by('id')
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = CompanyOptionSerializer
 
@@ -57,7 +57,7 @@ class CompanyOptionsView(generics.ListAPIView):
 
 class CompanyBranchOptionsView(generics.ListAPIView):
     queryset = CompanyBranch.objects.all().order_by('id')
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = CompanyBranchOptionSerializer
 
