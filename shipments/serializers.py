@@ -254,3 +254,14 @@ class ShipmentStatusOptionSerializer(serializers.ModelSerializer):
     def get_label(self, obj):
         return obj.name_ar
 
+class ClientInvoiceNumberOptionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    value = serializers.IntegerField(source='id')
+
+    class Meta:
+        model = Shipment
+        fields = ['value', 'label']
+
+    def get_label(self, obj):
+        return obj.client_invoice_number
+

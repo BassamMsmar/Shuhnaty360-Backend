@@ -10,7 +10,7 @@ from django.utils import timezone
 
 
 from .models import Shipment, ShipmentHistory, ShipmentStatus
-from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializerCreate, ShipmentStatusSerializer, ShipmentSerializerUpdate, ShipmentOptionSerializer, ShipmentStatusOptionSerializer
+from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializerCreate, ShipmentStatusSerializer, ShipmentSerializerUpdate, ShipmentOptionSerializer, ShipmentStatusOptionSerializer, ClientInvoiceNumberOptionSerializer
 
 # Create your views here.
 
@@ -195,3 +195,19 @@ class ShipmentOptionsView(generics.ListAPIView):
             'message': 'Shipment options retrieved successfully',
             'data': response.data
         })
+
+
+class ClientInvoiceNumberOptionsView(generics.ListAPIView):
+    queryset = Shipment.objects.all().order_by('-id')
+    serializer_class = ClientInvoiceNumberOptionSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Client invoice number options retrieved successfully',
+            'data': response.data
+        })
+
