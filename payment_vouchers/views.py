@@ -31,6 +31,7 @@ class PaymentVoucherListView(generics.ListAPIView):
         'approved_by': ['exact'], # user (the is staff) who approved the voucher
         'receiver_name': ['exact'], # driver name default
         'tracking_number': ['exact'],
+        'issuing_branch': ['exact'],
         'created_at': ['gte', 'lte'],
     }
     search_fields = ['id', 'tracking_number', 'created_by__username', 'shipment']

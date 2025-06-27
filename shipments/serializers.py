@@ -71,57 +71,6 @@ class ShipmentHistorySerializer(serializers.ModelSerializer):
         model = ShipmentHistory
         fields = '__all__'
 
-class ShipmentSerializerCreate(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
-    driver = serializers.PrimaryKeyRelatedField(queryset=Driver.objects.all(), required=True)
-    truck_type = serializers.PrimaryKeyRelatedField(queryset=TruckType.objects.all(), required=True)
-    origin_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=True)
-    destination_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all(), required=True)
-    client = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all(), required=True)
-    client_branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all(), required=True)
-    recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all(), required=True)
-    status = serializers.PrimaryKeyRelatedField(queryset=ShipmentStatus.objects.all(), required=True)
-    fare = serializers.IntegerField(required=True)
-    loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
-    class Meta:
-        model = Shipment
-        fields = [
-            'user',
-            
-            'driver', 
-            'truck_type',
-            'origin_city',
-            'destination_city',
-
-            'loading_date',
-            'days_to_arrive',
-            'expected_arrival_date',
-            'actual_delivery_date',
-
-            'contents',
-            'weight',
-            'notes',
-
-            'client',
-            'client_branch',
-            'client_invoice_number',
-            'notes_customer',
-
-            'recipient',
-            'notes_recipient',
-         
-            'fare',
-            'premium',
-            'fare_return',
-            'days_stayed',
-            'stay_cost',
-            'deducted',
-
-            'status',
-        ]
-
 
 class ShipmentSerializerList(serializers.ModelSerializer):
     user = UserSerializerMini(read_only=True)
@@ -151,6 +100,37 @@ class ShipmentSerializerList(serializers.ModelSerializer):
             'status',
             'loading_date',
         ]
+class ShipmentSerializerCreate(serializers.ModelSerializer):
+    driver = serializers.PrimaryKeyRelatedField(queryset=Driver.objects.all())
+    truck_type = serializers.PrimaryKeyRelatedField(queryset=TruckType.objects.all())
+    origin_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
+    destination_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
+    client = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all())
+    client_branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all())
+    recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all())
+    status = serializers.PrimaryKeyRelatedField(queryset=ShipmentStatus.objects.all())
+    fare = serializers.IntegerField()
+
+    loading_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=True)
+    expected_arrival_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=True)
+    actual_delivery_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, allow_null=True)
+
+    class Meta:
+        model = Shipment
+        fields = [
+            'driver', 'truck_type', 'origin_city', 'destination_city',
+            'loading_date', 'days_to_arrive', 'expected_arrival_date', 'actual_delivery_date',
+            'contents', 'weight', 'notes',
+            'client', 'client_branch', 'client_invoice_number', 'notes_customer',
+            'recipient', 'notes_recipient',
+            'fare', 'premium', 'fare_return', 'days_stayed', 'stay_cost', 'deducted',
+            'status',
+        ]
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
 
 class ShipmentSerializerDetail(serializers.ModelSerializer):
     total_cost = serializers.ReadOnlyField()
