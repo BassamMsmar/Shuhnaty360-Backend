@@ -58,6 +58,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
 
 class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
     shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
+    issuing_branch = serializers.PrimaryKeyRelatedField(read_only=True)
     total_cost = serializers.SerializerMethodField()
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -66,13 +67,18 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentVoucher
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'issuing_branch']
     
     def get_total_cost(self, obj):
         return obj.total_cost
 
     def create(self, validated_data):
         validated_data['created_by'] = self.context['request'].user
+        
+        
+        if hasattr(self.context['request'].user, 'company_branch'):
+            validated_data['issuing_branch'] = self.context['request'].user.company_branch
+        
         return super().create(validated_data)
  
 

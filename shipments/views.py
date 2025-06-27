@@ -57,6 +57,7 @@ class ShipmentCreateView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         user_name = request.user.get_full_name() if request.user else "مستخدم غير معروف"
+        
         # 1. التحقق من البيانات
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
