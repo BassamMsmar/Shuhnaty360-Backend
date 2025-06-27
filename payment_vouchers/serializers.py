@@ -21,6 +21,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
     client = serializers.SlugField(read_only=True)
     client_branch = serializers.SlugField(read_only=True)
     recipient = serializers.SlugField(read_only=True)
+    issuing_branch = serializers.SlugField(read_only=True)
     created_by = serializers.SlugField(read_only=True)
     receiver_name = serializers.SlugField(read_only=True)
     approved_by = serializers.SlugField(read_only=True)
@@ -40,6 +41,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
             'destination_city',
             'client',
             'client_branch',
+            'issuing_branch',
             'client_invoice_number',
             'recipient',
             'created_at',
