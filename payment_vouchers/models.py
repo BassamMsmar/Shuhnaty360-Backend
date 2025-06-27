@@ -7,6 +7,7 @@ from clients.models import Client, Branch
 from recipient.models import Recipient
 from cities.models import City
 from drivers.models import Driver
+from profile_company.models import CompanyBranch
 User = get_user_model()
 
 
@@ -116,6 +117,15 @@ class PaymentVoucher(models.Model):
         verbose_name='منشئ السند'
     )
 
+    issuing_branch = models.ForeignKey(
+        CompanyBranch,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='issued_payment_vouchers',
+        verbose_name="فرع الإصدار"
+    )
+    
     approved_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
