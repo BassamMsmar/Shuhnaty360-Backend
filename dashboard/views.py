@@ -6,7 +6,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from django.db.models import Count, Sum, F, Q, Min, Max
 
-
 from django.contrib.auth import get_user_model
 
 from shipments.models import Shipment, ShipmentStatus
@@ -16,10 +15,7 @@ from clients.models import Client
 from recipient.models import Recipient
 from cities.models import City
 
-
-
 User = get_user_model()
-
 
 class ShipmentReportView(GenericAPIView):
     queryset = Shipment.objects.all()
@@ -31,49 +27,64 @@ class ShipmentReportView(GenericAPIView):
     }
 
     def get(self, request):
-        # Get the base queryset
         queryset = self.filter_queryset(self.get_queryset())
-        
-        # Get filtered counts
         all_shipments = queryset.count()
-        
-        # Get branch counts and sort by count in descending order
-        branch_counts = [
-            (branch.branch_name_ar, queryset.filter(user__company_branch=branch).count())
-            for branch in CompanyBranch.objects.all()
-        ]
-        shipment_by_branch = dict(sorted(branch_counts, key=lambda x: x[1], reverse=True))
 
-        # Get user counts and sort by count in descending order
-        user_counts = [
-            (user.get_full_name() or user.username, queryset.filter(user=user).count())
-            for user in User.objects.all()
-        ]
-        shipment_by_user = dict(sorted(user_counts, key=lambda x: x[1], reverse=True))
+        statuses = ShipmentStatus.objects.all()
 
-        # Get status counts and sort by count in descending order
-        status_counts = [
-            (status.name_ar, queryset.filter(status=status).count())
-            for status in ShipmentStatus.objects.all()
-        ]
-        shipment_by_status = dict(sorted(status_counts, key=lambda x: x[1], reverse=True))
+        # توزيع الشحنات حسب الفروع وحالاتها
+        shipment_by_branch = {}
+        for branch in CompanyBranch.objects.all():
+            branch_queryset = queryset.filter(user__company_branch=branch)
+            branch_data = {
+                "كل الشحنات": branch_queryset.count()
+            }
+            for status in statuses:
+                branch_data[status.name_ar] = branch_queryset.filter(status=status).count()
+            shipment_by_branch[branch.branch_name_ar] = branch_data
 
-        # Get date range info from the filtered queryset
+        # توزيع الشحنات حسب المدن وحالاتها
+        shipment_by_city = {}
+        for city in City.objects.all():
+            city_queryset = queryset.filter(destination_city=city)
+            city_data = {
+                "كل الشحنات": city_queryset.count()
+            }
+            for status in statuses:
+                city_data[status.name_ar] = city_queryset.filter(status=status).count()
+            shipment_by_city[city.ar_city] = city_data
+
+        # توزيع الشحنات حسب المستخدمين وحالاتهم
+        shipment_by_user = {}
+        for user in User.objects.all():
+            user_queryset = queryset.filter(user=user)
+            user_data = {
+                "كل الشحنات": user_queryset.count()
+            }
+            for status in statuses:
+                user_data[status.name_ar] = user_queryset.filter(status=status).count()
+            shipment_by_user[user.get_full_name() or user.username] = user_data
+
+        # توزيع عام حسب الحالة فقط
+        shipment_by_status = {}
+        for status in statuses:
+            shipment_by_status[status.name_ar] = queryset.filter(status=status).count()
+
+        # معلومات النطاق الزمني
         date_range = queryset.aggregate(
             first_date=Min('loading_date'),
             last_date=Max('loading_date'),
             total_shipments=Count('id'),
         )
-
-        # Format dates for response
         from_date = date_range['first_date'].strftime('%Y-%m-%d') if date_range['first_date'] else None
         to_date = date_range['last_date'].strftime('%Y-%m-%d') if date_range['last_date'] else None
 
         return Response({
             'all_shipments': all_shipments,
             'shipment_by_branch': shipment_by_branch,
-            'shipment_by_status': shipment_by_status,
+            'shipment_by_city': shipment_by_city,
             'shipment_by_user': shipment_by_user,
+            'shipment_by_status': shipment_by_status,
             'from_date': from_date,
             'to_date': to_date,
             'total_shipments_in_range': date_range['total_shipments'],
