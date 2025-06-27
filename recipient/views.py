@@ -78,7 +78,7 @@ class RecipientDetails(generics.RetrieveUpdateDestroyAPIView):
 class RecipientOptionsView(generics.ListAPIView):
     queryset = Recipient.objects.all()
     serializer_class = RecipientOptionSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):

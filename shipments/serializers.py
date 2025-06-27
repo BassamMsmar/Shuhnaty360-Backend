@@ -118,7 +118,7 @@ class ShipmentSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Shipment
         fields = [
-            'driver', 'truck_type', 'origin_city', 'destination_city',
+            'driver', 'truck_type', 'vehicle_number', 'driver_phone_number', 'origin_city', 'destination_city',
             'loading_date', 'days_to_arrive', 'expected_arrival_date', 'actual_delivery_date',
             'contents', 'weight', 'notes',
             'client', 'client_branch', 'client_invoice_number', 'notes_customer',
@@ -163,6 +163,8 @@ class ShipmentSerializerDetail(serializers.ModelSerializer):
             'user',
             'driver',
             'truck_type',
+            'vehicle_number',
+            'driver_phone_number',
             'client',
             'client_branch',
             'client_invoice_number',
@@ -203,6 +205,8 @@ class ShipmentSerializerUpdate(serializers.ModelSerializer):
         fields = [
     'driver',
     'truck_type',
+    'vehicle_number',
+    'driver_phone_number',
     'client_invoice_number',
     'client',
     'client_branch',
