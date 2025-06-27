@@ -110,7 +110,7 @@ class TruckTypeViewSet(generics.ListCreateAPIView):
 class TruckTypeOptionsView(generics.ListAPIView):
     queryset = TruckType.objects.all()
     serializer_class = TruckTypeOptionSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
