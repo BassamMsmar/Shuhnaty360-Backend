@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_filters',
 
     'drf_yasg',
+    'easyaudit',
 
     'drivers',
     'clients',
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',  
+    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
