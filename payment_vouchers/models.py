@@ -147,6 +147,7 @@ class PaymentVoucher(models.Model):
         return fare + premium - deducted + (stay_cost * days_stayed) + fare_return
         
     def save(self, *args, **kwargs):
+
         
         try:
             completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
@@ -166,5 +167,4 @@ class PaymentVoucher(models.Model):
                 notes=self.note or f"تم إنشاء سند صرف للشحنة بواسطة {self.created_by.get_full_name()}" if self.created_by else "تم إنشاء سند صرف",
                 action="PUT"
             )
-
         super().save(*args, **kwargs)
