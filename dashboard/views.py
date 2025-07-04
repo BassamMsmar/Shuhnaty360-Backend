@@ -29,7 +29,7 @@ class ShipmentReportView(GenericAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         all_shipments = queryset.count()
 
-        # توزيع الشحنات حسب الفروع وحالاتها
+        # === التوزيع حسب الفروع وحالاتها
         branch_status = queryset.values(
             branch_name=F('user__company_branch__branch_name_ar'),
             status_name=F('status__name_ar')
@@ -43,7 +43,7 @@ class ShipmentReportView(GenericAPIView):
             shipment_by_branch[branch][status] = item['total']
             shipment_by_branch[branch]["كل الشحنات"] += item['total']
 
-        # توزيع الشحنات حسب المدن وحالاتها
+        # === التوزيع حسب المدن وحالاتها
         city_status = queryset.values(
             city_name=F('destination_city__ar_city'),
             status_name=F('status__name_ar')
@@ -57,7 +57,7 @@ class ShipmentReportView(GenericAPIView):
             shipment_by_city[city][status] = item['total']
             shipment_by_city[city]["كل الشحنات"] += item['total']
 
-        # توزيع الشحنات حسب المستخدمين وحالاتهم
+        # === التوزيع حسب المستخدمين وحالاتهم
         user_status = queryset.values(
             user_name=F('user__username'),
             status_name=F('status__name_ar')
@@ -71,7 +71,7 @@ class ShipmentReportView(GenericAPIView):
             shipment_by_user[user][status] = item['total']
             shipment_by_user[user]["كل الشحنات"] += item['total']
 
-        # توزيع عام حسب الحالة فقط
+        # === التوزيع العام حسب الحالات
         shipment_by_status = dict(
             queryset
             .values(status_name=F('status__name_ar'))
@@ -79,7 +79,7 @@ class ShipmentReportView(GenericAPIView):
             .values_list('status_name', 'total')
         )
 
-        # معلومات النطاق الزمني
+        # === معلومات المدى الزمني
         date_range = queryset.aggregate(
             first_date=Min('loading_date'),
             last_date=Max('loading_date'),
@@ -88,35 +88,67 @@ class ShipmentReportView(GenericAPIView):
         from_date = date_range['first_date'].strftime('%Y-%m-%d') if date_range['first_date'] else None
         to_date = date_range['last_date'].strftime('%Y-%m-%d') if date_range['last_date'] else None
 
-        # === 📆 عدد الشحنات حسب الأيام (آخر 7 أيام)
-        last_7_days = queryset.filter(loading_date__gte=now().date() - timedelta(days=6))
-        daily_stats = (
-            last_7_days
+        # === 📆 الشحنات لكل يوم خلال آخر 7 أيام (مع الأيام الفارغة)
+        today = now().date()
+        seven_days_ago = today - timedelta(days=6)
+
+        daily_qs = (
+            queryset
+            .filter(loading_date__gte=seven_days_ago)
             .annotate(day=TruncDay('loading_date'))
             .values('day')
             .annotate(total=Count('id'))
-            .order_by('day')
         )
+        daily_dict = {item['day'].strftime('%Y-%m-%d'): item['total'] for item in daily_qs}
 
-        # === 📆 عدد الشحنات حسب الأسابيع (آخر 4 أسابيع)
-        last_4_weeks = queryset.filter(loading_date__gte=now().date() - timedelta(weeks=4))
-        weekly_stats = (
-            last_4_weeks
+        daily_stats = []
+        for i in range(7):
+            day = seven_days_ago + timedelta(days=i)
+            day_str = day.strftime('%Y-%m-%d')
+            daily_stats.append({
+                'day': day_str,
+                'total': daily_dict.get(day_str, 0)
+            })
+
+        # === 📅 الشحنات لكل أسبوع في آخر 4 أسابيع (مع الأسابيع الفارغة)
+        weekly_qs = (
+            queryset
+            .filter(loading_date__gte=today - timedelta(weeks=4))
             .annotate(week=TruncWeek('loading_date'))
             .values('week')
             .annotate(total=Count('id'))
-            .order_by('week')
         )
+        weekly_dict = {item['week'].strftime('%Y-%m-%d'): item['total'] for item in weekly_qs}
 
-        # === 📆 عدد الشحنات حسب الأشهر (آخر 12 شهر)
-        last_12_months = queryset.filter(loading_date__gte=now().date().replace(day=1) - timedelta(days=365))
-        monthly_stats = (
-            last_12_months
+        weekly_stats = []
+        start_of_this_week = today - timedelta(days=today.weekday())
+        for i in range(4):
+            week_start = (start_of_this_week - timedelta(weeks=3 - i))
+            week_str = week_start.strftime('%Y-%m-%d')
+            weekly_stats.append({
+                'week': week_str,
+                'total': weekly_dict.get(week_str, 0)
+            })
+
+        # === 🗓 الشحنات لكل شهر خلال آخر 12 شهرًا (مع الشهور الفارغة)
+        monthly_qs = (
+            queryset
+            .filter(loading_date__gte=today.replace(day=1) - timedelta(days=365))
             .annotate(month=TruncMonth('loading_date'))
             .values('month')
             .annotate(total=Count('id'))
-            .order_by('month')
         )
+        monthly_dict = {item['month'].strftime('%Y-%m'): item['total'] for item in monthly_qs}
+
+        monthly_stats = []
+        current_month = today.replace(day=1)
+        for i in range(12):
+            month = (current_month - timedelta(days=i * 30)).replace(day=1)
+            month_str = month.strftime('%Y-%m')
+            monthly_stats.insert(0, {
+                'month': month_str,
+                'total': monthly_dict.get(month_str, 0)
+            })
 
         return Response({
             'all_shipments': all_shipments,
@@ -128,7 +160,7 @@ class ShipmentReportView(GenericAPIView):
             'to_date': to_date,
             'total_shipments_in_range': date_range['total_shipments'],
 
-            # 📊 الإحصائيات الزمنية
+            # 🟩 إحصائيات زمنية
             'daily_stats_last_7_days': daily_stats,
             'weekly_stats_last_4_weeks': weekly_stats,
             'monthly_stats_last_12_months': monthly_stats,
