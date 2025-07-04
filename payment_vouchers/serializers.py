@@ -95,6 +95,7 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
         validated_data['created_by'] = self.context['request'].user
         
         
+        
         if hasattr(self.context['request'].user, 'company_branch'):
             validated_data['issuing_branch'] = self.context['request'].user.company_branch
         

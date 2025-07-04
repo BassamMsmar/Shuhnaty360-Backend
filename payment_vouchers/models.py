@@ -147,8 +147,7 @@ class PaymentVoucher(models.Model):
         return fare + premium - deducted + (stay_cost * days_stayed) + fare_return
         
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
+        
         try:
             completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
         except ShipmentStatus.DoesNotExist:
@@ -168,3 +167,4 @@ class PaymentVoucher(models.Model):
                 action="PUT"
             )
 
+        super().save(*args, **kwargs)
