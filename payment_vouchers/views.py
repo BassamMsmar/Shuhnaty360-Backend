@@ -70,7 +70,20 @@ class PaymentVoucherCreateView(generics.CreateAPIView):
 
 class PaymentVoucherDetailView(generics.RetrieveAPIView):
     """عرض وحذف سند"""
-    queryset = PaymentVoucher.objects.all()
+    queryset = PaymentVoucher.objects.select_related(
+        "shipment",
+        "shipment__status",
+        "client",
+        "client_branch",
+        "driver",
+        "recipient",
+        "origin_city",
+        "destination_city",
+        "created_by",
+        "approved_by",
+        "receiver_name",
+        "issuing_branch"
+    )
     serializer_class = PaymentVoucherDetailSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

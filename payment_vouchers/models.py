@@ -133,7 +133,7 @@ class PaymentVoucher(models.Model):
         verbose_name_plural = "سندات الصرف"
 
     def __str__(self):
-        return f"سند صرف للشحنة {self.shipment.tracking_number}"
+        return f"سند صرف #{self.pk}"
 
     @property
     def total_cost(self):
