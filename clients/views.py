@@ -84,6 +84,7 @@ class ClientBranchList(generics.ListAPIView):
             'message': 'Successfully retrieved branches list',
             'data': response.data
         })
+    
 class ClientBranchCreate(generics.CreateAPIView):
     queryset = Branch.objects.all()
     serializer_class = ClientBranchCreateSerializer
@@ -139,6 +140,8 @@ class ClientOptionsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
+
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return Response({
@@ -152,6 +155,8 @@ class ClientBranchOptionsView(generics.ListAPIView):
     serializer_class = ClientBranchOptionSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+
+
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
