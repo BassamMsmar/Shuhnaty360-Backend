@@ -92,6 +92,7 @@ class PaymentVoucherOptionsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return Response({
