@@ -23,10 +23,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
     recipient = serializers.SlugField(read_only=True)
     issuing_branch = serializers.SlugField(read_only=True)
     created_by = serializers.SlugField(read_only=True)
-    receiver_name = serializers.SlugField(read_only=True)
-    approved_by = serializers.SlugField(read_only=True)
     total_cost = serializers.SerializerMethodField()
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
@@ -46,12 +43,9 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
             'created_at',
             'created_by',
             'is_approved',
-            'receiver_name',
-            'approved_by',
-            'updated_at',
             'total_cost',
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'total_cost']
 
     def get_total_cost(self, obj):
         return obj.total_cost
@@ -60,7 +54,6 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
     shipment = serializers.PrimaryKeyRelatedField(queryset=Shipment.objects.all(), required=True)
     issuing_branch = serializers.PrimaryKeyRelatedField(read_only=True)
     total_cost = serializers.SerializerMethodField()
-    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
 
@@ -83,10 +76,15 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
             'is_approved',
             'receiver_name',
             'approved_by',
-            'updated_at',
+            'fare',
+            'premium',
+            'deducted',
+            'days_stayed',
+            'stay_cost',
+            'fare_return',
             'total_cost',
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'issuing_branch']
+        read_only_fields = ['id', 'created_at', 'issuing_branch', 'total_cost']
     
     def get_total_cost(self, obj):
         return obj.total_cost
@@ -106,14 +104,14 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
     created_by = serializers.SlugField(read_only=True)
     receiver_name = serializers.SlugField(read_only=True)
     approved_by = serializers.SlugField(read_only=True)
-    total_cost = serializers.ReadOnlyField()
+    total_cost = serializers.IntegerField(read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = PaymentVoucher
         fields = '__all__'
-        read_only_fields = ['id', 'created_at', 'updated_at', 'total_cost']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 
