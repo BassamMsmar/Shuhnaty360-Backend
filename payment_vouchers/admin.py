@@ -29,3 +29,4 @@ class PaymentVoucherAdmin(admin.ModelAdmin):
         return obj.shipment.id if obj.shipment else "-"
 
 admin.site.register(PaymentVoucher, PaymentVoucherAdmin)
+

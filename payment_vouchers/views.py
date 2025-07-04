@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
 from .models import PaymentVoucher
-from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer
+from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer, PaymentVoucherApproveSerializer
 from shipments.models import Shipment
 
 
@@ -100,6 +100,27 @@ class PaymentVoucherDetailView(generics.RetrieveAPIView):
             'data': serializer.data
         })
 
+
+class PaymentVoucherApproveView(generics.UpdateAPIView):
+    """موافقة على سند"""
+    queryset = PaymentVoucher.objects.all()
+    serializer_class = PaymentVoucherApproveSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def patch(self, request, *args, **kwargs):
+        """موافقة على سند"""
+        instance = self.get_object()
+        instance.is_approved = True
+        instance.approved_by = request.user
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response({
+            'status': 'success',
+            'message': 'Payment voucher approved successfully',
+            'data': serializer.data
+        })
+
  
 class PaymentVoucherOptionsView(generics.ListAPIView):
     """عرض قائمة الخيارات لإنشاء سند جديد"""
@@ -116,5 +137,6 @@ class PaymentVoucherOptionsView(generics.ListAPIView):
             'message': 'Successfully retrieved payment vouchers options',
             'data': response.data
         })
+
 
    
