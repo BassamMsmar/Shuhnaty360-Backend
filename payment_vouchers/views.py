@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
 from .models import PaymentVoucher
-from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer
+from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer, PaymentVoucherApproveSerializer
 from shipments.models import Shipment
 
 
@@ -70,7 +70,20 @@ class PaymentVoucherCreateView(generics.CreateAPIView):
 
 class PaymentVoucherDetailView(generics.RetrieveAPIView):
     """عرض وحذف سند"""
-    queryset = PaymentVoucher.objects.all()
+    queryset = PaymentVoucher.objects.select_related(
+        "shipment",
+        "shipment__status",
+        "client",
+        "client_branch",
+        "driver",
+        "recipient",
+        "origin_city",
+        "destination_city",
+        "created_by",
+        "approved_by",
+        "receiver_name",
+        "issuing_branch"
+    )
     serializer_class = PaymentVoucherDetailSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -84,6 +97,27 @@ class PaymentVoucherDetailView(generics.RetrieveAPIView):
         return Response({
             'status': 'success',
             'message': 'Payment voucher retrieved successfully',
+            'data': serializer.data
+        })
+
+
+class PaymentVoucherApproveView(generics.UpdateAPIView):
+    """موافقة على سند"""
+    queryset = PaymentVoucher.objects.all()
+    serializer_class = PaymentVoucherApproveSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def patch(self, request, *args, **kwargs):
+        """موافقة على سند"""
+        instance = self.get_object()
+        instance.is_approved = True
+        instance.approved_by = request.user
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response({
+            'status': 'success',
+            'message': 'Payment voucher approved successfully',
             'data': serializer.data
         })
 
@@ -103,5 +137,6 @@ class PaymentVoucherOptionsView(generics.ListAPIView):
             'message': 'Successfully retrieved payment vouchers options',
             'data': response.data
         })
+
 
    

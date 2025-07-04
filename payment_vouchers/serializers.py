@@ -116,6 +116,12 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
+class PaymentVoucherApproveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentVoucher
+        fields = ['id', 'is_approved', 'approved_by']
+
+
 
 
 # ------------------------------

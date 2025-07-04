@@ -23,6 +23,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
+import debug_toolbar
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -69,6 +71,9 @@ urlpatterns = [
     ),
     # Root URL redirects to Swagger
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
+    # Debug toolbar
+    path('__debug__/', include(debug_toolbar.urls)),
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
