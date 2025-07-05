@@ -107,14 +107,14 @@ class PaymentVoucherApproveView(generics.UpdateAPIView):
     serializer_class = PaymentVoucherApproveSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-
+  
     def patch(self, request, *args, **kwargs):
         """موافقة على سند"""
         instance = self.get_object()
-        instance.is_approved = True
-        instance.approved_by = request.user
-        instance.save()
-        serializer = self.get_serializer(instance)
+        if instance.is_approved == True:
+            instance.approved_by = request.user
+            instance.save()
+            serializer = self.get_serializer(instance)
         return Response({
             'status': 'success',
             'message': 'Payment voucher approved successfully',

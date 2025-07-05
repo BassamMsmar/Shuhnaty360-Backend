@@ -7,11 +7,14 @@ from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
 from django.utils.timezone import now
 from datetime import timedelta
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth import get_user_model
+
 
 from shipments.models import Shipment, ShipmentStatus
 from profile_company.models import CompanyBranch
 from cities.models import City
-from django.contrib.auth import get_user_model
+from .serializers import ShipmentReportDummySerializer
+
 
 User = get_user_model()
 
@@ -24,6 +27,7 @@ class ShipmentReportView(GenericAPIView):
     filterset_fields = {
         'loading_date': ['gte', 'lte', 'exact'],
     }
+    serializer_class = ShipmentReportDummySerializer
 
     def get(self, request):
         queryset = self.filter_queryset(self.get_queryset())
