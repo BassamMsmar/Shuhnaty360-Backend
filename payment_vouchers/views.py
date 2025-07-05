@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
 from .models import PaymentVoucher
-from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer, PaymentVoucherApproveSerializer
+from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer, PaymentVoucherStatusUpdateSerializer
 from shipments.models import Shipment
 
 
@@ -27,8 +27,8 @@ class PaymentVoucherListView(generics.ListAPIView):
         'id': ['exact'],
         'shipment': ['exact'],
         'created_by': ['exact'],  # user who created the voucher
-        'is_approved': ['exact'], # if the voucher is approved
-        'approved_by': ['exact'], # user (the is staff) who approved the voucher
+        'approval_status': ['exact'], # if the voucher is approved
+        'reviewed_by': ['exact'], # user (the is staff) who approved the voucher
         'receiver_name': ['exact'], # driver name default
         'tracking_number': ['exact'],
         'issuing_branch': ['exact'],
@@ -80,7 +80,7 @@ class PaymentVoucherDetailView(generics.RetrieveAPIView):
         "origin_city",
         "destination_city",
         "created_by",
-        "approved_by",
+        "reviewed_by",
         "receiver_name",
         "issuing_branch"
     )
@@ -101,25 +101,65 @@ class PaymentVoucherDetailView(generics.RetrieveAPIView):
         })
 
 
-class PaymentVoucherApproveView(generics.UpdateAPIView):
+class PaymentVoucherStatusUpdateView(generics.UpdateAPIView):
     """موافقة على سند"""
     queryset = PaymentVoucher.objects.all()
-    serializer_class = PaymentVoucherApproveSerializer
+    serializer_class = PaymentVoucherStatusUpdateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
   
     def patch(self, request, *args, **kwargs):
-        """موافقة على سند"""
+        """تحديث حالة سند صرف (موافقة - رفض - إعادة إرسال)"""
         instance = self.get_object()
-        if instance.is_approved == True:
-            instance.approved_by = request.user
-            instance.save()
-            serializer = self.get_serializer(instance)
-        return Response({
-            'status': 'success',
-            'message': 'Payment voucher approved successfully',
-            'data': serializer.data
-        })
+        old_status = instance.approval_status
+        new_status = request.data.get('approval_status')
+
+        if new_status not in ['approved', 'rejected', 'pending']:
+            return Response({
+                'status': 'error',
+                'message': 'الحالة المرسلة غير صحيحة. يجب أن تكون: approved أو rejected أو pending.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # في حالة الرفض، تحقق من وجود سبب
+        if new_status == 'rejected':
+            rejection_reason = request.data.get('rejection_reason')
+            if not rejection_reason:
+                return Response({
+                    'status': 'error',
+                    'message': 'يرجى كتابة سبب الرفض.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            instance.rejection_reason = rejection_reason
+        else:
+            # إزالة سبب الرفض السابق في الحالات الأخرى
+            instance.rejection_reason = None
+
+        # تحديث القيم
+        instance.approval_status = new_status
+        instance.reviewed_by = request.user
+        instance.save()
+
+        # حفظ التعديلات الأخرى (إن وجدت) من serializer
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # سجل تاريخ التغيير
+        # from .models import PaymentVoucherHistory
+        # PaymentVoucherHistory.objects.create(
+        #     payment_voucher=instance,
+        #     old_status=old_status,
+        #     new_status=new_status,
+        #     action=new_status,
+        #     user=request.user,
+        #     notes=instance.rejection_reason if new_status == 'rejected' else ''
+        # )
+
+        # return Response({
+        #     'status': 'success',
+        #     'message': f'تم تحديث حالة السند إلى "{new_status}".',
+        #     'data': serializer.data
+        # })
+
 
  
 class PaymentVoucherOptionsView(generics.ListAPIView):
