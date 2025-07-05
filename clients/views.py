@@ -5,6 +5,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 from .models import Client, Branch
 from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList, ClientBranchUpdateSerializer, ClientOptionSerializer, ClientBranchOptionSerializer
@@ -15,6 +18,8 @@ class ClientViewSet(generics.ListCreateAPIView):
     serializer_class = ClientSerializerList
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['id', 'client_name_ar', 'client_name_en',]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -76,6 +81,9 @@ class ClientBranchList(generics.ListAPIView):
     serializer_class = ClientBranchListSerializer
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
+    pagination_class = PageNumberPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['id', 'branch_name_ar', 'branch_name_en',]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -104,7 +112,7 @@ class ClientBranchSDetail(generics.RetrieveDestroyAPIView):
     serializer_class = ClientBranchListSerializer
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
-
+ 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return Response({
