@@ -133,7 +133,7 @@ class PaymentVoucher(models.Model):
         verbose_name_plural = "سندات الصرف"
 
     def __str__(self):
-        return f"سند صرف للشحنة {self.shipment.tracking_number}"
+        return f"سند صرف #{self.pk}"
 
     @property
     def total_cost(self):
@@ -148,6 +148,7 @@ class PaymentVoucher(models.Model):
         
     def save(self, *args, **kwargs):
 
+        
         try:
             completed_status = ShipmentStatus.objects.get(name_ar="مكتملة")
         except ShipmentStatus.DoesNotExist:
@@ -167,4 +168,3 @@ class PaymentVoucher(models.Model):
                 action="PUT"
             )
         super().save(*args, **kwargs)
-

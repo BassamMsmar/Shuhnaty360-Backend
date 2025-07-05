@@ -19,6 +19,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
     origin_city = serializers.SlugField(read_only=True)
     destination_city = serializers.SlugField(read_only=True)
     client = serializers.SlugField(read_only=True)
+    approved_by = serializers.SlugField(read_only=True)
     client_branch = serializers.SlugField(read_only=True)
     recipient = serializers.SlugField(read_only=True)
     issuing_branch = serializers.SlugField(read_only=True)
@@ -43,6 +44,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
             'created_at',
             'created_by',
             'is_approved',
+            'approved_by',
             'total_cost',
         ]
         read_only_fields = ['id', 'created_at', 'total_cost']
@@ -93,6 +95,7 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
         validated_data['created_by'] = self.context['request'].user
         
         
+        
         if hasattr(self.context['request'].user, 'company_branch'):
             validated_data['issuing_branch'] = self.context['request'].user.company_branch
         
@@ -112,6 +115,12 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
         model = PaymentVoucher
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class PaymentVoucherApproveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentVoucher
+        fields = ['id', 'is_approved', 'approved_by']
 
 
 

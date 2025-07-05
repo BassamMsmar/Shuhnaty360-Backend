@@ -46,6 +46,8 @@ class CompanyOptionsView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     serializer_class = CompanyOptionSerializer
 
+
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return Response({
@@ -60,6 +62,7 @@ class CompanyBranchOptionsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = CompanyBranchOptionSerializer
+
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
