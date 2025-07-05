@@ -40,7 +40,7 @@ class PaymentVoucherListView(generics.ListAPIView):
         if self.request.user.is_superuser or   self.request.user.is_staff:
             context = PaymentVoucher.objects.all().order_by('-id')
         else:
-            context = PaymentVoucher.objects.filter(user=self.request.user).order_by('-id')
+            context = PaymentVoucher.objects.filter(created_by=self.request.user).order_by('-id')
         return context
 
     def get(self, request, *args, **kwargs):
