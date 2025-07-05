@@ -19,7 +19,7 @@ class PaymentVoucherAdmin(admin.ModelAdmin):
             "origin_city",
             "destination_city",
             "created_by",
-            "approved_by",
+            "reviewed_by",
             "receiver_name",
             "issuing_branch"
         )

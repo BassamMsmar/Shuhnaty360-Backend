@@ -11,7 +11,15 @@ from profile_company.models import CompanyBranch
 User = get_user_model()
 
 
+PENDING = 'pending'
+APPROVED = 'approved'
+REJECTED = 'rejected'
 
+APPROVAL_STATUS_CHOICES = [
+    (PENDING, 'Pending'),
+    (APPROVED, 'Approved'),
+    (REJECTED, 'Rejected'),
+]
 
 # Create your models here.
 class PaymentVoucher(models.Model):
@@ -88,10 +96,28 @@ class PaymentVoucher(models.Model):
         'تاريخ التحديث',
         auto_now=True
     )
-    is_approved= models.BooleanField(
-        'موافقة',
-        default=False
+    approval_status = models.CharField(
+        max_length=10,
+        choices=APPROVAL_STATUS_CHOICES,
+        default=PENDING,
+        verbose_name='مستلم المبلغ'
+
     )
+    reviewed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviewed_payment_vouchers',
+        verbose_name='مراجع السند'
+    )
+    rejection_reason = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='سبب الرفض'
+    )
+ 
     receiver_name = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -118,15 +144,7 @@ class PaymentVoucher(models.Model):
         verbose_name="فرع الإصدار"
     )
     
-    approved_by = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='approved_payment_vouchers',
-        verbose_name='معتمد السند'
-    )
-
+ 
     
     class Meta:
         verbose_name = "سند صرف"

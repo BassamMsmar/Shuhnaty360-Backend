@@ -19,7 +19,8 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
     origin_city = serializers.SlugField(read_only=True)
     destination_city = serializers.SlugField(read_only=True)
     client = serializers.SlugField(read_only=True)
-    approved_by = serializers.SlugField(read_only=True)
+    approval_status = serializers.SlugField(read_only=True)
+    receiver_name = serializers.SlugField(read_only=True)
     client_branch = serializers.SlugField(read_only=True)
     recipient = serializers.SlugField(read_only=True)
     issuing_branch = serializers.SlugField(read_only=True)
@@ -43,8 +44,9 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
             'recipient',
             'created_at',
             'created_by',
-            'is_approved',
-            'approved_by',
+            'reviewed_by',
+            'approval_status',
+            'receiver_name',
             'total_cost',
         ]
         read_only_fields = ['id', 'created_at', 'total_cost']
@@ -75,9 +77,8 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
             'recipient',
             'created_at',
             'created_by',
-            'is_approved',
+            'approval_status',
             'receiver_name',
-            'approved_by',
             'fare',
             'premium',
             'deducted',
@@ -106,7 +107,7 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
     shipment = ShipmentSerializerDetail(read_only=True)
     created_by = serializers.SlugField(read_only=True)
     receiver_name = serializers.SlugField(read_only=True)
-    approved_by = serializers.SlugField(read_only=True)
+    reviewed_by = serializers.SlugField(read_only=True)
     total_cost = serializers.IntegerField(read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     
@@ -117,10 +118,10 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
-class PaymentVoucherApproveSerializer(serializers.ModelSerializer):
+class PaymentVoucherStatusUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentVoucher
-        fields = ['id', 'is_approved', 'approved_by']
+        fields = ['id', 'approval_status', 'rejection_reason']
 
 
 
