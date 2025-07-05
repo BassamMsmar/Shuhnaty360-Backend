@@ -14,6 +14,7 @@ from drivers.models import Driver
 from clients.models import Client
 from recipient.models import Recipient
 from cities.models import City
+from .serializers import ShipmentReportDummySerializer
 
 User = get_user_model()
 
@@ -25,6 +26,7 @@ class ShipmentReportView(GenericAPIView):
     filterset_fields = {
         'loading_date': ['gte', 'lte', 'exact'], 
     }
+    serializer_class = ShipmentReportDummySerializer
 
     def get(self, request):
         queryset = self.filter_queryset(self.get_queryset())
