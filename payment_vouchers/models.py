@@ -100,7 +100,7 @@ class PaymentVoucher(models.Model):
         max_length=10,
         choices=APPROVAL_STATUS_CHOICES,
         default=PENDING,
-        verbose_name='مستلم المبلغ'
+        verbose_name='حالة السند'
 
     )
     reviewed_by = models.ForeignKey(
@@ -124,7 +124,7 @@ class PaymentVoucher(models.Model):
         null=True,
         blank=True,
         related_name='received_payment_vouchers',
-        verbose_name='مستلم المبلغ'
+        verbose_name='المستلم'
 
     )
     created_by = models.ForeignKey(
