@@ -119,11 +119,11 @@ def create_company_branches():
         print(f'Company Branch created for {company}')
 
 # Create 100 Users
-def create_user():
+def create_user(users):
     fake = Faker()
     branches = list(CompanyBranch.objects.all())
     
-    for i in range(1, 100):
+    for i in range(1, users):
         username = fake.user_name()
         # Make sure username is unique
         while User.objects.filter(username=username).exists():
@@ -146,15 +146,15 @@ def create_user():
     print(f'Users created successfully!')
 
 # Create 200 Clients
-def create_client():
+def create_client(clients):
     fake = Faker()
     
     # Check if we already have enough clients
-    if Client.objects.count() >= 200:
+    if Client.objects.count() >= clients:
         print('Clients already exist')
         return
         
-    for i in range(1, 200):
+    for i in range(1, clients):
         client_email = fake.email()
         # Generate phone number with max 20 characters
         phone = fake.phone_number()[:10]
@@ -176,11 +176,11 @@ def create_client():
             print(f'Client with email {client_email} already exists')
 
 # Create 100 Branches
-def create_branch():
+def create_branch(clients):
     fake = Faker()
     clients = Client.objects.all()
     cities = City.objects.all()
-    for i in range(1, 100):
+    for i in range(1, clients):
         Branch.objects.create(
             client=random.choice(clients), 
             name=fake.company(), 
@@ -193,12 +193,12 @@ def create_branch():
         print(f'Branch {i} created')
 
 # Create 1000 Drivers
-def create_driver():
+def create_driver(drivers):
     fake = Faker()
     truck_types = list(TruckType.objects.all())
 
     if truck_types:
-        for i in range(1, 1000):
+        for i in range(1, drivers):
             Driver.objects.create(
                 name=fake.name(),
                 phone_number=fake.phone_number()[:10],
@@ -215,7 +215,7 @@ def create_driver():
         print(f'Driver {i} created')
 
 # Create 500 Recipients
-def create_recipient():
+def create_recipient(recipients):
     fake = Faker()
     cities = City.objects.all()
     
@@ -223,7 +223,7 @@ def create_recipient():
         created_count = 0
         attempts = 0
         
-        while created_count < 500 and attempts < 1000:  # محاولة محددة العدد لتفادي حلقة لا نهائية
+        while created_count < recipients and attempts < 1000:  # محاولة محددة العدد لتفادي حلقة لا نهائية
             email = fake.email() if random.choice([True, False]) else None
             
             # تأكد من عدم تكرار البريد
@@ -249,9 +249,9 @@ def create_recipient():
         print("⚠️ No cities found.")
 
 # Create 10,000 Shipments
-def create_shipment():
+def create_shipment(shipments):
     # Check if we already have shipments
-    if Shipment.objects.count() > 10000:
+    if Shipment.objects.count() > shipments:
         print('Shipments already exist')
         return
         
@@ -283,7 +283,7 @@ def create_shipment():
         return
     
     # Create fewer shipments for testing
-    for i in range(1, 200000):
+    for i in range(1, shipments):
         # Create a shipment with proper client-branch relationship
         client = random.choice(clients)
         client_branches = Branch.objects.filter(client=client)
@@ -378,29 +378,16 @@ def create_shipment_history(shipment, statuses, users):
 
 
 
-# Clear existing data (uncomment if you want to clear data before creating new)
-
-ShipmentHistory.objects.all().delete()
-Shipment.objects.all().delete()
-# ShipmentStatus.objects.all().delete()
-# Recipient.objects.all().delete()
-Driver.objects.all().delete()
-# TruckType.objects.all().delete()
-# Branch.objects.all().delete()
-# Client.objects.all().delete()
-# City.objects.all().delete()
-# User.objects.filter(is_superuser=False).delete()
-
 
 # Create data in the correct order
 print('Starting data creation...')
-# create_superuser()
-# create_user()
-# create_company_profiles()
-# create_company_branches()
-# create_client()
-# create_driver()
-# create_branch()
-# create_recipient()
-# create_shipment()
+create_superuser()
+create_user(100)
+create_company_profiles()
+create_company_branches()
+create_client(50)
+create_driver(200)
+create_branch(200)
+create_recipient(200)
+create_shipment(10000)
 print('Data creation completed successfully!')
