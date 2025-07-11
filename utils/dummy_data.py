@@ -1,5 +1,7 @@
 import os
 import django
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # إعداد متغير البيئة لمشروع Django الخاص بك
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')  # استبدل 'project' باسم مشروعك الفعلي
@@ -14,14 +16,13 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-from cities.models import City
 from clients.models import Client, Branch
 from drivers.models import Driver, TruckType
 from recipient.models import Recipient
-from shipments.models import Shipment, ShipmentStatus, ShipmentHistory
+from shipments.models import Shipment, ShipmentHistory, ShipmentStatus
 from profile_company.models import CompanyProfile, CompanyBranch
+from cities.models import City
 
-CITIES = [('جدة', 'Jeddah'), ('الرياض', 'Riyadh'), ('الدمام', 'Dammam'), ('مكة', 'Makkah'), ('المدينة', 'Madinah')]
 
 # Create a superuser
 def create_superuser():
@@ -39,40 +40,6 @@ def create_superuser():
     else:
         print('Superuser already exists')
 
-# Create 5 Users
-def create_user():
-    fake = Faker()
-    branches = list(CompanyBranch.objects.all())
-    
-    for i in range(1, 200):
-        username = fake.user_name()
-        # Make sure username is unique
-        while User.objects.filter(username=username).exists():
-            username = fake.user_name()
-        
-        # Randomly assign a company branch to some users
-        company_branch = random.choice(branches) if branches and random.choice([True, False]) else None
-            
-        User.objects.create_user(
-            username=username, 
-            email=fake.email(), 
-            password='password', 
-            first_name=fake.first_name(),
-            last_name=fake.last_name(),
-            phone=fake.phone_number()[:10],
-            company_branch=company_branch
-        )
-        print(f'User {i} created')
-
-# Create 5 Cities
-def create_city():
-    for i, (ar_city, en_city) in enumerate(CITIES, start=1):
-        # Check if city already exists by either Arabic or English name
-        if not City.objects.filter(en_city=en_city).exists() and not City.objects.filter(ar_city=ar_city).exists():
-            City.objects.create(ar_city=ar_city, en_city=en_city)
-            print(f'City {en_city} ({ar_city}) created')
-        else:
-            print(f'City {en_city} ({ar_city}) already exists')
 
 # Create company profiles
 def create_company_profiles():
@@ -151,8 +118,34 @@ def create_company_branches():
         )
         print(f'Company Branch created for {company}')
 
+# Create 100 Users
+def create_user():
+    fake = Faker()
+    branches = list(CompanyBranch.objects.all())
+    
+    for i in range(1, 100):
+        username = fake.user_name()
+        # Make sure username is unique
+        while User.objects.filter(username=username).exists():
+            username = fake.user_name()
+        
+        # Randomly assign a company branch to some users
+        company_branch = random.choice(branches) if branches and random.choice([True, False]) else None
+            
+        User.objects.create_user(
+            username=username, 
+            email=fake.email(), 
+            password='password', 
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            phone=fake.phone_number()[:10],
+            company_branch=company_branch
+        )
+        print(f'User {i} created')
 
-# Create 5 Clients
+    print(f'Users created successfully!')
+
+# Create 200 Clients
 def create_client():
     fake = Faker()
     
@@ -182,12 +175,12 @@ def create_client():
         else:
             print(f'Client with email {client_email} already exists')
 
-# Create 10 Branches
+# Create 100 Branches
 def create_branch():
     fake = Faker()
     clients = Client.objects.all()
     cities = City.objects.all()
-    for i in range(1, 1000):
+    for i in range(1, 100):
         Branch.objects.create(
             client=random.choice(clients), 
             name=fake.company(), 
@@ -198,63 +191,17 @@ def create_branch():
             second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None
         )
         print(f'Branch {i} created')
-# Create Truck Types
-def create_truck_types():
-    truck_types = [
-        {'name_ar': 'شاحنة صغيرة', 'name_en': 'Small Truck', 'description': 'شاحنة صغيرة للشحنات الخفيفة'},
-        {'name_ar': 'شاحنة متوسطة', 'name_en': 'Medium Truck', 'description': 'شاحنة متوسطة للشحنات المتوسطة'},
-        {'name_ar': 'شاحنة كبيرة', 'name_en': 'Large Truck', 'description': 'شاحنة كبيرة للشحنات الثقيلة'},
-        {'name_ar': 'شاحنة مبردة', 'name_en': 'Refrigerated Truck', 'description': 'شاحنة مبردة للمواد الغذائية'}
-    ]
-    
-    for i, truck_type in enumerate(truck_types, 1):
-        # Check if truck type already exists
-        if not TruckType.objects.filter(name_en=truck_type['name_en']).exists():
-            TruckType.objects.create(
-                name_ar=truck_type['name_ar'],
-                name_en=truck_type['name_en'],
-                description=truck_type['description']
-            )
-            print(f'Truck Type {i} created')
-        else:
-            print(f'Truck Type {truck_type["name_en"]} already exists')
 
-# Create Shipment Statuses
-def create_shipment_status():
-    statuses = [
-        {'name_en': 'In Shipping', 'name_ar': 'قيد الشحن'},
-        {'name_en': 'In Transit', 'name_ar': 'في الطريق'},
-        {'name_en': 'Delivered', 'name_ar': 'تم التوصيل'},
-        {'name_en': 'Returned', 'name_ar': 'تم الإرجاع'},
-        {'name_en': 'Under Review', 'name_ar': 'قيد المراجعة'},
-        {'name_en': 'Cancelled', 'name_ar': 'تم الإلغاء'}
-    ]
-    
-    # Check if statuses already exist
-    if ShipmentStatus.objects.count() >= len(statuses):
-        print('Shipment statuses already exist')
-        return
-    
-    for status in statuses:
-        # Check if status already exists
-        if not ShipmentStatus.objects.filter(name_en=status['name_en']).exists():
-            ShipmentStatus.objects.create(name_en=status['name_en'], name_ar=status['name_ar'])
-            print(f'Shipment status {status["name_en"]} created')
-        else:
-            print(f'Shipment status {status["name_en"]} already exists')
-    
-    print('Shipment statuses creation completed')
-
-
-# Create 10 Drivers
+# Create 1000 Drivers
 def create_driver():
     fake = Faker()
     truck_types = list(TruckType.objects.all())
-    
-    for i in range(1, 2000):
-        Driver.objects.create(
-            name=fake.name(),
-            phone_number=fake.phone_number()[:10],
+
+    if truck_types:
+        for i in range(1, 1000):
+            Driver.objects.create(
+                name=fake.name(),
+                phone_number=fake.phone_number()[:10],
             nationality=fake.country(),
             language=random.choice(['en', 'ar', 'ur']),
             identity_number=fake.numerify(text='############'),
@@ -267,24 +214,44 @@ def create_driver():
         )
         print(f'Driver {i} created')
 
-# Create 10 Recipients
+# Create 500 Recipients
 def create_recipient():
     fake = Faker()
     cities = City.objects.all()
-    for i in range(1, 2000):
-        Recipient.objects.create(
-            name=fake.name(),
-            phone_number=fake.phone_number()[:10],
-            address=fake.address(),
-            city=random.choice(cities),
-            second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
-            email=fake.email() if random.choice([True, False]) else None
-        )
-        print(f'Recipient {i} created')
+    
+    if cities.exists():
+        created_count = 0
+        attempts = 0
+        
+        while created_count < 500 and attempts < 1000:  # محاولة محددة العدد لتفادي حلقة لا نهائية
+            email = fake.email() if random.choice([True, False]) else None
+            
+            # تأكد من عدم تكرار البريد
+            if email and Recipient.objects.filter(email=email).exists():
+                attempts += 1
+                continue
 
+            try:
+                Recipient.objects.create(
+                    name=fake.name(),
+                    phone_number=fake.phone_number()[:10],
+                    address=fake.address(),
+                    city=random.choice(cities),
+                    second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
+                    email=email
+                )
+                created_count += 1
+                print(f'✅ Recipient {created_count} created')
+            except Exception as e:
+                print(f'❌ Error creating recipient {created_count + 1}: {e}')
+                attempts += 1
+    else:
+        print("⚠️ No cities found.")
+
+# Create 10,000 Shipments
 def create_shipment():
     # Check if we already have shipments
-    if Shipment.objects.count() > 1100000:
+    if Shipment.objects.count() > 10000:
         print('Shipments already exist')
         return
         
@@ -299,11 +266,24 @@ def create_shipment():
     
     # Make sure we have all the necessary data
     if not all([users, drivers, branches, recipients, statuses, cities, clients]):
-        print('Missing required data for shipment creation')
+        if not users:
+            print('No users found')
+        if not drivers:
+            print('No drivers found')
+        if not branches:
+            print('No branches found')
+        if not recipients:
+            print('No recipients found')
+        if not statuses:
+            print('No statuses found')
+        if not cities:
+            print('No cities found')
+        if not clients:
+            print('No clients found')
         return
     
     # Create fewer shipments for testing
-    for i in range(1, 100000):
+    for i in range(1, 200000):
         # Create a shipment with proper client-branch relationship
         client = random.choice(clients)
         client_branches = Branch.objects.filter(client=client)
@@ -354,9 +334,6 @@ def create_shipment():
             updated_at=timezone.now() - timedelta(days=random.randint(0, 5))
         )
         
-        # Create shipment history entries
-        # create_shipment_history(shipment, statuses, users)
-            
         print(f'Shipment {i} created')
 
 # Create shipment history entries for a shipment
@@ -402,31 +379,28 @@ def create_shipment_history(shipment, statuses, users):
 
 
 # Clear existing data (uncomment if you want to clear data before creating new)
-'''
+
 ShipmentHistory.objects.all().delete()
 Shipment.objects.all().delete()
-ShipmentStatus.objects.all().delete()
-Recipient.objects.all().delete()
+# ShipmentStatus.objects.all().delete()
+# Recipient.objects.all().delete()
 Driver.objects.all().delete()
-TruckType.objects.all().delete()
-Branch.objects.all().delete()
-Client.objects.all().delete()
-City.objects.all().delete()
-User.objects.filter(is_superuser=False).delete()
-'''
+# TruckType.objects.all().delete()
+# Branch.objects.all().delete()
+# Client.objects.all().delete()
+# City.objects.all().delete()
+# User.objects.filter(is_superuser=False).delete()
+
 
 # Create data in the correct order
 print('Starting data creation...')
-create_city()
-create_company_profiles()
-create_company_branches()
 # create_superuser()
-create_user()
-create_client()
-create_branch()
-create_truck_types()
-create_driver()
-create_recipient()
-create_shipment_status()
-create_shipment()
+# create_user()
+# create_company_profiles()
+# create_company_branches()
+# create_client()
+# create_driver()
+# create_branch()
+# create_recipient()
+# create_shipment()
 print('Data creation completed successfully!')
