@@ -176,11 +176,11 @@ def create_client(clients):
             print(f'Client with email {client_email} already exists')
 
 # Create 100 Branches
-def create_branch(clients):
+def create_branch(branches):
     fake = Faker()
     clients = Client.objects.all()
     cities = City.objects.all()
-    for i in range(1, clients):
+    for i in range(1, branches):
         Branch.objects.create(
             client=random.choice(clients), 
             name=fake.company(), 
@@ -200,15 +200,15 @@ def create_driver(drivers):
     if truck_types:
         for i in range(1, drivers):
             Driver.objects.create(
-                name=fake.name(),
-                phone_number=fake.phone_number()[:10],
+            name=fake.name(),
+            phone_number=fake.phone_number()[:10],
             nationality=fake.country(),
             language=random.choice(['en', 'ar', 'ur']),
             identity_number=fake.numerify(text='############'),
             vehicle_number=fake.numerify(text='########'),
-            truck_type=random.choice(truck_types) if truck_types else None,
+            truck_type=random.choice(truck_types),
             status=random.choice(['available', 'busy', 'offline']),
-            is_active=random.choice([True, True, True, False]),  # 75% chance of being active
+            is_active=True,  # 75% chance of being active
             created_at=timezone.now() - timedelta(days=random.randint(1, 365)),
             updated_at=timezone.now() - timedelta(days=random.randint(0, 30))
         )
@@ -218,35 +218,36 @@ def create_driver(drivers):
 def create_recipient(recipients):
     fake = Faker()
     cities = City.objects.all()
-    
-    if cities.exists():
-        created_count = 0
-        attempts = 0
-        
-        while created_count < recipients and attempts < 1000:  # محاولة محددة العدد لتفادي حلقة لا نهائية
-            email = fake.email() if random.choice([True, False]) else None
-            
-            # تأكد من عدم تكرار البريد
-            if email and Recipient.objects.filter(email=email).exists():
-                attempts += 1
-                continue
 
-            try:
-                Recipient.objects.create(
-                    name=fake.name(),
-                    phone_number=fake.phone_number()[:10],
-                    address=fake.address(),
-                    city=random.choice(cities),
-                    second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
-                    email=email
-                )
-                created_count += 1
-                print(f'✅ Recipient {created_count} created')
-            except Exception as e:
-                print(f'❌ Error creating recipient {created_count + 1}: {e}')
-                attempts += 1
-    else:
+    if not cities.exists():
         print("⚠️ No cities found.")
+        return
+
+    created_count = 0
+    attempts = 0
+
+    while created_count < recipients and attempts < 1000:  # تحديد عدد المحاولات لتفادي التكرار أو الأخطاء المستمرة
+        email = fake.email() if random.choice([True, False]) else None
+
+        # تأكد من عدم تكرار البريد
+        if email and Recipient.objects.filter(email=email).exists():
+            attempts += 1
+            continue
+
+        try:
+            Recipient.objects.create(
+                name=fake.name(),
+                phone_number=fake.phone_number()[:10],
+                address=fake.address(),
+                city=random.choice(cities),
+                second_phone_number=fake.phone_number()[:10] if random.choice([True, False]) else None,
+                email=email
+            )
+            created_count += 1
+            print(f'✅ Recipient {created_count} created')
+        except Exception as e:
+            print(f'❌ Error creating recipient {created_count + 1}: {e}')
+            attempts += 1
 
 # Create 10,000 Shipments
 def create_shipment(shipments):
