@@ -197,6 +197,7 @@ class UsersUpdateSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password', None)
         validated_data.pop('password2', None)  # Remove it if exists
 
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
