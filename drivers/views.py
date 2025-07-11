@@ -6,7 +6,7 @@ from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework import filters
+
 from .models import Driver, TruckType
 from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreateSerializer, DriverOptionSerializer, TruckTypeOptionSerializer
 
@@ -17,7 +17,7 @@ class DriverListViewSet(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['id', 'driver_name_ar', 'driver_name_en',]
+    search_fields = ['id', 'name',]
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return Response({

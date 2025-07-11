@@ -19,7 +19,7 @@ class ClientViewSet(generics.ListCreateAPIView):
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['id', 'client_name_ar', 'client_name_en',]
+    search_fields = ['id', 'name',]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
