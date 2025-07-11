@@ -16,10 +16,11 @@ APPROVED = 'approved'
 REJECTED = 'rejected'
 
 APPROVAL_STATUS_CHOICES = [
-    (PENDING, 'Pending'),
-    (APPROVED, 'Approved'),
-    (REJECTED, 'Rejected'),
+    (PENDING, 'قيد المراجعة'),
+    (APPROVED, 'مقبول'),
+    (REJECTED, 'مرفوض'),
 ]
+
 
 # Create your models here.
 class PaymentVoucher(models.Model):
