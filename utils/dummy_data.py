@@ -218,15 +218,22 @@ def create_driver(drivers):
 def create_recipient(recipients):
     fake = Faker()
     cities = City.objects.all()
-    
-    if cities.exists():
-        created_count = 0
-        attempts = 0
 
-            # تأكد من عدم تكرار البريد
+    if not cities.exists():
+        print("⚠️ No cities found.")
+        return
+
+    created_count = 0
+    attempts = 0
+
+    while created_count < recipients and attempts < 1000:  # تحديد عدد المحاولات لتفادي التكرار أو الأخطاء المستمرة
+        email = fake.email() if random.choice([True, False]) else None
+
+        # تأكد من عدم تكرار البريد
         if email and Recipient.objects.filter(email=email).exists():
             attempts += 1
             continue
+
         try:
             Recipient.objects.create(
                 name=fake.name(),
@@ -241,8 +248,6 @@ def create_recipient(recipients):
         except Exception as e:
             print(f'❌ Error creating recipient {created_count + 1}: {e}')
             attempts += 1
-    else:
-        print("⚠️ No cities found.")
 
 # Create 10,000 Shipments
 def create_shipment(shipments):
