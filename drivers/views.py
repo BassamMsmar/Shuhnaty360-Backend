@@ -6,7 +6,7 @@ from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from rest_framework import filters
 from .models import Driver, TruckType
 from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreateSerializer, DriverOptionSerializer, TruckTypeOptionSerializer
 
