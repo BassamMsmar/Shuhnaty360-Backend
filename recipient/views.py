@@ -10,7 +10,7 @@ from .serializers import RecipientSerializerList, RecipientSerializerCreate, Rec
 
 # Create your views here.
 class RecipientViewSet(generics.ListAPIView):
-    queryset = Recipient.objects.all()
+    queryset = Recipient.objects.all().order_by('id')
     serializer_class = RecipientSerializerList
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

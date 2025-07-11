@@ -14,7 +14,7 @@ from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, 
 
 # Create your views here.
 class ClientViewSet(generics.ListCreateAPIView):
-    queryset = Client.objects.all()
+    queryset = Client.objects.all().order_by('id')
     serializer_class = ClientSerializerList
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
