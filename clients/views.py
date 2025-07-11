@@ -18,7 +18,7 @@ class ClientViewSet(generics.ListCreateAPIView):
     serializer_class = ClientSerializerList
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filter_backends = [filters.SearchFilter]
     search_fields = ['id', 'client_name_ar', 'client_name_en',]
 
     def get(self, request, *args, **kwargs):

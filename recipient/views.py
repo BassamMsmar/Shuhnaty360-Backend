@@ -14,6 +14,8 @@ class RecipientViewSet(generics.ListAPIView):
     serializer_class = RecipientSerializerList
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id', 'name']
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)

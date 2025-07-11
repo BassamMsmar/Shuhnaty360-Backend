@@ -16,7 +16,7 @@ class DriverListViewSet(generics.ListAPIView):
     serializer_class = DriverListSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filter_backends = [filters.SearchFilter]
     search_fields = ['id', 'driver_name_ar', 'driver_name_en',]
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
