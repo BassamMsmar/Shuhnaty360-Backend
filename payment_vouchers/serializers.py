@@ -15,16 +15,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PaymentVoucherListSerializer(serializers.ModelSerializer):
     shipment = serializers.PrimaryKeyRelatedField(read_only=True)
-    driver = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    origin_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
-    destination_city = serializers.SlugRelatedField(read_only=True, slug_field='ar_city')
-    client = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    receiver_name = serializers.SlugRelatedField(read_only=True, slug_field='get_full_name')
-    client_branch = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    recipient = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    issuing_branch = serializers.SlugRelatedField(read_only=True, slug_field='branch_name_ar')
-    created_by = serializers.SlugRelatedField(read_only=True, slug_field='get_full_name')
-    reviewed_by = serializers.SlugRelatedField(read_only=True, slug_field='get_full_name')
+    driver = serializers.SlugField()
+    origin_city = serializers.SlugField()
+    destination_city = serializers.SlugField()
+    client = serializers.SlugField()
+    receiver_name = serializers.SlugField()
+    client_branch = serializers.SlugField()
+    recipient = serializers.SlugField()
+    issuing_branch = serializers.SlugField()
+    created_by = serializers.SlugField()
+    reviewed_by = serializers.SlugField()
     approval_status_display = serializers.SerializerMethodField()
     total_cost = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
@@ -115,15 +115,9 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
 class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
     shipment = ShipmentSerializerDetail(read_only=True)
 
-    created_by = serializers.SlugRelatedField(
-        read_only=True, slug_field='get_full_name'
-    )
-    receiver_name = serializers.SlugRelatedField(
-        read_only=True, slug_field='get_full_name'
-    )
-    reviewed_by = serializers.SlugRelatedField(
-        read_only=True, slug_field='get_full_name'
-    )
+    created_by = serializers.SlugField()
+    receiver_name = serializers.SlugField()
+    reviewed_by = serializers.SlugField()
 
     approval_status_display = serializers.SerializerMethodField()
     total_cost = serializers.SerializerMethodField()
@@ -141,6 +135,21 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
 
     def get_total_cost(self, obj):
         return obj.total_cost
+
+    def get_receiver_name(self, obj):
+        if obj.receiver_name:
+            return obj.receiver_name.get_full_name()
+        return None
+
+    def get_created_by(self, obj):
+        if obj.created_by:
+            return obj.created_by.get_full_name()
+        return None
+
+    def get_reviewed_by(self, obj):
+        if obj.reviewed_by:
+            return obj.reviewed_by.get_full_name()
+        return None
 
 from rest_framework import serializers
 from .models import PaymentVoucher
