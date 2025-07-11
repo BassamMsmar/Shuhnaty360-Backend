@@ -22,10 +22,9 @@ from recipient.models import Recipient
 from shipments.models import Shipment, ShipmentStatus, ShipmentHistory
 
 
-# Create shipments
-def create_shipment():
+def create_shipment(shipments):
     # Check if we already have shipments
-    if Shipment.objects.count() > 100000000:
+    if Shipment.objects.count() > shipments:
         print('Shipments already exist')
         return
         
@@ -40,11 +39,24 @@ def create_shipment():
     
     # Make sure we have all the necessary data
     if not all([users, drivers, branches, recipients, statuses, cities, clients]):
-        print('Missing required data for shipment creation')
+        if not users:
+            print('No users found')
+        if not drivers:
+            print('No drivers found')
+        if not branches:
+            print('No branches found')
+        if not recipients:
+            print('No recipients found')
+        if not statuses:
+            print('No statuses found')
+        if not cities:
+            print('No cities found')
+        if not clients:
+            print('No clients found')
         return
     
     # Create fewer shipments for testing
-    for i in range(1, 1000000):
+    for i in range(1, shipments):
         # Create a shipment with proper client-branch relationship
         client = random.choice(clients)
         client_branches = Branch.objects.filter(client=client)
@@ -95,9 +107,6 @@ def create_shipment():
             updated_at=timezone.now() - timedelta(days=random.randint(0, 5))
         )
         
-        # Create shipment history entries
-        # create_shipment_history(shipment, statuses, users)
-            
         print(f'Shipment {i} created')
 
 # Create shipment history entries for a shipment
@@ -142,23 +151,12 @@ def create_shipment_history(shipment, statuses, users):
 
 
 
-# Clear existing data (uncomment if you want to clear data before creating new)
-'''
-ShipmentHistory.objects.all().delete()
-Shipment.objects.all().delete()
-ShipmentStatus.objects.all().delete()
-Recipient.objects.all().delete()
-Driver.objects.all().delete()
-TruckType.objects.all().delete()
-Branch.objects.all().delete()
-Client.objects.all().delete()
-City.objects.all().delete()
-User.objects.filter(is_superuser=False).delete()
-'''
+
+
 
 # Create data in the correct order
 print('Starting data creation...')
 
-create_shipment()
+create_shipment(50000)
 create_shipment_history()
 print('Data creation completed successfully!')
