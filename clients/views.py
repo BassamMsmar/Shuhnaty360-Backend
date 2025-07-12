@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from rest_framework import filters
 from .models import Client, Branch
 from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList, ClientBranchUpdateSerializer, ClientOptionSerializer, ClientBranchOptionSerializer
 
