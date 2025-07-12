@@ -19,7 +19,6 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
     origin_city = serializers.SlugField()
     destination_city = serializers.SlugField()
     client = serializers.SlugField()
-    receiver_name = serializers.SlugField()
     client_branch = serializers.SlugField()
     recipient = serializers.SlugField()
     issuing_branch = serializers.SlugField()
@@ -87,10 +86,12 @@ class PaymentVoucherCreateSerializer(serializers.ModelSerializer):
             'issuing_branch',
             'client_invoice_number',
             'recipient',
+            'receiver_name',
+            'receiver_phone',
+            'receiver_identity',
             'created_at',
             'created_by',
             'approval_status',
-            'receiver_name',
             'fare',
             'premium',
             'deducted',
@@ -117,7 +118,6 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
     shipment = ShipmentSerializerDetail(read_only=True)
 
     created_by = serializers.SlugField()
-    receiver_name = serializers.SlugField()
     reviewed_by = serializers.SlugField()
 
     approval_status_display = serializers.SerializerMethodField()
@@ -177,6 +177,8 @@ class PaymentVoucherUpdateSerializer(serializers.ModelSerializer):
             'approval_status',
             'rejection_reason',
             'receiver_name',
+            'receiver_phone',
+            'receiver_identity',
             'fare',
             'premium',
             'deducted',
