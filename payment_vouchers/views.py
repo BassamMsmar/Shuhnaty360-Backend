@@ -111,6 +111,7 @@ class PaymentVoucherUpdateView(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         """تحديث حالة السند وتعديل الحقول المرتبطة"""
         instance = self.get_object()
+        print(request.data)
         new_status = request.data.get('approval_status')
 
         if new_status not in ['approved', 'rejected', 'pending']:
