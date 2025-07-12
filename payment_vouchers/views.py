@@ -82,7 +82,6 @@ class PaymentVoucherDetailView(generics.RetrieveAPIView):
         "destination_city",
         "created_by",
         "reviewed_by",
-        "receiver_name",
         "issuing_branch"
     )
     serializer_class = PaymentVoucherDetailSerializer
