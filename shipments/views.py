@@ -187,7 +187,7 @@ class ShipmentOptionsView(generics.ListAPIView):
     serializer_class = ShipmentOptionSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    pagination_class = None
+    
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
