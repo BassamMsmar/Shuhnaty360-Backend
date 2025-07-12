@@ -137,10 +137,6 @@ class PaymentVoucherDetailSerializer(serializers.ModelSerializer):
     def get_total_cost(self, obj):
         return obj.total_cost
 
-    def get_receiver_name(self, obj):
-        if obj.receiver_name:
-            return obj.receiver_name.get_full_name()
-        return None
 
     def get_created_by(self, obj):
         if obj.created_by:
