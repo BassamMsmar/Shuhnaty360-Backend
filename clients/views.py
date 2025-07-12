@@ -2,16 +2,18 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from rest_framework import filters
 from .models import Client, Branch
 from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList, ClientBranchUpdateSerializer, ClientOptionSerializer, ClientBranchOptionSerializer
 
 # Create your views here.
 class ClientViewSet(generics.ListCreateAPIView):
-    queryset = Client.objects.all()
+    queryset = Client.objects.all().order_by('id')
     serializer_class = ClientSerializerList
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id', 'name',]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
