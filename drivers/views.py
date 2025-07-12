@@ -12,12 +12,12 @@ from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreate
 
 # Create your views here.
 class DriverListViewSet(generics.ListAPIView):
-    queryset = Driver.objects.all()
+    queryset = Driver.objects.all().order_by('id')
     serializer_class = DriverListSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['id', 'driver_name_ar', 'driver_name_en',]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id', 'name',]
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return Response({

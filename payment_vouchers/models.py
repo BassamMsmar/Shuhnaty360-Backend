@@ -32,6 +32,14 @@ class PaymentVoucher(models.Model):
         verbose_name='الشحنة المرتبطة'
     )
 
+    tracking_number = models.CharField(
+        "رقم الشحنة",
+        max_length=50,
+        unique=True,
+        null=True,
+        blank=True
+    )
+
     driver = models.ForeignKey(
         Driver,
         on_delete=models.SET_NULL,

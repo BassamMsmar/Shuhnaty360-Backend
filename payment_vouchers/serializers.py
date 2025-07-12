@@ -33,6 +33,7 @@ class PaymentVoucherListSerializer(serializers.ModelSerializer):
         model = PaymentVoucher
         fields = [
             'id',
+            'tracking_number',
             'shipment',
             'driver',
             'tracking_number',

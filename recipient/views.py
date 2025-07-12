@@ -4,16 +4,18 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from rest_framework import filters
 from .models import Recipient
 from .serializers import RecipientSerializerList, RecipientSerializerCreate, RecipientOptionSerializer
 
 # Create your views here.
 class RecipientViewSet(generics.ListAPIView):
-    queryset = Recipient.objects.all()
+    queryset = Recipient.objects.all().order_by('id')
     serializer_class = RecipientSerializerList
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id', 'name']
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)

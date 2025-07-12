@@ -1,31 +1,103 @@
-from typing import override
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import generics
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .models import Client, Branch
-from .serializers import ClientSerializerDetails, ClientBranchCreateSerializer, ClientBranchListSerializer, ClientSerializerList, ClientBranchUpdateSerializer, ClientOptionSerializer, ClientBranchOptionSerializer
+from .models import Driver, TruckType
+from .serializers import DriverListSerializer, TruckTypeSerializer, DriverCreateSerializer, DriverOptionSerializer, TruckTypeOptionSerializer
 
 # Create your views here.
-class ClientViewSet(generics.ListCreateAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializerList
-    permission_classes = [IsAdminUser]
+class DriverListViewSet(generics.ListAPIView):
+    queryset = Driver.objects.all().order_by('id')
+    serializer_class = DriverListSerializer
+    permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['id', 'client_name_ar', 'client_name_en',]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id', 'name',]
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Successfully retrieved drivers list',
+            'data': response.data
+        })
+
+class DriverRetrieve(generics.RetrieveDestroyAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverListSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return Response({
             'status': 'success',
-            'message': 'Successfully retrieved clients list',
+            'message': 'Driver details retrieved successfully',
+            'data': response.data
+        })
+
+
+class DriverCreateViewSet(generics.CreateAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverCreateSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver created successfully',
+            'data': response.data
+        })
+
+
+class DriverUpdate(generics.UpdateAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverCreateSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+
+
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver updated successfully',
+            'data': response.data
+        })
+
+    def patch(self, request, *args, **kwargs):
+        response = super().patch(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Driver updated successfully',
+            'data': response.data
+        })
+
+
+
+
+
+class TruckTypeViewSet(generics.ListCreateAPIView):
+    queryset = TruckType.objects.all()
+    serializer_class = TruckTypeSerializer
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
+    
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return Response({
+            'status': 'success',
+            'message': 'Successfully retrieved truck types list',
             'data': response.data
         })
 
@@ -33,118 +105,14 @@ class ClientViewSet(generics.ListCreateAPIView):
         response = super().post(request, *args, **kwargs)
         return Response({
             'status': 'success',
-            'message': 'Client created successfully',
+            'message': 'Truck type created successfully',
             'data': response.data
         })
 
-   
 
-class ClientDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializerDetails
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Client details retrieved successfully',
-            'data': response.data
-        })
-    
-    def put(self, request, *args, **kwargs):
-        response = super().put(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Client updated successfully',
-            'data': response.data
-        })
-    
-    def patch(self, request, *args, **kwargs):
-        response = super().patch(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Client updated successfully',
-            'data': response.data
-        })
-    
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Client deleted successfully'
-        })
-
-class ClientBranchList(generics.ListAPIView):
-    queryset = Branch.objects.all()
-    serializer_class = ClientBranchListSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
-    pagination_class = PageNumberPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['id', 'branch_name_ar', 'branch_name_en',]
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Successfully retrieved branches list',
-            'data': response.data
-        })
-    
-class ClientBranchCreate(generics.CreateAPIView):
-    queryset = Branch.objects.all()
-    serializer_class = ClientBranchCreateSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Branch created successfully',
-            'data': response.data
-        })
-
-class ClientBranchSDetail(generics.RetrieveDestroyAPIView):
-    queryset = Branch.objects.all()
-    serializer_class = ClientBranchListSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
- 
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Branch details retrieved successfully',
-            'data': response.data
-        })
-class ClientBranchUpdate(generics.UpdateAPIView):
-    queryset = Branch.objects.all()
-    serializer_class = ClientBranchUpdateSerializer
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
-
-    def put(self, request, *args, **kwargs):
-        response = super().put(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Branch updated successfully',
-            'data': response.data
-        })
-    
-    def patch(self, request, *args, **kwargs):
-        response = super().patch(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Branch updated successfully',
-            'data': response.data
-        })
-    
-class ClientOptionsView(generics.ListAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientOptionSerializer
+class TruckTypeOptionsView(generics.ListAPIView):
+    queryset = TruckType.objects.all()
+    serializer_class = TruckTypeOptionSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -154,13 +122,14 @@ class ClientOptionsView(generics.ListAPIView):
         response = super().get(request, *args, **kwargs)
         return Response({
             'status': 'success',
-            'message': 'Clients options retrieved successfully',
+            'message': 'Truck types options retrieved successfully',
             'data': response.data
         })
 
-class ClientBranchOptionsView(generics.ListAPIView):
-    queryset = Branch.objects.all()
-    serializer_class = ClientBranchOptionSerializer
+
+class DriverOptionsView(generics.ListAPIView):
+    queryset = Driver.objects.all()
+    serializer_class = DriverOptionSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -170,6 +139,6 @@ class ClientBranchOptionsView(generics.ListAPIView):
         response = super().get(request, *args, **kwargs)
         return Response({
             'status': 'success',
-            'message': 'Branches options retrieved successfully',
+            'message': 'Drivers options retrieved successfully',
             'data': response.data
         })
