@@ -127,13 +127,25 @@ class PaymentVoucher(models.Model):
         verbose_name='سبب الرفض'
     )
  
-    receiver_name = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
+    receiver_name = models.CharField(
+        max_length=255,
         null=True,
         blank=True,
-        related_name='received_payment_vouchers',
-        verbose_name='المستلم'
+        verbose_name='اسم المستلم'
+
+    )
+    receiver_phone = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='رقم الهاتف'
+
+    )
+    receiver_identity = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='رقم الهوية'
 
     )
     created_by = models.ForeignKey(

@@ -32,9 +32,10 @@ class PaymentVoucherListView(generics.ListAPIView):
         'receiver_name': ['exact'], # driver name default
         'tracking_number': ['exact'],
         'issuing_branch': ['exact'],
+        'client_invoice_number': ['exact'],
         'created_at': ['gte', 'lte'],
     }
-    search_fields = ['id', 'tracking_number', 'created_by__username', 'shipment']
+    search_fields = ['id', 'tracking_number', 'created_by__username', 'shipment_id']
 
     def get_queryset(self):
         if self.request.user.is_superuser or   self.request.user.is_staff:
