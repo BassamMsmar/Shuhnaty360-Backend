@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
 from .models import PaymentVoucher
-from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer, PaymentVoucherStatusUpdateSerializer
+from .serializers import PaymentVoucherCreateSerializer, PaymentVoucherListSerializer, PaymentVoucherDetailSerializer, PaymentVoucherOptionsSerializer, PaymentVoucherUpdateSerializer
 from shipments.models import Shipment
 
 
@@ -101,17 +101,16 @@ class PaymentVoucherDetailView(generics.RetrieveAPIView):
         })
 
 
-class PaymentVoucherStatusUpdateView(generics.UpdateAPIView):
-    """موافقة على سند"""
+class PaymentVoucherUpdateView(generics.UpdateAPIView):
+    """تحديث سند الصرف مع تعديل الحقول المالية والإدارية"""
     queryset = PaymentVoucher.objects.all()
-    serializer_class = PaymentVoucherStatusUpdateSerializer
+    serializer_class = PaymentVoucherUpdateSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-  
+
     def patch(self, request, *args, **kwargs):
-        """تحديث حالة سند صرف (موافقة - رفض - إعادة إرسال)"""
+        """تحديث حالة السند وتعديل الحقول المرتبطة"""
         instance = self.get_object()
-        old_status = instance.approval_status
         new_status = request.data.get('approval_status')
 
         if new_status not in ['approved', 'rejected', 'pending']:
@@ -120,7 +119,7 @@ class PaymentVoucherStatusUpdateView(generics.UpdateAPIView):
                 'message': 'الحالة المرسلة غير صحيحة. يجب أن تكون: approved أو rejected أو pending.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        # في حالة الرفض، تحقق من وجود سبب
+        # تحقق من سبب الرفض إذا كانت الحالة مرفوضة
         if new_status == 'rejected':
             rejection_reason = request.data.get('rejection_reason')
             if not rejection_reason:
@@ -130,18 +129,21 @@ class PaymentVoucherStatusUpdateView(generics.UpdateAPIView):
                 }, status=status.HTTP_400_BAD_REQUEST)
             instance.rejection_reason = rejection_reason
         else:
-            # إزالة سبب الرفض السابق في الحالات الأخرى
             instance.rejection_reason = None
 
-        # تحديث القيم
         instance.approval_status = new_status
         instance.reviewed_by = request.user
-        instance.save()
 
-        # حفظ التعديلات الأخرى (إن وجدت) من serializer
+        # مرّر بقية الحقول القابلة للتعديل عبر السيريالايزر
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        return Response({
+            'status': 'success',
+            'message': 'تم تحديث السند بنجاح.',
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
 
         # سجل تاريخ التغيير
         # from .models import PaymentVoucherHistory
