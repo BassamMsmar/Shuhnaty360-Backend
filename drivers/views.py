@@ -86,7 +86,7 @@ class DriverUpdate(generics.UpdateAPIView):
 
 
 class TruckTypeViewSet(generics.ListCreateAPIView):
-    queryset = TruckType.objects.all()
+    queryset = TruckType.objects.all().order_by('id')
     serializer_class = TruckTypeSerializer
     permission_classes = [IsAdminUser]
     authentication_classes = [JWTAuthentication]
@@ -111,7 +111,7 @@ class TruckTypeViewSet(generics.ListCreateAPIView):
 
 
 class TruckTypeOptionsView(generics.ListAPIView):
-    queryset = TruckType.objects.all()
+    queryset = TruckType.objects.all().order_by('id')
     serializer_class = TruckTypeOptionSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -128,7 +128,7 @@ class TruckTypeOptionsView(generics.ListAPIView):
 
 
 class DriverOptionsView(generics.ListAPIView):
-    queryset = Driver.objects.all()
+    queryset = Driver.objects.all().order_by('id')
     serializer_class = DriverOptionSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

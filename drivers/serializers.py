@@ -8,12 +8,15 @@ class TruckTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DriverListSerializer(serializers.ModelSerializer):
-    truck_type = serializers.SlugField(source='truck_type.name_ar')
+    truck_type = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     class Meta:
         model = Driver
         fields = '__all__'
+
+    def get_truck_type(self, obj):
+        return obj.truck_type.name_ar if obj.truck_type else None
 class DriverCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver

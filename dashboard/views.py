@@ -20,7 +20,7 @@ User = get_user_model()
 
 
 class ShipmentReportView(GenericAPIView):
-    queryset = Shipment.objects.all()
+    queryset = Shipment.objects.all().order_by('id')
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend]
