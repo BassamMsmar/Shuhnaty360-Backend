@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,8 +30,8 @@ SECRET_KEY = 'django-insecure-4d1l_xba2c1m@%#lfyebh9)4(06w%vkj(zr3u9+5=3@wbw(y$6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = [ 'www.shuhnaty.com', 'shuhnaty.com', '137.184.61.215', '127.0.0.1']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+# ALLOWED_HOSTS = [ 'www.shuhnaty.com', 'shuhnaty.com', '137.184.61.215', '127.0.0.1']
 
 # Frontend settings
 FRONTEND_URL = 'http://localhost:5173'  # Change this to your frontend URL in production
