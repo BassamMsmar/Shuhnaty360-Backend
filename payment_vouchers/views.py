@@ -122,12 +122,14 @@ class PaymentVoucherUpdateView(generics.UpdateAPIView):
         # تحقق من سبب الرفض إذا كانت الحالة مرفوضة
         if new_status == 'rejected':
             rejection_reason = request.data.get('rejection_reason')
+
             if not rejection_reason:
                 return Response({
                     'status': 'error',
                     'message': 'يرجى كتابة سبب الرفض.'
                 }, status=status.HTTP_400_BAD_REQUEST)
             instance.rejection_reason = rejection_reason
+
         else:
             instance.rejection_reason = None
 
@@ -166,7 +168,7 @@ class PaymentVoucherUpdateView(generics.UpdateAPIView):
  
 class PaymentVoucherOptionsView(generics.ListAPIView):
     """عرض قائمة الخيارات لإنشاء سند جديد"""
-    queryset = PaymentVoucher.objects.all()
+    queryset = PaymentVoucher.objects.all().order_by('id')
     serializer_class = PaymentVoucherOptionsSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

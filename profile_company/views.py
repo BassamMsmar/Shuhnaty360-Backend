@@ -10,7 +10,7 @@ from .serializers import CompanyProfileSerializer, CompanyBranchSerializer, Comp
 
 
 class CompanyProfileViewSet(generics.ListAPIView):
-    queryset = CompanyProfile.objects.all()
+    queryset = CompanyProfile.objects.all().order_by('id')
     serializer_class = CompanyProfileSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -24,7 +24,7 @@ class CompanyProfileViewSet(generics.ListAPIView):
         })
 
 class CompanyBranchViewSet(generics.ListAPIView):
-    queryset = CompanyBranch.objects.all()
+    queryset = CompanyBranch.objects.all().order_by('id')
     serializer_class = CompanyBranchSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

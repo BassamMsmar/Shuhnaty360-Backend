@@ -133,16 +133,23 @@ class ShipmentUpdate(generics.UpdateAPIView):
             )
     
     def patch(self, request, *args, **kwargs):
-        response = super().patch(request, *args, **kwargs)
-        return Response({
-            'status': 'success',
-            'message': 'Shipment updated successfully',
-            'data': response.data
-        })
-        
+        partial = True
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response({
+                'status': 'success',
+                'message': 'Shipment updated successfully',
+                'data': serializer.data
+            })
+        else:
+            print("Serializer errors:", serializer.errors)
+            return Response(serializer.errors, status=400)
+
 
 class ShipmentStatusView(generics.ListCreateAPIView):
-    queryset = ShipmentStatus.objects.all()
+    queryset = ShipmentStatus.objects.all().order_by('id')
     serializer_class = ShipmentStatusSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

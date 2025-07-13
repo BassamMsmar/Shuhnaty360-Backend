@@ -9,7 +9,7 @@ from .serializers import CitySerializer, CityOptionSerializer
 
 # Create your views here.
 class CityViewSet(generics.ListCreateAPIView):
-    queryset = City.objects.all()
+    queryset = City.objects.all().order_by('id')
     serializer_class = CitySerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -23,7 +23,7 @@ class CityViewSet(generics.ListCreateAPIView):
         })
 
 class CityDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = City.objects.all()
+    queryset = City.objects.all().order_by('id')
     serializer_class = CitySerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
