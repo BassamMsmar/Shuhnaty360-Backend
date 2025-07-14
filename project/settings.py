@@ -35,11 +35,6 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 # Frontend settings
 FRONTEND_URL = os.getenv('FRONTEND_URL')  # Change this to your frontend URL in production
 
-print(os.getenv('FRONTEND_URL'))
-print(os.getenv('ALLOWED_HOSTS'))
-print(os.getenv('DEBUG'))
-print(os.getenv('SECRET_KEY'))
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -144,12 +139,12 @@ SWAGGER_SETTINGS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'aljeed_db',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
