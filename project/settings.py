@@ -25,17 +25,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4d1l_xba2c1m@%#lfyebh9)4(06w%vkj(zr3u9+5=3@wbw(y$6'
-
+SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 # ALLOWED_HOSTS = [ 'www.shuhnaty.com', 'shuhnaty.com', '137.184.61.215', '127.0.0.1']
 
 # Frontend settings
-FRONTEND_URL = 'http://localhost:5173'  # Change this to your frontend URL in production
+FRONTEND_URL = os.getenv('FRONTEND_URL')  # Change this to your frontend URL in production
 
+print(os.getenv('FRONTEND_URL'))
+print(os.getenv('ALLOWED_HOSTS'))
+print(os.getenv('DEBUG'))
+print(os.getenv('SECRET_KEY'))
 
 # Application definition
 
