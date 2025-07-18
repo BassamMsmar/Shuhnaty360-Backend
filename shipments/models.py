@@ -89,7 +89,8 @@ class Shipment(models.Model):
         Recipient,
         related_name='shipments_recipient',
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True
     )
     notes_recipient = models.TextField("ملاحظات المستلم", null=True, blank=True)
 

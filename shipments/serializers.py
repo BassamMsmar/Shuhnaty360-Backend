@@ -107,7 +107,8 @@ class ShipmentSerializerCreate(serializers.ModelSerializer):
     destination_city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
     client = serializers.PrimaryKeyRelatedField(queryset=Client.objects.all())
     client_branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all())
-    recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all())
+    recipient = serializers.PrimaryKeyRelatedField(queryset=Recipient.objects.all(), required=False,
+    allow_null=True)
     status = serializers.PrimaryKeyRelatedField(queryset=ShipmentStatus.objects.all())
     fare = serializers.IntegerField()
 
@@ -230,6 +231,13 @@ class ShipmentSerializerUpdate(serializers.ModelSerializer):
     'fare',
     'premium',
     'total_cost',
+        ]
+
+class ShipmentUpdateStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shipment
+        fields = [
+            'status',
         ]
 
 class ShipmentOptionSerializer(serializers.ModelSerializer):
