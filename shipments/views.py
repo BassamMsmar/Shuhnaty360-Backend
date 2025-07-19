@@ -1,3 +1,4 @@
+from typing import override
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,7 +11,7 @@ from django.utils import timezone
 
 
 from .models import Shipment, ShipmentHistory, ShipmentStatus
-from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializerCreate, ShipmentStatusSerializer, ShipmentSerializerUpdate, ShipmentOptionSerializer, ShipmentStatusOptionSerializer, ClientInvoiceNumberOptionSerializer
+from .serializers import ShipmentSerializerList, ShipmentSerializerDetail, ShipmentSerializerCreate, ShipmentStatusSerializer, ShipmentSerializerUpdate, ShipmentUpdateStatusSerializer, ShipmentOptionSerializer, ShipmentStatusOptionSerializer, ClientInvoiceNumberOptionSerializer
 
 # Create your views here.
 
@@ -147,6 +148,31 @@ class ShipmentUpdate(generics.UpdateAPIView):
             print("Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
 
+class ShipmentUpdateStatus(generics.UpdateAPIView):
+    queryset = Shipment.objects.all()
+    serializer_class = ShipmentUpdateStatusSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def patch(self, request, *args, **kwargs):
+        partial = True
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response({
+                'status': 'success',
+                'message': 'Shipment updated successfully',
+                'data': serializer.data
+            })
+        else:
+            print("Serializer errors:", serializer.errors)
+            return Response(serializer.errors, status=400)
+
+ 
+
+
+        
 
 class ShipmentStatusView(generics.ListCreateAPIView):
     queryset = ShipmentStatus.objects.all().order_by('id')
