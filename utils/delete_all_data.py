@@ -17,15 +17,22 @@ from shipments.models import Shipment, ShipmentHistory, ShipmentStatus
 from profile_company.models import CompanyProfile, CompanyBranch
 from cities.models import City
 
+input("Do you want to delete all data? (y/n)")
+print("Deleting all data...")
 
-ShipmentHistory.objects.all().delete()
-Shipment.objects.all().delete()
-ShipmentStatus.objects.all().delete()
-Recipient.objects.all().delete()
-Driver.objects.all().delete()
-TruckType.objects.all().delete()
-Branch.objects.all().delete()
-Client.objects.all().delete()
-City.objects.all().delete()
-User.objects.filter(is_superuser=False).delete()
+if input("Do you want to delete all data? (y/n)") == 'y':
+    User.objects.all().delete()
+    Shipment.objects.all().delete()
+    ShipmentHistory.objects.all().delete()
+    ShipmentStatus.objects.all().delete()
+    Recipient.objects.all().delete()
+    Driver.objects.all().delete()
+    TruckType.objects.all().delete()
+    Branch.objects.all().delete()
+    Client.objects.all().delete()
+    City.objects.all().delete()
+    User.objects.filter(is_superuser=False).delete()
+    print("All data deleted successfully.")
+else:
+    print("No data deleted.")
 

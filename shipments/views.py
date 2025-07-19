@@ -57,8 +57,11 @@ class ShipmentCreateView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
 
     def create(self, request, *args, **kwargs):
+        # استخراج اسم المستخدم
         user_name = request.user.get_full_name() if request.user else "مستخدم غير معروف"
         
+        print(request.data)
+
         # 1. التحقق من البيانات
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -168,6 +171,29 @@ class ShipmentUpdateStatus(generics.UpdateAPIView):
         else:
             print("Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
+
+    def perform_update(self, serializer): # for update after save serializer
+        user = self.request.user
+        user_name = user.get_full_name()
+        old_status = serializer.instance.status
+
+        updated_instance = serializer.save()
+        new_status = updated_instance.status
+
+        if old_status != new_status:
+            ShipmentHistory.objects.create(
+                shipment=updated_instance,
+                user=user,
+                old_status=old_status,
+                new_status=new_status,
+                action= self.request.method,
+                notes=f"تم تغيير الحالة من '{old_status}' إلى '{new_status}' بواسطة {user_name}"
+            )
+
+
+   
+
+
 
  
 
