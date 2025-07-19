@@ -24,15 +24,20 @@
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/BassamMsmar/Shuhnaty360.git
-cd Shuhnaty360
+git clone https://github.com/BassamMsmar/Shuhnaty360-Backend.git
+cd Shuhnaty360-Backend
 ```
 
 ### 2️⃣ Create a Virtual Environment
 
 ```bash
 python -m venv env
-source env/bin/activate  # On Windows use `env\Scripts\activate`
+
+# Activate the virtual environment
+# On Windows
+call venv\Scripts\activate
+# On Linux/Mac
+source env/bin/activate
 ```
 
 ### 3️⃣ Install Dependencies
@@ -48,12 +53,20 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-### 4️⃣ Create dummy data to first time
+### 5️⃣ Create dummy data to first time
+
 ```bash
-python dummy_data.py
+python load_initial_data.py # to load initial data
+python dummy_data.py # to load dummy data
 ```
 
-### 5️⃣ API Documentation (Postman & Swagger)
+### 6️⃣ Login to admin panel
+
+`http://127.0.0.1:8000/admin/`
+username: admin
+password: admin
+
+### 7️⃣ API Documentation (Postman & Swagger)
 
 - Import the Postman collection from the `docs/` folder.
 - Base API URL: `http://127.0.0.1:8000/api/`
