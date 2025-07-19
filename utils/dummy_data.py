@@ -338,57 +338,33 @@ def create_shipment(shipments):
         print(f'Shipment {i} created')
 
 # Create shipment history entries for a shipment
-def create_shipment_history(shipment, statuses, users):
-    fake = Faker()
-    # Always create an initial status entry
-    initial_status = next((s for s in statuses if s.name_en == 'In Shipping'), random.choice(statuses))
-    
-    ShipmentHistory.objects.create(
-        shipment=shipment,
-        status=initial_status,
-        updated_at=shipment.created_at,
-        user=random.choice(users),
-        notes=fake.sentence() if random.choice([True, False]) else None
-    )
-    
-    # Add 1-3 random status updates
-    for _ in range(random.randint(1, 3)):
-        update_time = shipment.created_at + timedelta(days=random.randint(1, 5))
-        if update_time > timezone.now():
-            update_time = timezone.now()
-            
+def create_shipment_history():
+    statuses = ShipmentStatus.objects.all()
+    users = User.objects.all()
+    for shipment in Shipment.objects.all():
         ShipmentHistory.objects.create(
             shipment=shipment,
-            status=random.choice(statuses),
-            updated_at=update_time,
+            old_status=shipment.status,
+            new_status=random.choice(statuses),
+            updated_at=shipment.created_at,
             user=random.choice(users),
             notes=fake.sentence() if random.choice([True, False]) else None
         )
-    
-    # If shipment is delivered, add a delivered status
-    if shipment.actual_delivery_date:
-        delivered_status = next((s for s in statuses if s.name_en == 'Delivered'), None)
-        if delivered_status:
-            ShipmentHistory.objects.create(
-                shipment=shipment,
-                status=delivered_status,
-                updated_at=shipment.actual_delivery_date,
-                user=random.choice(users),
-                notes=fake.sentence() if random.choice([True, False]) else None
-            )
+
 
 
 
 
 # Create data in the correct order
 print('Starting data creation...')
-create_superuser()
-create_user(100)
-create_company_profiles()
-create_company_branches()
-create_client(50)
-create_driver(200)
-create_branch(200)
-create_recipient(200)
-create_shipment(10000)
+# create_superuser()
+# create_user(100)
+# create_company_profiles()
+# create_company_branches()
+# create_client(50)
+# create_driver(200)
+# create_branch(200)
+# create_recipient(200)
+# create_shipment(10000)
+create_shipment_history()
 print('Data creation completed successfully!')

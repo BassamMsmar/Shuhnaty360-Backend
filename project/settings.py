@@ -25,15 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'z60&@oq6zu4aaf2&1m-c)h1#=2_x8jne3l%!ds_)6=3ir&r4-m'
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
+DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = [ 'www.shuhnaty.com', 'shuhnaty.com', '137.184.61.215', '127.0.0.1']
 
 # Frontend settings
-FRONTEND_URL = os.getenv('FRONTEND_URL')  # Change this to your frontend URL in production
+FRONTEND_URL = 'http://localhost:5173' # Change this to your frontend URL in production
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more specific in production
