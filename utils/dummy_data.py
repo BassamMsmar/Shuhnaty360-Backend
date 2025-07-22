@@ -9,7 +9,6 @@ django.setup()
 
 from faker import Faker
 import random
-import uuid
 from datetime import timedelta
 from django.utils import timezone
 
@@ -339,6 +338,7 @@ def create_shipment(shipments):
 
 # Create shipment history entries for a shipment
 def create_shipment_history():
+    fake = Faker()
     statuses = ShipmentStatus.objects.all()
     users = User.objects.all()
     for shipment in Shipment.objects.all():
@@ -357,14 +357,14 @@ def create_shipment_history():
 
 # Create data in the correct order
 print('Starting data creation...')
-# create_superuser()
+create_superuser()
 # create_user(100)
-# create_company_profiles()
-# create_company_branches()
-# create_client(50)
-# create_driver(200)
-# create_branch(200)
-# create_recipient(200)
-# create_shipment(10000)
+create_company_profiles()
+create_company_branches()
+create_client(50)
+create_driver(200)
+create_branch(200)
+create_recipient(200)
+create_shipment(10000)
 create_shipment_history()
 print('Data creation completed successfully!')
