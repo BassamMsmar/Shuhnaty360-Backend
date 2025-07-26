@@ -35,6 +35,15 @@ ALLOWED_HOSTS = ['*']
 # Frontend settings
 FRONTEND_URL = 'http://localhost:5173' # Change this to your frontend URL in production
 
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more specific in production
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+
 
 # Application definition
 
@@ -193,14 +202,6 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more specific in production
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
 
 
 INSTALLED_APPS += ['debug_toolbar']
