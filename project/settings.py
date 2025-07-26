@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBDJANGO_DEBUGUG')
+DEBUG = os.getenv('DJANGO_DEBUG')
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
 
@@ -36,13 +36,13 @@ ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
 FRONTEND_URL = os.getenv('FRONTEND_URL')
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more specific in production
+CORS_ALLOW_ALL_ORIGINS = False  # For development only, be more specific in production
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if origin.strip()]
 
 
 
-CSRF_TRUSTED_ORIGINS = [origin.strip() + '/' for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
 
 
 # Application definition
